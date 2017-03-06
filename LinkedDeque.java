@@ -140,13 +140,15 @@ public class LinkedDeque<Item> implements Deque<Item>
         }
         public void remove()
         {
+
+            if (lastcurrent == null) throw new IllegalStateException(); // done: if called a second time will throw IllegalStateException
             // TODO(EC): implement this method.
             // It should be constant time.
             // Note remove() applies to the item last returned by
             // next().  The user should make at most one call to
             // remove() between two calls of next().  If remove()
             // is called a second time (without another next()), it
-            // should throw an IllegalStateException.
+            // should throw an IllegalStateException. [DONE]
         }
         public Item next()
         {
