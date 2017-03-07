@@ -164,6 +164,18 @@ public class LinkedDeque<Item> implements Deque<Item>
             // remove() between two calls of next().  If remove()
             // is called a second time (without another next()), it
             // should throw an IllegalStateException. [DONE]
+
+            if(lastcurrent.previous == null) 
+                first = lastcurrent.next;
+            else
+                lastcurrent.previous.next = lastcurrent.next;
+            
+            if(lastcurrent.next == null)
+                last = null;
+            else
+                lastcurrent.next.previous = lastcurrent.previous;
+
+            lastcurrent = null;
         }
         public Item next()
         {
