@@ -111,8 +111,21 @@ public class LinkedDeque<Item> implements Deque<Item>
 
     public Item removeLast()
     {
-        // TODO: implement this method
-        throw new UnsupportedOperationException();
+        // DONE: method implemented 
+        if (isEmpty()) throw new NoSuchElementException();
+        Item item = last.item;
+        if (last.previous == null) {  //if last.previous is null, we are removing the only item in the list 
+            first = null;             //therefore set first and last to null
+            last = null;
+        }
+        else {
+            last = last.previous;
+            last.next = null;      //eliminates only two references to the item we remove
+        }
+
+        N--;                        // deincrements count
+        return item;
+
     }
 
     // Return a string representation: "[first, second, last]".
