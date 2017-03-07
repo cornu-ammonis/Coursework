@@ -32,8 +32,9 @@ A TUTOR OR CODE WRITTEN BY OTHER STUDENTS.  ___ANDREW C JONES 3/6/17____
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Deque;
 
-public class LinkedDeque<Item> implements Deque<Item>
+public class LinkedDeque<Item> 
 {
     // Not private, just to allow testing.
     int N;         // number of elements on deque
@@ -129,7 +130,7 @@ public class LinkedDeque<Item> implements Deque<Item>
     }
 
     // Return a string representation: "[first, second, last]".
-    public String toString()
+   /* public String toString()
     {
         // TODO: this takes time at least quadratic in N!
         // Modify it to use a StringBuilder, so it takes time
@@ -140,7 +141,7 @@ public class LinkedDeque<Item> implements Deque<Item>
 	    sep = ", ";
         }
 	return s + "]";
-    }
+    }*/
 
     // A standard iterator (visits items from first to last).
     public Iterator<Item> iterator() { return new Iter(); }
@@ -214,5 +215,24 @@ public class LinkedDeque<Item> implements Deque<Item>
         // creating new ones.  You should modify their next/previous
         // links, not their item links.
         throw new UnsupportedOperationException();
+    }
+
+
+    public static void main(String[] args){
+        LinkedDeque<String> testq = new LinkedDeque<String>();
+
+        testq.addFirst("hi");
+        testq.addLast("there");
+        testq.addLast("sup?");
+
+       Iterator<String> testiter = testq.iterator();
+        System.out.println(testiter.next());
+        testiter.remove();
+
+        System.out.println(testiter.next());
+        testiter.remove();
+        System.out.println(testiter.next());
+        testiter.remove();
+        System.out.println(testiter.next());
     }
 }
