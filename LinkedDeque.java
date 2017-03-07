@@ -90,7 +90,7 @@ public class LinkedDeque<Item> implements Deque<Item>
         if (last == null)
             last = first;
         else
-            oldfirst.previous = first;
+            oldfirst.previous = first; // added previous link for oldfirst
         ++N;
     }
 
@@ -102,8 +102,10 @@ public class LinkedDeque<Item> implements Deque<Item>
         Item item = first.item;
         first = first.next;
         N--;
-        if (isEmpty())
+        if (isEmpty()) 
             last = null;
+        else
+            first.previous = null;   //sets first.previous to null if first exists 
         return item;
     }
 
