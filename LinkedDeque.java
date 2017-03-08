@@ -226,7 +226,24 @@ public class LinkedDeque<Item> implements Deque<Item>
         // You should reuse the existing Node objects, rather than
         // creating new ones.  You should modify their next/previous
         // links, not their item links.
-        throw new UnsupportedOperationException();
+        if (first == null || last == null || first.equals(last))
+            return;
+
+        Node oldfirst = first;
+        Node i = last;
+        first = last;
+        i.next = i.previous;
+        i.previous = null;
+        i = i.next;
+        while(i!= null && i.next != null){
+            Node temp;
+            temp = i.next;
+            i.next = i.previous;
+            i.previous = temp;
+            i = i.next;
+
+        }
+        last = oldfirst;
     }
 
 
@@ -241,14 +258,20 @@ public class LinkedDeque<Item> implements Deque<Item>
          System.out.println(testiter.next());
         testq.addLast("there");
         testq.addLast("sup?");
+
+
         System.out.println(testq.toString());
-        testiter.remove();
+        testq.reverse();
+        System.out.println(testq.toString());
+        /*testiter.remove();
         System.out.println(testq.toString());
 
         Iterator<String> reviter = testq.descendingIterator();
         System.out.println(reviter.next());
         reviter.remove();
-        System.out.println(testq.toString());
+        System.out.println(testq.toString());*/
+
+
 
        /*
         System.out.println(testiter.next());
