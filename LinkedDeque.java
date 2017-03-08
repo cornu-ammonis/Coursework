@@ -62,7 +62,7 @@ public class LinkedDeque<Item> implements Deque<Item>
 
     public void addLast(Item item)
     {
-        // TODO: fix .previous links as necessary
+        // DONE: fix .previous links as necessary
         // This is enqueue from LinkedQueue.java
         Node oldlast = last;
         last = new Node();
@@ -81,7 +81,7 @@ public class LinkedDeque<Item> implements Deque<Item>
 
     public void addFirst(Item item)
     {
-        // TODO: fix .previous links as necessary
+        // DONE: fix .previous links as necessary
         // This is push from LinkedStack.java (also updating last)
         Node oldfirst = first;
         first = new Node();
@@ -96,7 +96,7 @@ public class LinkedDeque<Item> implements Deque<Item>
 
     public Item removeFirst()
     {
-        // TODO: fix .previous links as necessary
+        // DONE: fix .previous links as necessary
         // This is dequeue from LinkedQueue.java
         if (isEmpty()) throw new NoSuchElementException();
         Item item = first.item;
@@ -131,7 +131,7 @@ public class LinkedDeque<Item> implements Deque<Item>
     // Return a string representation: "[first, second, last]".
    public String toString()
     {
-        // TODO: this takes time at least quadratic in N!
+        // DONE: this takes time at least quadratic in N!
         // Modify it to use a StringBuilder, so it takes time
         // that is linear in the length of its output.
         String sep = "";
@@ -159,6 +159,10 @@ public class LinkedDeque<Item> implements Deque<Item>
         //removes the element most recently returned by the next() method. if there is no such element,
         //e.g. if the list is empty or there was more than one remove() call between next() calls,
         //the method throws an IllegalStateException. 
+
+        //removes element by setting its previous element's next point to its own next pointer, and its next elements 
+        //previous pointer to its own previous pointer (if they exist, updating first and last pointers as required)
+        //in effect removing all references to the item (so it is deleted by garbage collection)
         public void remove()
         {
 
@@ -222,19 +226,23 @@ public class LinkedDeque<Item> implements Deque<Item>
 
     public void reverse()
     {
-        // TODO(EC): implement this method.
+        // DONE(EC): implement this method.
         // You should reuse the existing Node objects, rather than
         // creating new ones.  You should modify their next/previous
         // links, not their item links.
         if (first == null || last == null || first.equals(last))
             return;
 
+
+        //switches next and previous pointers, beginning with the last element and continuing in the loop if there are more 
         Node oldfirst = first;
         Node i = last;
         first = last;
         i.next = i.previous;
-        i.previous = null;
+        i.previous = null; //always null because this is the last element becoming the first element, means temp is not required
         i = i.next;
+        
+
         while(i!= null && i.next != null){
             Node temp;
             temp = i.next;
@@ -243,6 +251,7 @@ public class LinkedDeque<Item> implements Deque<Item>
             i = i.next;
 
         }
+        //makes sure what was previously "first" is set to "last"
         last = oldfirst;
     }
 
