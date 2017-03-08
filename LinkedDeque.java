@@ -159,6 +159,8 @@ public class LinkedDeque<Item> implements Deque<Item>
         {
 
             if (lastcurrent == null) throw new IllegalStateException(); // done: if called a second time will throw IllegalStateException
+            else
+                N -= 1;
             // TODO(EC): implement this method.
             // It should be constant time.
             // Note remove() applies to the item last returned by
@@ -173,11 +175,15 @@ public class LinkedDeque<Item> implements Deque<Item>
                 lastcurrent.previous.next = lastcurrent.next;
             
             if(lastcurrent.next == null)
-                last = null;
+                if (lastcurrent.previous == null)
+                    last = null;
+                else
+                    last = lastcurrent.previous;
             else
                 lastcurrent.next.previous = lastcurrent.previous;
 
             lastcurrent = null;
+            
         }
         public Item next()
         {
