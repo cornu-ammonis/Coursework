@@ -32,9 +32,8 @@ A TUTOR OR CODE WRITTEN BY OTHER STUDENTS.  ___ANDREW C JONES 3/6/17____
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Deque;
 
-public class LinkedDeque<Item> 
+public class LinkedDeque<Item> implements Deque<Item>
 {
     // Not private, just to allow testing.
     int N;         // number of elements on deque
@@ -130,18 +129,20 @@ public class LinkedDeque<Item>
     }
 
     // Return a string representation: "[first, second, last]".
-   /* public String toString()
+   public String toString()
     {
         // TODO: this takes time at least quadratic in N!
         // Modify it to use a StringBuilder, so it takes time
         // that is linear in the length of its output.
-        String s = "[", sep = "";
+        String sep = "";
+        StringBuilder str = new StringBuilder("[");
         for (Item it : this) {
-	    s += sep + it;
+	    str.append(sep + it);
 	    sep = ", ";
         }
-	return s + "]";
-    }*/
+        str.append("]");
+	return str.toString();
+    }
 
     // A standard iterator (visits items from first to last).
     public Iterator<Item> iterator() { return new Iter(); }
@@ -220,12 +221,20 @@ public class LinkedDeque<Item>
 
     public static void main(String[] args){
         LinkedDeque<String> testq = new LinkedDeque<String>();
+        
 
+        
         testq.addFirst("hi");
+        Iterator<String> testiter = testq.iterator();
+         System.out.println(testiter.next());
         testq.addLast("there");
         testq.addLast("sup?");
+        System.out.println(testq.toString());
+        testiter.remove();
+        System.out.println(testq.toString());
 
-       Iterator<String> testiter = testq.iterator();
+
+       /*
         System.out.println(testiter.next());
         testiter.remove();
 
@@ -233,6 +242,6 @@ public class LinkedDeque<Item>
         testiter.remove();
         System.out.println(testiter.next());
         testiter.remove();
-        System.out.println(testiter.next());
+        System.out.println(testiter.next()); */
     }
 }
