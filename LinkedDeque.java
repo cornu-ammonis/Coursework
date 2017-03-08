@@ -155,13 +155,17 @@ public class LinkedDeque<Item> implements Deque<Item>
         {
             return current != null;
         }
+        
+        //removes the element most recently returned by the next() method. if there is no such element,
+        //e.g. if the list is empty or there was more than one remove() call between next() calls,
+        //the method throws an IllegalStateException. 
         public void remove()
         {
 
             if (lastcurrent == null) throw new IllegalStateException(); // done: if called a second time will throw IllegalStateException
             else
                 N -= 1;
-            // TODO(EC): implement this method.
+            // [DONE] (EC): implement this method.
             // It should be constant time.
             // Note remove() applies to the item last returned by
             // next().  The user should make at most one call to
@@ -195,6 +199,7 @@ public class LinkedDeque<Item> implements Deque<Item>
         }
     }
 
+    //same as iterator but goes in reverse order 
     private class RevIter extends Iter
     {
         public RevIter() { this.current = last; }
@@ -225,6 +230,7 @@ public class LinkedDeque<Item> implements Deque<Item>
     }
 
 
+    //testing 
     public static void main(String[] args){
         LinkedDeque<String> testq = new LinkedDeque<String>();
         
