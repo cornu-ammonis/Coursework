@@ -206,7 +206,7 @@ public class LinkedDeque<Item> implements Deque<Item>
     public Iterator<Item> descendingIterator()
     {
         // TODO: implement this method.
-        throw new UnsupportedOperationException();
+        return new RevIter();
     }
 
     public void reverse()
@@ -233,6 +233,10 @@ public class LinkedDeque<Item> implements Deque<Item>
         testiter.remove();
         System.out.println(testq.toString());
 
+        Iterator<String> reviter = testq.descendingIterator();
+        System.out.println(reviter.next());
+        reviter.remove();
+        System.out.println(testq.toString());
 
        /*
         System.out.println(testiter.next());
