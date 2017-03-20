@@ -263,18 +263,27 @@ public class LinkedDeque<Item> implements Deque<Item>
 
         
         testq.addFirst("hi");
-        Iterator<String> testiter = testq.iterator();
-         System.out.println(testiter.next());
+        
         testq.addLast("there");
         testq.addLast("sup?");
-
+        Iterator<String> testiter = testq.iterator();
+         System.out.println(testiter.next());
 
         System.out.println(testq.toString());
+        System.out.println(testiter.next());
         testq.reverse();
+        System.out.println(testiter.next());
         System.out.println(testq.toString());
-        /*testiter.remove();
+        testiter.remove();
+        System.out.println(testq.toString());
+        System.out.println(testiter.next());
+        testiter.remove();
         System.out.println(testq.toString());
 
+         System.out.println(testiter.next());
+        testiter.remove();
+        System.out.println(testq.toString());
+        /*
         Iterator<String> reviter = testq.descendingIterator();
         System.out.println(reviter.next());
         reviter.remove();
