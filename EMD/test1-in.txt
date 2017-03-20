@@ -1,0 +1,11 @@
+add/The Wizard of Oz/Transported to a surreal landscape, a young girl kills the first person she meets and then teams up with three strangers to kill again
+get/Thundercats
+get/the wizard of oz
+get/THE WIZARD OF OZ
+add/Jaws/If you watch the movie backwards, it's about a shark that keeps throwing up people until they have to open a beach
+get/Jaws
+add/Godzilla/If you watch Godzilla backwards, it's about a giant lizard who helps rebuild a half burnt down city, then moonwalks into the ocean
+get/The Wizard of Oz
+get/Jaws
+get/Godzilla
+get/Home Alone
