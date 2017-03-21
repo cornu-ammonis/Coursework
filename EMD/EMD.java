@@ -16,6 +16,10 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
     // name of the movie (key) and its description (value), respectively.) If
     // there is a duplicate key, the old entry should be overwritten with the
     // new value.
+
+    // @param key - used to identify and sort/rank the value to add
+    // @param value - data associated with key
+    // @returns nothing - after execution, the KV pair will be placed in the proper position in the tree
     public void add(K key, V value) {
         // TODO: Implement me(basic score)
         if(root == null) //if tree is empty
@@ -25,33 +29,33 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
             return;
         }
 
+        // < 0 if root key less than argument key, 0 if equal, > 0 if root key > arg key
         int cmp = root.kv.key.compareTo(key);
 
         if(cmp < 0)  //root is less than key so go right
         {
+            //if null, this is the proper position for the given kv pair, so create a new node
             if (root.right == null)
             {
                 root.right = new Node();
                 root.right.kv = new KVPair<K,V>(key, value);
             }
-            else
+            else //if not null, recur down to right subtree
                 addRecur(key, value, root.right);
         }
         else if (cmp > 0) //root is greater than key so go left
         {
+            //if null, this is the proper position for the given kv pair, so create a new node
             if(root.left == null)
             {
                 root.left = new Node();
                 root.left.kv = new KVPair<K, V>(key, value);
             }
-            else
+            else //if not null, recur down to left subtree
                 addRecur(key, value, root.left);
         }
-        else //too is equal to key so replace its kv
+        else //root is equal to key so replace its kv
             root.kv = new KVPair<K, V>(key, value);
-
-
-
     }
 
     public void addRecur(K key, V value, Node node) 
