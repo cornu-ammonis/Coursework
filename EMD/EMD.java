@@ -58,33 +58,40 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
             root.kv = new KVPair<K, V>(key, value);
     }
 
+    //recursive helper method for the add method -- 
+    //traverses the BST until the proper position for the given key is found
+    //
+    // @param key - used to identify and sort/rank the value to add
+    // @param value - data associated with key
+    // @param node, type Node - our current position in the BST. the root element for the subtree into which we must insert key/value.
     public void addRecur(K key, V value, Node node) 
     {
-        
-
+         // < 0 if root key less than argument key, 0 if equal, > 0 if root key > arg key       
         int cmp = node.kv.key.compareTo(key);
 
         if(cmp < 0)  //root is less than key so go right
         {
+            //if right child is null, this is proper position for KV pair, insert it here
             if (node.right == null)
             {
                 node.right = new Node();
                 node.right.kv = new KVPair<K,V>(key, value);
             }
-            else
+            else //if right child not null, recur on right subtree
                 addRecur(key, value, node.right);
         }
         else if (cmp > 0) //root is greater than key so go left
         {
+            //if left child is null, this is proper position for KV pair, insert it here
             if(node.left == null)
             {
                 node.left = new Node();
                 node.left.kv = new KVPair<K, V>(key, value);
             }
-            else
+            else //if left child not null, recur on left subtree
                 addRecur(key, value, node.left);
         }
-        else //too is equal to key so replace its kv
+        else //node (root of current subtree) is equal to key so replace its kv
             node.kv = new KVPair<K, V>(key, value);
 
     }
