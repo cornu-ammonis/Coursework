@@ -149,9 +149,29 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
     // If key is exactly the name of a movie, next should still return
     // the following movie in the database.)
     // Note that key does not have to exist in the database.
+
+    // Algorithm explanation - similar to binary search except we do not know exactly what value we want in advance,
+    // so we maintain a current element. if a given node is larger than the key but smaller than our current "next" candidate,
+    // we replace the next candidate with that key and traverse left (to find potentially a node which is smaller than current candidate
+    // but later than key) - if it is smaller than the key, we traverse right to find a node which is larger than the current key. 
+    // if they are equal, we traverse right to find something larger
     public K next(K key) {
         // TODO: Implement me(EC for intermediate score)
-        return null;
+
+        
+        if(root == null)
+            return null;
+        K currentNext;
+
+        int cmp = root.kv.key.compareTo(key);
+        if (cmp <= 0)
+            return nextRecur(key, currentNext, root.right);
+        else // root is larger than key
+        {
+            currentNext = root.kv.key;
+            return nextRecur(key, currentNext, root.left);
+        }
+        
     }
 
     // Return a list of key-value pairs in the RangeMap that are between the
