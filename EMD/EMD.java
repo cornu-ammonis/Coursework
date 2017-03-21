@@ -16,17 +16,118 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
     // name of the movie (key) and its description (value), respectively.) If
     // there is a duplicate key, the old entry should be overwritten with the
     // new value.
+
+    // @param key - used to identify and sort/rank the value to add
+    // @param value - data associated with key
+    // @returns nothing - after execution, the KV pair will be placed in the proper position in the tree
     public void add(K key, V value) {
         // TODO: Implement me(basic score)
+        if(root == null) //if tree is empty
+        {
+            root = new Node();
+            root.kv = new KVPair<K, V>(key, value);
+            return;
+        }
+
+        // < 0 if root key less than argument key, 0 if equal, > 0 if root key > arg key
+        int cmp = root.kv.key.compareTo(key);
+
+        if(cmp < 0)  //root is less than key so go right
+        {
+            //if null, this is the proper position for the given kv pair, so create a new node
+            if (root.right == null)
+            {
+                root.right = new Node();
+                root.right.kv = new KVPair<K,V>(key, value);
+            }
+            else //if not null, recur down to right subtree
+                addRecur(key, value, root.right);
+        }
+        else if (cmp > 0) //root is greater than key so go left
+        {
+            //if null, this is the proper position for the given kv pair, so create a new node
+            if(root.left == null)
+            {
+                root.left = new Node();
+                root.left.kv = new KVPair<K, V>(key, value);
+            }
+            else //if not null, recur down to left subtree
+                addRecur(key, value, root.left);
+        }
+        else //root is equal to key so replace its kv
+            root.kv = new KVPair<K, V>(key, value);
+    }
+
+    //recursive helper method for the add method -- 
+    //traverses the BST until the proper position for the given key is found
+    //
+    // @param key - used to identify and sort/rank the value to add
+    // @param value - data associated with key
+    // @param node, type Node - our current position in the BST. the root element for the subtree into which we must insert key/value.
+    public void addRecur(K key, V value, Node node) 
+    {
+         // < 0 if root key less than argument key, 0 if equal, > 0 if root key > arg key       
+        int cmp = node.kv.key.compareTo(key);
+
+        if(cmp < 0)  //root is less than key so go right
+        {
+            //if right child is null, this is proper position for KV pair, insert it here
+            if (node.right == null)
+            {
+                node.right = new Node();
+                node.right.kv = new KVPair<K,V>(key, value);
+            }
+            else //if right child not null, recur on right subtree
+                addRecur(key, value, node.right);
+        }
+        else if (cmp > 0) //root is greater than key so go left
+        {
+            //if left child is null, this is proper position for KV pair, insert it here
+            if(node.left == null)
+            {
+                node.left = new Node();
+                node.left.kv = new KVPair<K, V>(key, value);
+            }
+            else //if left child not null, recur on left subtree
+                addRecur(key, value, node.left);
+        }
+        else //node (root of current subtree) is equal to key so replace its kv
+            node.kv = new KVPair<K, V>(key, value);
+
     }
 
     // Retrieve the value corresponding to key, or return null if the key is
     // not in your RangeMap. The comparison between keys should be exact.
     // (For EMD, this would correspond to the lower-case name of the movie
     // (key).)
-    public V get(K key) {
+    public V get(K key) 
+    {
         // TODO: Implement me(basic score)
-        return null;
+        if (root == null)
+            return null;
+
+        int cmp = root.kv.key.compareTo(key);
+        if(cmp < 0)
+            return getRecur(key, root.right);
+        else if(cmp > 0)
+            return getRecur(key, root.left);
+        else //they are equal return root's value
+            return root.kv.value;
+    }
+
+    public V getRecur(K key, Node node) 
+    {
+        if (node == null)
+            return null;
+
+        int cmp = node.kv.key.compareTo(key);
+        if(cmp < 0)
+            return getRecur(key, node.right);
+        else if(cmp > 0)
+            return getRecur(key, node.left);
+        else
+            return node.kv.value;
+
     }
 
     // Return the key in the RangeMap that's lexicographically next after
