@@ -89,9 +89,34 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
     // not in your RangeMap. The comparison between keys should be exact.
     // (For EMD, this would correspond to the lower-case name of the movie
     // (key).)
-    public V get(K key) {
+    public V get(K key) 
+    {
         // TODO: Implement me(basic score)
-        return null;
+        if (root == null)
+            return null;
+
+        int cmp = root.kv.key.compareTo(key);
+        if(cmp < 0)
+            return getRecur(key, root.right);
+        else if(cmp > 0)
+            return getRecur(key, root.left);
+        else //they are equal return root's value
+            return root.kv.value;
+    }
+
+    public V getRecur(K key, Node node) 
+    {
+        if (node == null)
+            return null;
+
+        int cmp = node.kv.key.compareTo(key);
+        if(cmp < 0)
+            return getRecur(key, node.right);
+        else if(cmp > 0)
+            return getRecur(key, node.left);
+        else
+            return node.kv.value;
+
     }
 
     // Return the key in the RangeMap that's lexicographically next after
