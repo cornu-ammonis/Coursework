@@ -2,6 +2,12 @@ import java.util.List;
 import java.util.ArrayList;
 import java.io.Console;
 // NOTE: No other Java libraries allowed (automatic 0)
+/*
+THIS CODE IS MY OWN WORK, IT WAS WRITTEN WITHOUT CONSULTING
+A TUTOR OR CODE WRITTEN BY OTHER STUDENTS.  ___ANDREW C JONES 3/20/17____
+*/
+
+
 
 class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
     class Node {
@@ -102,10 +108,11 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
     // (key).)
     public V get(K key) 
     {
-        // TODO: Implement me(basic score)
-        if (root == null)
+        // DONE: Implement me(basic score)
+        if (root == null) //empty tree
             return null;
 
+        // if negative, root is smaller than key so go right. if positive, root is larger than key so go left. 
         int cmp = root.kv.key.compareTo(key);
         if(cmp < 0)
             return getRecur(key, root.right);
@@ -115,11 +122,17 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
             return root.kv.value;
     }
 
+    //recursively implements binary search on the tree, either returns the value of the node wiht key 
+    // @param key, 
+    // or returns null if it doesn't exist
+    // @param node is the root of the subtree over which we binary search for a given recursive call
     public V getRecur(K key, Node node) 
     {
+        //reached end of tree, target node doesn't exist
         if (node == null)
             return null;
 
+        // if negative, root is smaller than key so go right. if positive, root is larger than key so go left. 
         int cmp = node.kv.key.compareTo(key);
         if(cmp < 0)
             return getRecur(key, node.right);
