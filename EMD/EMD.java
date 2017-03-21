@@ -18,6 +18,71 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
     // new value.
     public void add(K key, V value) {
         // TODO: Implement me(basic score)
+        if(root == null) //if tree is empty
+        {
+            root = new Node();
+            root.kv = new KVPair<K, V>(key, value);
+            return;
+        }
+
+        int cmp = root.kv.key.compareTo(key);
+
+        if(cmp < 0)  //root is less than key so go right
+        {
+            if (root.right == null)
+            {
+                root.right = new Node();
+                root.right.kv = new KVPair<K,V>(key, value);
+            }
+            else
+                addRecur(key, value, root.right);
+        }
+        else if (cmp > 0) //root is greater than key so go left
+        {
+            if(root.left == null)
+            {
+                root.left = new Node();
+                root.left.kv = new KVPair<K, V>(key, value);
+            }
+            else
+                addRecur(key, value, root.left);
+        }
+        else //too is equal to key so replace its kv
+            root.kv = new KVPair<K, V>(key, value);
+
+
+
+    }
+
+    public void addRecur(K key, V value, Node node) 
+    {
+        
+
+        int cmp = node.kv.key.compareTo(key);
+
+        if(cmp < 0)  //root is less than key so go right
+        {
+            if (node.right == null)
+            {
+                node.right = new Node();
+                node.right.kv = new KVPair<K,V>(key, value);
+            }
+            else
+                addRecur(key, value, node.right);
+        }
+        else if (cmp > 0) //root is greater than key so go left
+        {
+            if(node.left == null)
+            {
+                node.left = new Node();
+                node.left.kv = new KVPair<K, V>(key, value);
+            }
+            else
+                addRecur(key, value, node.left);
+        }
+        else //too is equal to key so replace its kv
+            node.kv = new KVPair<K, V>(key, value);
+
     }
 
     // Retrieve the value corresponding to key, or return null if the key is
