@@ -155,7 +155,8 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
     // we replace the next candidate with that key and traverse left (to find potentially a node which is smaller than current candidate
     // but later than key) - if it is smaller than the key, we traverse right to find a node which is larger than the current key. 
     // if they are equal, we traverse right to find something larger
-    public K next(K key) {
+    public K next(K key) 
+    {
         // TODO: Implement me(EC for intermediate score)
 
         
@@ -164,6 +165,8 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
         K currentNext;
 
         int cmp = root.kv.key.compareTo(key);
+        
+        //root is smaller than key so go right
         if (cmp <= 0)
             return nextRecur(key, currentNext, root.right);
         else // root is larger than key
@@ -172,6 +175,22 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
             return nextRecur(key, currentNext, root.left);
         }
         
+    }
+
+    public K nextRecur(K key, K currentNext, Node node)
+    {
+        if (node == null) //base case
+            return currentNext;
+
+        int cmp = node.kv.compareTo(key);
+
+        if (cmp <= 0) // node smaller than key so go right
+            return nextRecur(key, currentNext, node.right);
+        else //node is larger than key, so replace CurrentNext and recur left
+        {
+            currentNext = node.kv.key;
+            return nextRecur(key, currentNext, node.left);
+        }
     }
 
     // Return a list of key-value pairs in the RangeMap that are between the
