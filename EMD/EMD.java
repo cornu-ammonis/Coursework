@@ -199,7 +199,8 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
     // (For EMD, range would return an alphabetic list of movies titles that
     // are between the two parameter strings). Note that neither start nor
     // end have to exist in the database.
-    public List<KVPair<K,V>> range(K start, K end) {
+    public List<KVPair<K,V>> range(K start, K end) 
+    {
         // TODO: Implement me(EC for full score)
         List<KVPair<K,V>> list = new ArrayList<KVPair<K,V>>();
 
@@ -217,6 +218,24 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
 
         if (endCmp < 0) //checks root element is smaller than end -- if it isnt no need to walk right
             recurRange(start, end, list, root.right);
+    }
+
+    private void rangeRecur(K start, K end, List<KVPair<K,V>> list, Node node)
+    {
+        if node == null;
+            return;
+
+        int startCmp = node.kv.key.compareTo(start);
+        int endCmp = node.kv.key.compareTo(end);
+
+        if (startcmp > 0)
+            recurRange(start, end, list, node.left);
+
+        if (startcmp >=0 && endCmp <= 0)
+            list.add(node.kv);
+
+        if (endCmp < 0)
+            recurRange(start, end, list, node.right);
     }
 
     // Removes the key-value pair with key specified by the parameter from
