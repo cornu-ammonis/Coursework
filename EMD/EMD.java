@@ -260,20 +260,7 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
                 return;
             }
 
-            Node tmpParent = root; //there must be a slick way to avoid this 
-            Node tmp = root.right;
-            while (tmp.left != null)
-            {
-                tmpParent = tmp;
-                tmp = tmp.left;
-            }
-            if (tmp == root.right)
-                root.right = null;
-            else
-                tmpParent.left = null;
-
-            root = tmp;
-            return;
+            root = removeRecur(key, root);
 
 
         }
