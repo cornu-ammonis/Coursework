@@ -201,7 +201,7 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
     // end have to exist in the database.
     public List<KVPair<K,V>> range(K start, K end) 
     {
-        // TODO: Implement me(EC for full score)
+        // DONE: Implement me(EC for full score)
         List<KVPair<K,V>> list = new ArrayList<KVPair<K,V>>();
 
         if (root == null)
@@ -243,8 +243,94 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
     // Removes the key-value pair with key specified by the parameter from
     // the RangeMap. Does nothing if the key does not exist. 
     // Extra Credit beyond 100%
-    public void remove(K key) {
+    public void remove(K key) 
+    {
         // TODO: Implement me(EC beyond full score)
+
+        if (root == null)
+            return;
+
+        int cmp = root.kv.key.compareTo(key);
+
+        if (cmp == 0)
+        {
+            if (root.right == null)
+            {
+                root = root.left;
+                return;
+            }
+
+            Node tmpParent = root; //there must be a slick way to avoid this 
+            Node tmp = root.right;
+            while (tmp.left != null)
+            {
+                tmpParent = tmp;
+                tmp = tmp.left;
+            }
+            if (tmp == root.right)
+                root.right = null;
+            else
+                tmpParent.left = null;
+
+            root = tmp;
+            return;
+
+
+        }
+
+        // root is larger than thing so go left
+        else if (cmp > 0)
+        {
+            root.left = recurRemove(key, root.left);
+        }
+        else
+            root.left = recurRemove(key, root.right);
+
+
+
+    }
+
+    private Node removeRecur(K key, Node node)
+    {
+        if node == null
+            return null;
+
+        int cmp = node.kv.key.compareTo(key);
+
+        if (cmp == 0)
+        {
+            //if theres no right subtree replace self with left subtree. this properly handles case where left and right are both null
+            if (node.right == null) 
+                return node.left;
+
+            if (node.right.left == null)
+            {
+                node.right.left = node.left;
+                return node.right;
+            }
+
+            Node tmp = node.right;
+            while (tmp.left.left != null)
+                tmp = tmp.left;
+
+            Node becomesRoot = tmp.left;
+            tmp.left = becomesRoot.right;
+            becomesRoot.right = node.right;
+            becomesRoot.left = node.left;
+            return becomesRoot;
+        }
+
+        else if (cmp < 0)
+        {
+            node.right = removeRecur(key, node.right);
+            return node;
+        }
+
+        else //cmp > 0 so node larger than key so go left
+        {
+            node.left = removeRecur(key, node.left);
+            return node;
+        }
     }
 
     /////////////////////////////////////////////////
