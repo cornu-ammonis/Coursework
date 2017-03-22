@@ -245,36 +245,29 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
     // Extra Credit beyond 100%
     public void remove(K key) 
     {
-        // TODO: Implement me(EC beyond full score)
+        // DONE: Implement me(EC beyond full score)
+        // Implementation inspired by the example approach given by prof. Vigfusson in class, 
+        // taken entirely from memory not copied.  
 
         if (root == null)
             return;
 
         int cmp = root.kv.key.compareTo(key);
 
+        //if root is the element to remove
         if (cmp == 0)
-        {
-            if (root.right == null)
-            {
-                root = root.left;
-                return;
-            }
-
             root = removeRecur(key, root);
+        
 
-
-        }
-
-        // root is larger than thing so go left
+        // root is larger than item to remove, so it must be in left subtree if it exists
         else if (cmp > 0)
         {
             root.left = removeRecur(key, root.left);
         }
+
+        // root is smaller than item to remove, so it must be in right subtree if it exists
         else
             root.right = removeRecur(key, root.right);
-
-
-
     }
 
     private Node removeRecur(K key, Node node)
