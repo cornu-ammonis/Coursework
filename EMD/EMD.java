@@ -7,7 +7,7 @@ THIS CODE IS MY OWN WORK, IT WAS WRITTEN WITHOUT CONSULTING
 A TUTOR OR CODE WRITTEN BY OTHER STUDENTS.  ___ANDREW C JONES 3/20/17____
 */
 
-
+//TODO: should helper methods be private?
 
 class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
     class Node {
@@ -149,9 +149,48 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
     // If key is exactly the name of a movie, next should still return
     // the following movie in the database.)
     // Note that key does not have to exist in the database.
-    public K next(K key) {
+
+    // Algorithm explanation - similar to binary search except we do not know exactly what value we want in advance,
+    // so we maintain a current element. if a given node is larger than the key but smaller than our current "next" candidate,
+    // we replace the next candidate with that key and traverse left (to find potentially a node which is smaller than current candidate
+    // but later than key) - if it is smaller than the key, we traverse right to find a node which is larger than the current key. 
+    // if they are equal, we traverse right to find something larger
+    public K next(K key) 
+    {
         // TODO: Implement me(EC for intermediate score)
-        return null;
+
+        
+        if(root == null)
+            return null;
+        K currentNext = null;
+
+        int cmp = root.kv.key.compareTo(key);
+        
+        //root is smaller than key so go right
+        if (cmp <= 0)
+            return nextRecur(key, currentNext, root.right);
+        else // root is larger than key
+        {
+            currentNext = root.kv.key;
+            return nextRecur(key, currentNext, root.left);
+        }
+        
+    }
+
+    public K nextRecur(K key, K currentNext, Node node)
+    {
+        if (node == null) //base case
+            return currentNext;
+
+        int cmp = node.kv.key.compareTo(key);
+
+        if (cmp <= 0) // node smaller than key so go right
+            return nextRecur(key, currentNext, node.right);
+        else //node is larger than key, so replace CurrentNext and recur left
+        {
+            currentNext = node.kv.key;
+            return nextRecur(key, currentNext, node.left);
+        }
     }
 
     // Return a list of key-value pairs in the RangeMap that are between the
@@ -160,9 +199,45 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
     // (For EMD, range would return an alphabetic list of movies titles that
     // are between the two parameter strings). Note that neither start nor
     // end have to exist in the database.
-    public List<KVPair<K,V>> range(K start, K end) {
+    public List<KVPair<K,V>> range(K start, K end) 
+    {
         // TODO: Implement me(EC for full score)
-        return null;
+        List<KVPair<K,V>> list = new ArrayList<KVPair<K,V>>();
+
+        if (root == null)
+            return null;
+
+        int startCmp = root.kv.key.compareTo(start);
+        int endCmp = root.kv.key.compareTo(end);
+        
+        if (startCmp > 0) //checks root key is greater than start - if it isnt no need to walk left
+            rangeRecur(start, end, list, root.left);
+        
+        if (startCmp >= 0 && endCmp <= 0) //checks if roots element is in range
+            list.add(root.kv);
+
+        if (endCmp < 0) //checks root element is smaller than end -- if it isnt no need to walk right
+            rangeRecur(start, end, list, root.right);
+
+        return list;
+    }
+
+    private void rangeRecur(K start, K end, List<KVPair<K,V>> list, Node node)
+    {
+        if (node == null)
+            return;
+
+        int startCmp = node.kv.key.compareTo(start);
+        int endCmp = node.kv.key.compareTo(end);
+
+        if (startCmp > 0)
+            rangeRecur(start, end, list, node.left);
+
+        if (startCmp >=0 && endCmp <= 0)
+            list.add(node.kv);
+
+        if (endCmp < 0)
+            rangeRecur(start, end, list, node.right);
     }
 
     // Removes the key-value pair with key specified by the parameter from
