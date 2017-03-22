@@ -281,10 +281,10 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
         // root is larger than thing so go left
         else if (cmp > 0)
         {
-            root.left = recurRemove(key, root.left);
+            root.left = removeRecur(key, root.left);
         }
         else
-            root.left = recurRemove(key, root.right);
+            root.right = removeRecur(key, root.right);
 
 
 
@@ -292,7 +292,7 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
 
     private Node removeRecur(K key, Node node)
     {
-        if node == null
+        if (node == null)
             return null;
 
         int cmp = node.kv.key.compareTo(key);
