@@ -204,38 +204,40 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
         // TODO: Implement me(EC for full score)
         List<KVPair<K,V>> list = new ArrayList<KVPair<K,V>>();
 
-        if root == null
+        if (root == null)
             return null;
 
         int startCmp = root.kv.key.compareTo(start);
         int endCmp = root.kv.key.compareTo(end);
         
         if (startCmp > 0) //checks root key is greater than start - if it isnt no need to walk left
-            recurRange(start, end, list, root.left);
+            rangeRecur(start, end, list, root.left);
         
         if (startCmp >= 0 && endCmp <= 0) //checks if roots element is in range
             list.add(root.kv);
 
         if (endCmp < 0) //checks root element is smaller than end -- if it isnt no need to walk right
-            recurRange(start, end, list, root.right);
+            rangeRecur(start, end, list, root.right);
+
+        return list;
     }
 
     private void rangeRecur(K start, K end, List<KVPair<K,V>> list, Node node)
     {
-        if node == null;
+        if (node == null)
             return;
 
         int startCmp = node.kv.key.compareTo(start);
         int endCmp = node.kv.key.compareTo(end);
 
-        if (startcmp > 0)
-            recurRange(start, end, list, node.left);
+        if (startCmp > 0)
+            rangeRecur(start, end, list, node.left);
 
-        if (startcmp >=0 && endCmp <= 0)
+        if (startCmp >=0 && endCmp <= 0)
             list.add(node.kv);
 
         if (endCmp < 0)
-            recurRange(start, end, list, node.right);
+            rangeRecur(start, end, list, node.right);
     }
 
     // Removes the key-value pair with key specified by the parameter from
