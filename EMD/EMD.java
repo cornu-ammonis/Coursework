@@ -272,34 +272,40 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
 
     private Node removeRecur(K key, Node node)
     {
-        if (node == null)
+        if (node == null) // base case 1 -- we did not find element to remove
             return null;
 
         int cmp = node.kv.key.compareTo(key);
 
-        if (cmp == 0)
+        if (cmp == 0) // base case 2 - we found the element to remove
         {
             //if theres no right subtree replace self with left subtree. this properly handles case where left and right are both null
             if (node.right == null) 
                 return node.left;
 
+            //if right subtree has no left child, it can become (sub)root simply by making its left child the current
+            //(sub)root's left child and returning it.  
             if (node.right.left == null)
             {
                 node.right.left = node.left;
                 return node.right;
             }
 
+
+            //traverses left until we find the first node whose left child has no left child (means tmp.left is the smallest 
+            //node in the right subtree. then make tmp.left the new root.
             Node tmp = node.right;
             while (tmp.left.left != null)
                 tmp = tmp.left;
 
             Node becomesRoot = tmp.left;
-            tmp.left = becomesRoot.right;
-            becomesRoot.right = node.right;
+            tmp.left = becomesRoot.right; //handles case where becomesRoot has a right subtree, and case when it's a leaf.
+            becomesRoot.right = node.right; // gives becomesRoot appopriate left and right subtrees
             becomesRoot.left = node.left;
             return becomesRoot;
         }
 
+        // node is smaller than key, so if key exists it must be on the right, recur right
         else if (cmp < 0)
         {
             node.right = removeRecur(key, node.right);
