@@ -7,7 +7,7 @@ THIS CODE IS MY OWN WORK, IT WAS WRITTEN WITHOUT CONSULTING
 A TUTOR OR CODE WRITTEN BY OTHER STUDENTS.  ___ANDREW C JONES 3/20/17____
 */
 
-
+//TODO: should helper methods be private?
 
 class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
     class Node {
@@ -162,7 +162,7 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
         
         if(root == null)
             return null;
-        K currentNext;
+        K currentNext = null;
 
         int cmp = root.kv.key.compareTo(key);
         
@@ -182,7 +182,7 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
         if (node == null) //base case
             return currentNext;
 
-        int cmp = node.kv.compareTo(key);
+        int cmp = node.kv.key.compareTo(key);
 
         if (cmp <= 0) // node smaller than key so go right
             return nextRecur(key, currentNext, node.right);
@@ -201,7 +201,22 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
     // end have to exist in the database.
     public List<KVPair<K,V>> range(K start, K end) {
         // TODO: Implement me(EC for full score)
-        return null;
+        List<KVPair<K,V>> list = new ArrayList<KVPair<K,V>>();
+
+        if root == null
+            return null;
+
+        int startCmp = root.kv.key.compareTo(start);
+        int endCmp = root.kv.key.compareTo(end);
+        
+        if (startCmp > 0) //checks root key is greater than start - if it isnt no need to walk left
+            recurRange(start, end, list, root.left);
+        
+        if (startCmp >= 0 && endCmp <= 0) //checks if roots element is in range
+            list.add(root.kv);
+
+        if (endCmp < 0) //checks root element is smaller than end -- if it isnt no need to walk right
+            recurRange(start, end, list, root.right);
     }
 
     // Removes the key-value pair with key specified by the parameter from
