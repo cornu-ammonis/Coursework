@@ -177,7 +177,9 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
         //root is smaller than key so go right
         if (cmp <= 0)
             return nextRecur(key, currentNext, root.right);
-        else // root is larger than key so assign it's key to currentNextxt and go left
+        
+        //root is larger than key so assign its key to currentNext & go left
+        else 
         {
             currentNext = root.kv.key;
             return nextRecur(key, currentNext, root.left);
@@ -218,13 +220,16 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
         int startCmp = root.kv.key.compareTo(start);
         int endCmp = root.kv.key.compareTo(end);
         
-        if (startCmp > 0) //checks root key is greater than start - if it isnt no need to walk left
+        //checks root key is greater than start - if not no need to walk left
+        if (startCmp > 0) 
             rangeRecur(start, end, list, root.left);
         
-        if (startCmp >= 0 && endCmp <= 0) //checks if roots element is in range
+        //checks if roots element is in range, adds if so
+        if (startCmp >= 0 && endCmp <= 0) 
             list.add(root.kv);
 
-        if (endCmp < 0) //checks root element is smaller than end -- if it isnt no need to walk right
+        //checks root element is smaller than end, if not no need to go right
+        if (endCmp < 0) 
             rangeRecur(start, end, list, root.right);
 
         return list;
@@ -254,8 +259,8 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
     public void remove(K key) 
     {
         // DONE: Implement me(EC beyond full score)
-        // Implementation inspired by the example approach given by prof. Vigfusson in class, 
-        // taken entirely from memory not copied.  
+        // Implementation inspired by the example approach given by prof 
+        // Vigfusson in class,  taken entirely from memory not copied.  
 
         if (root == null)
             return;
@@ -267,7 +272,8 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
             root = removeRecur(key, root);
         
 
-        // root is larger than item to remove, so it must be in left subtree if it exists
+        // root is larger than item to remove, so it must be in left subtree 
+        // (if it exists)
         else if (cmp > 0)
         {
             root.left = removeRecur(key, root.left);
