@@ -151,28 +151,33 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
     // Note that key does not have to exist in the database.
 
     // Algorithm explanation - similar to binary search except we do not know 
-    // exactly what value we want in advance, so we maintain a currentNext element 
-    // initialized to null. if a given node is larger than the target key but smaller
-    // than our current nextCandidate, we replace the next candidate with that
-    // key and traverse left (to find potentially a node which is smaller than current  
-    // candidate but larger than target key) - if it is smaller than the key, we 
-    // traverse right to find a node which is larger than the target key.
-    // if they are equal, we traverse right to find something larger than target.
+    // exactly what value we want in advance, so we maintain a currentNext
+    // element initialized to null. if a given node is larger than the target 
+    // key but smallerthan our current nextCandidate, we replace the next 
+    // candidate with that key and traverse left (to find potentially a node 
+    // which is smaller than current candidate but larger than target key) - 
+    // if it is smaller than the key, we traverse right to find a node which 
+    // is larger than the target key. if they are equal, we traverse right 
+    // to find something larger than target.
     public K next(K key) 
     {
-        // TODO: Implement me(EC for intermediate score)
+        // DONE: Implement me(EC for intermediate score)
 
         
         if(root == null)
             return null;
+
+        //this pointer tracks the smallest element which is larger than key
+        //encountered so far 
         K currentNext = null;
 
+        //comparison value
         int cmp = root.kv.key.compareTo(key);
         
         //root is smaller than key so go right
         if (cmp <= 0)
             return nextRecur(key, currentNext, root.right);
-        else // root is larger than key
+        else // root is larger than key so assign it's key to currentNextxt and go left
         {
             currentNext = root.kv.key;
             return nextRecur(key, currentNext, root.left);
