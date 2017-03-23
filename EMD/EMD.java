@@ -150,11 +150,14 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
     // the following movie in the database.)
     // Note that key does not have to exist in the database.
 
-    // Algorithm explanation - similar to binary search except we do not know exactly what value we want in advance,
-    // so we maintain a current element. if a given node is larger than the key but smaller than our current "next" candidate,
-    // we replace the next candidate with that key and traverse left (to find potentially a node which is smaller than current candidate
-    // but later than key) - if it is smaller than the key, we traverse right to find a node which is larger than the current key. 
-    // if they are equal, we traverse right to find something larger
+    // Algorithm explanation - similar to binary search except we do not know 
+    // exactly what value we want in advance, so we maintain a currentNext element 
+    // initialized to null. if a given node is larger than the target key but smaller
+    // than our current nextCandidate, we replace the next candidate with that
+    // key and traverse left (to find potentially a node which is smaller than current  
+    // candidate but larger than target key) - if it is smaller than the key, we 
+    // traverse right to find a node which is larger than the target key.
+    // if they are equal, we traverse right to find something larger than target.
     public K next(K key) 
     {
         // TODO: Implement me(EC for intermediate score)
