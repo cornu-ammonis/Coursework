@@ -69,7 +69,8 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
     //
     // @param key - used to identify and sort/rank the value to add
     // @param value - data associated with key
-    // @param node, type Node - our current position in the BST. the root element for the subtree into which we must insert key/value.
+    // @param node, type Node - our current position in the BST. 
+    // the root element for the subtree into which we must insert key/value.
     public void addRecur(K key, V value, Node node) 
     {
          // < 0 if root key less than argument key, 0 if equal, > 0 if root key > arg key       
@@ -150,26 +151,36 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
     // the following movie in the database.)
     // Note that key does not have to exist in the database.
 
-    // Algorithm explanation - similar to binary search except we do not know exactly what value we want in advance,
-    // so we maintain a current element. if a given node is larger than the key but smaller than our current "next" candidate,
-    // we replace the next candidate with that key and traverse left (to find potentially a node which is smaller than current candidate
-    // but later than key) - if it is smaller than the key, we traverse right to find a node which is larger than the current key. 
-    // if they are equal, we traverse right to find something larger
+    // Algorithm explanation - similar to binary search except we do not know 
+    // exactly what value we want in advance, so we maintain a currentNext
+    // element initialized to null. if a given node is larger than the target 
+    // key but smallerthan our current nextCandidate, we replace the next 
+    // candidate with that key and traverse left (to find potentially a node 
+    // which is smaller than current candidate but larger than target key) - 
+    // if it is smaller than the key, we traverse right to find a node which 
+    // is larger than the target key. if they are equal, we traverse right 
+    // to find something larger than target.
     public K next(K key) 
     {
-        // TODO: Implement me(EC for intermediate score)
+        // DONE: Implement me(EC for intermediate score)
 
         
         if(root == null)
             return null;
+
+        //this pointer tracks the smallest element which is larger than key
+        //encountered so far 
         K currentNext = null;
 
+        //comparison value
         int cmp = root.kv.key.compareTo(key);
         
         //root is smaller than key so go right
         if (cmp <= 0)
             return nextRecur(key, currentNext, root.right);
-        else // root is larger than key
+        
+        //root is larger than key so assign its key to currentNext & go left
+        else 
         {
             currentNext = root.kv.key;
             return nextRecur(key, currentNext, root.left);
@@ -177,6 +188,11 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
         
     }
 
+    // @param key - find the smallest key which is larger than this argument
+    // @param currentNext - tracks the smallest kv which is larger than 
+    // param key we have seen so far
+    // @param node - our current position in the tree
+    // @returns - the node we have chosen as next
     public K nextRecur(K key, K currentNext, Node node)
     {
         if (node == null) //base case
@@ -210,18 +226,25 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
         int startCmp = root.kv.key.compareTo(start);
         int endCmp = root.kv.key.compareTo(end);
         
-        if (startCmp > 0) //checks root key is greater than start - if it isnt no need to walk left
+        //checks root key is greater than start, if not no need to walk left
+        if (startCmp > 0) 
             rangeRecur(start, end, list, root.left);
         
-        if (startCmp >= 0 && endCmp <= 0) //checks if roots element is in range
+        //checks if root's KV is in range, adds if so
+        if (startCmp >= 0 && endCmp <= 0) 
             list.add(root.kv);
 
-        if (endCmp < 0) //checks root element is smaller than end -- if it isnt no need to walk right
+        //checks root kv is smaller than end, if not no need to go right
+        if (endCmp < 0) 
             rangeRecur(start, end, list, root.right);
 
         return list;
     }
 
+    // @param start - beginning of our range inclusive
+    // @param end - end of our range inclusive
+    // @param list - list of elements to return
+    // @param node - current position in tree
     private void rangeRecur(K start, K end, List<KVPair<K,V>> list, Node node)
     {
         if (node == null)
@@ -230,12 +253,15 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
         int startCmp = node.kv.key.compareTo(start);
         int endCmp = node.kv.key.compareTo(end);
 
+        //checks node key is greater than start, if not no need to walk left
         if (startCmp > 0)
             rangeRecur(start, end, list, node.left);
 
+         //checks if node's kv is in range, adds if so
         if (startCmp >=0 && endCmp <= 0)
             list.add(node.kv);
 
+        //checks node's key is smaller than end, if not no need to go right
         if (endCmp < 0)
             rangeRecur(start, end, list, node.right);
     }
@@ -246,8 +272,9 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
     public void remove(K key) 
     {
         // DONE: Implement me(EC beyond full score)
-        // Implementation inspired by the example approach given by prof. Vigfusson in class, 
-        // taken entirely from memory not copied.  
+        
+        // Implementation inspired by the example approach given by prof 
+        // Vigfusson in class,  taken entirely from memory not copied.  
 
         if (root == null)
             return;
@@ -259,17 +286,27 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
             root = removeRecur(key, root);
         
 
-        // root is larger than item to remove, so it must be in left subtree if it exists
+        // root is larger than item to remove, so it must be in left subtree 
+        // (if it exists)
         else if (cmp > 0)
-        {
             root.left = removeRecur(key, root.left);
-        }
+        
 
-        // root is smaller than item to remove, so it must be in right subtree if it exists
+        // root is smaller than item to remove, so it must be in right  
+        // subtree (if it exists)
         else
             root.right = removeRecur(key, root.right);
     }
 
+    // this recursive method either returns the node it was given 
+    // (potentially with a subtree modified by another recursive call to 
+    // removeRecur) or it returns the new node which replaces the node we 
+    // removed. this solves the issue of making sure that, when we remove 
+    // a node, we have its parent point to the node which replaced it.  
+    // -
+    // @param key - key for node to remove (if it exists)
+    // @param node - position in the tree. 
+    // @returns - either @param node or the node which replaces it
     private Node removeRecur(K key, Node node)
     {
         if (node == null) // base case 1 -- we did not find element to remove
@@ -279,12 +316,14 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
 
         if (cmp == 0) // base case 2 - we found the element to remove
         {
-            //if theres no right subtree replace self with left subtree. this properly handles case where left and right are both null
+            // if theres no right subtree replace self with left subtree. 
+            // this properly handles case where left and right are both null
             if (node.right == null) 
                 return node.left;
 
-            //if right subtree has no left child, it can become (sub)root simply by making its left child the current
-            //(sub)root's left child and returning it.  
+            // if right subtree has no left child, it can become (sub)root 
+            // simply by making its left child the current (sub)root's left 
+            // child and returning it.  
             if (node.right.left == null)
             {
                 node.right.left = node.left;
@@ -292,20 +331,28 @@ class EMD<K extends Comparable<K>, V> implements RangeMap<K,V> {
             }
 
 
-            //traverses left until we find the first node whose left child has no left child (means tmp.left is the smallest 
-            //node in the right subtree. then make tmp.left the new root.
+            // traverses left until we find the first node whose left child
+            // has no left child (means tmp.left is the smallest node
+            // in the right subtree. then make tmp.left the new root.
             Node tmp = node.right;
             while (tmp.left.left != null)
                 tmp = tmp.left;
 
             Node becomesRoot = tmp.left;
-            tmp.left = becomesRoot.right; //handles case where becomesRoot has a right subtree, and case when it's a leaf.
-            becomesRoot.right = node.right; // gives becomesRoot appopriate left and right subtrees
+            
+            // handles case where becomesRoot has a right subtree, 
+            // and case when it's a leaf.
+            tmp.left = becomesRoot.right; 
+
+            // gives appopriate left and right subtrees
+            becomesRoot.right = node.right; 
             becomesRoot.left = node.left;
+            
+            // return assigns this to its parent right or left pointer 
             return becomesRoot;
         }
 
-        // node is smaller than key, so if key exists it must be on the right, recur right
+        // node < key, so if key exists it must be on the right, recur right
         else if (cmp < 0)
         {
             node.right = removeRecur(key, node.right);
