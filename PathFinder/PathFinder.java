@@ -1,6 +1,6 @@
 /*
 THIS CODE IS MY OWN WORK, IT WAS WRITTEN WITHOUT CONSULTING
-A TUTOR OR CODE WRITTEN BY OTHER STUDENTS.  __YOUR_NAME_HERE__
+A TUTOR OR CODE WRITTEN BY OTHER STUDENTS.  __ANDREW C JONES 4/1/17__
 */
 
 // Homework: revise this file, WRITE YOUR NAME UPSTAIRS, see TODO items below.
@@ -87,11 +87,15 @@ public class PathFinder
         // Since S is the root, we will let S be its own parent.
 
         // Compute parent links, by recursive depth-first-search!
-        dfs(S, S);
-
+        //dfs(S, S);
+        dfsNonRecursive(S);
+        System.out.println("returned control flow");
         // If T has no parent, it is not reachable, so no path.
         if (getParent(T)==null)
+        {
+        	System.out.println("didnt find path");
             return null;
+        }
         // Otherwise, we can reconstruct a path from S to T.
         Deque<Position> path = new LinkedDeque<Position>();
         for (Position u=T; !u.equals(S); u=getParent(u))
@@ -110,6 +114,32 @@ public class PathFinder
         // Now recursively try the four neighbors of p.
         for (int dir=0; dir<4; ++dir)
             dfs(p.neighbor(dir), p);
+    }
+
+    private static void dfsNonRecursive(Position start) 
+    {
+    	Deque<Position> queue = new LinkedDeque<Position>();
+    	setParent(start, start);
+    	queue.addLast(start);
+    	
+    	while(!queue.isEmpty())
+    	{
+    		System.out.println("looping");
+    		Position current = queue.removeLast();
+    		for (int i = 0; i < 4; i++)
+    		{
+    			Position neighbor = current.neighbor(i);
+    			if(!m.inRange(neighbor) || !m.isOpen(neighbor) || getParent(neighbor) != null)
+    				continue;
+    			else
+    			{
+    				setParent(neighbor, current);
+    				queue.addLast(neighbor);
+    			}
+    		}
+    	}
+    	System.out.println("left loop");
+    	return;
     }
 
     // Return a wall path separating S and T, or null.
