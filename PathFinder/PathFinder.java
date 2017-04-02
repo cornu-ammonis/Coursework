@@ -45,6 +45,8 @@ public class PathFinder
     // findPath() method more than once, on different mazes, and
     // to get valid results for each maze.
 
+    private static int wallCount;
+
     // The maze we are currently searching, and its size.
     private static Maze m;      // current maze
     private static int N;       // its size (N by N)
@@ -175,6 +177,22 @@ public class PathFinder
     {
     	m = maze;                           // save the maze
         N = m.size();                       // save size (maze is N by N)
+        Position S = new Position(0,0);     // start of maze
+        Position T = new Position(N-1,N-1); // end of maze
+        Deque<Position> path = null;
+        if(m.isWall(S))
+        {
+        	path = new LinkedDeque<Position>();
+        	path.addFirst(S);
+        	return path;
+        }
+
+        if(m.isWall(T))
+        {
+        	path = new LinkedDeque<Position>();
+        	path.addFirst(T);
+        	return path;
+        }
 
         //if there are no 1 bits in first row or far right column
         //there cannot be a wall path
@@ -186,12 +204,12 @@ public class PathFinder
 
         //checks for valid start in first row
         for(int j = 0; j < N && validStart == false; j++)
-        	if (m[0][j] == 1)
+        	if (m.isWall(new Position(0, j)))
         		validStart = true;
 
         //checks for valid start in last column
         for(int i = 0; i < N && validStart == false; i++)
-        	if (m[i][N-1] == 1)
+        	if (m.isWall(new Position(i, N-1)))
         		validStart = true;
 
         if(!validStart)
@@ -199,17 +217,90 @@ public class PathFinder
 
         //checks for valid end at left column
         for(int i = 0; i < N && validEnd == false; i++)
-        	if(m[i][0] == 1)
+        	if(m.isWall(new Position(i, 0)))
         		validEnd = true;
 
         for(int j = 0; j < N && validEnd == false; j++)
-        	if(m[N-1][j] == 1)
+        	if(m.isWall(new Position(N-1, j)))
         		validEnd = true;
 
         if(!validEnd)
         	return null;
+
+        int currentMin = Integer.MAX_VALUE;
         
-        return null;            // up to you (EC)
+
+        for(int i = 0; i < N; i++)
+        {
+        	Position end = new Position(i, 0);
+        	if(m.isWall(end))
+        	{
+        		parent = new Position[N][N];
+        		Position start = bfsWall(end);
+        		if (wallCount > - 1 )
+        		{
+        			if (wallCount < currentMin)
+        				path = unpackWallPath(start, end);
+        		}
+        	}
+        }
+
+        for (int j = 0; j < N; j++) 
+        {
+        	Position end = new Position(N-1, j);
+        	if(m.isWall(end))
+        	{
+        		parent = new Position[N][N];
+        		Position start = bfsWall(end);
+        		if (wallCount > - 1 )
+        		{
+        			if (wallCount < currentMin)
+        				path = unpackWallPath(start, end);
+        		}
+        	}
+        }
+
+        return path;            // up to you (EC)
+    }
+
+    private static Deque<Position> unpackWallPath(Position start, Position end) 
+    {
+    	Deque<Position> path = new LinkedDeque<Position>();
+
+    	for (Position u=start; !u.equals(end); u=getParent(u))
+            path.addLast(u);
+        path.addLast(end);
+        return path;
+    	
+    }
+
+    private static Position bfsWall(Position end) 
+    {
+    	Deque<Position> queue = new LinkedDeque<Position>();
+    	setParent(end, end);
+    	queue.addFirst(end);
+    	wallCount = 0;
+    	while(!queue.isEmpty())
+    	{
+    		Position current = queue.removeLast();
+    		wallCount++;
+
+    		for(int i = 0; i < 8; i++)
+    		{
+    			Position neighbor = current.neighbor(i);
+    			if(!m.inRange(neighbor) || m.isOpen(neighbor) || getParent(neighbor) != null)
+    				continue;
+
+    			setParent(neighbor, current);
+    			if(neighbor.i == 0 || neighbor.j == N-1)
+    				return neighbor;
+
+    			queue.addFirst(neighbor);
+
+    		}
+    	}
+    	wallCount = -1;
+    	return null; // didn't find a valid startPoint
     }
 
     // Command-line usage:
