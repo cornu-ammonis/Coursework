@@ -88,7 +88,8 @@ public class PathFinder
 
         // Compute parent links, by recursive depth-first-search!
         //dfs(S, S);
-        dfsNonRecursive(S);
+        //dfsNonRecursive(S);
+        bfs(S, T);
         System.out.println("returned control flow");
         // If T has no parent, it is not reachable, so no path.
         if (getParent(T)==null)
@@ -140,6 +141,31 @@ public class PathFinder
     	}
     	System.out.println("left loop");
     	return;
+    }
+
+    private static void bfs(Position start, Position target)
+    {
+    	Deque<Position> queue = new LinkedDeque<Position>();
+    	setParent(start, start);
+    	queue.addFirst(start);
+    	while(!queue.isEmpty())
+    	{
+    		Position current = queue.removeLast();
+    		for (int i = 0; i < 4; i++)
+    		{
+    			Position neighbor = current.neighbor(i);
+    			if(!m.inRange(neighbor) || !m.isOpen(neighbor) || getParent(neighbor) != null)
+    				continue;
+    			else
+    			{
+    				setParent(neighbor, current);
+    				if (neighbor.equals(target))
+    					return;
+    				queue.addFirst(neighbor);
+    			}
+    		}
+
+    	}
     }
 
     // Return a wall path separating S and T, or null.
