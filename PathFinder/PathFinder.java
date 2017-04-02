@@ -169,8 +169,46 @@ public class PathFinder
     }
 
     // Return a wall path separating S and T, or null.
+    // Note: must begin at i==0 or j==N-1 (first row or far right column)
+    // must end at i==N-1 or j==0 (last row or far left column)
     public static Deque<Position> findWallPath(Maze maze)
     {
+    	m = maze;                           // save the maze
+        N = m.size();                       // save size (maze is N by N)
+
+        //if there are no 1 bits in first row or far right column
+        //there cannot be a wall path
+        boolean validStart = false; 
+        
+        //if there are no 1 bits in last row or far left column 
+        //there cannot be a valid wall path
+        boolean validEnd = false;
+
+        //checks for valid start in first row
+        for(int j = 0; j < N && validStart == false; j++)
+        	if (m[0][j] == 1)
+        		validStart = true;
+
+        //checks for valid start in last column
+        for(int i = 0; i < N && validStart == false; i++)
+        	if (m[i][N-1] == 1)
+        		validStart = true;
+
+        if(!validStart)
+        	return null;
+
+        //checks for valid end at left column
+        for(int i = 0; i < N && validEnd == false; i++)
+        	if(m[i][0] == 1)
+        		validEnd = true;
+
+        for(int j = 0; j < N && validEnd == false; j++)
+        	if(m[N-1][j] == 1)
+        		validEnd = true;
+
+        if(!validEnd)
+        	return null;
+        
         return null;            // up to you (EC)
     }
 
