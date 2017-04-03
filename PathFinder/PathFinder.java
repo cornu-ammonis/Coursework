@@ -236,12 +236,13 @@ public class PathFinder
         	{
         		parent = new Position[N][N];
         		Position start = bfsWall(end);
-        		if (wallCount > - 1 )
+        		if (start != null) 
         		{
-        			if (wallCount < currentMin)
+        			Deque<Position> tmp = unpackWallPath(start, end);
+        			if (tmp.size() < currentMin)
         			{
-        				path = unpackWallPath(start, end);
-        				currentMin = wallCount;
+        				currentMin = tmp.size();
+        				path = tmp;
         			}
         		}
         	}
@@ -254,12 +255,13 @@ public class PathFinder
         	{
         		parent = new Position[N][N];
         		Position start = bfsWall(end);
-        		if (wallCount > - 1 )
+        		if (start != null) 
         		{
-        			if (wallCount < currentMin)
+        			Deque<Position> tmp = unpackWallPath(start, end);
+        			if (tmp.size() < currentMin)
         			{
-        				path = unpackWallPath(start, end);
-        				currentMin = wallCount;
+        				currentMin = tmp.size();
+        				path = tmp;
         			}
         		}
         	}
@@ -271,12 +273,12 @@ public class PathFinder
 
     private static Deque<Position> unpackWallPath(Position start, Position end) 
     {
-    	Deque<Position> path = new LinkedDeque<Position>();
+    	Deque<Position> pth = new LinkedDeque<Position>();
 
     	for (Position u=start; !u.equals(end); u=getParent(u))
-            path.addLast(u);
-        path.addLast(end);
-        return path;
+            pth.addLast(u);
+        pth.addLast(end);
+        return pth;
     	
     }
 
