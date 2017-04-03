@@ -340,7 +340,100 @@ public class PathFinder
         return path;            // up to you (EC)
     } */
 
-	
+	// Return a wall path separating S and T, or null.
+    // Note: must begin at i==0 or j==N-1 (first row or far right column)
+    // must end at i==N-1 or j==0 (last row or far left column)
+    public static Deque<Position> findWallPath(Maze maze)
+    {
+    	m = maze;
+    	N = m.size();
+    	Deque<Position> path = null;
+    	phantom = new PhantomPosition(-1, -1);
+    	Position start = bfsWallPhantom();
+    	if (start == null)
+    		return null;
+
+    	path = unpackWallPathPhantom(start);
+    	return path;
+    }
+
+    private static Position bfsWallPhantom()
+    {
+    	Deque<PositionListedNeighbors> queue = new LinkedDeque<PositionListedNeighbors>();
+    	queue.addFirst(phantom);
+    	while(!queue.isEmpty())
+    	{
+    		PositionListedNeighbors current = queue.removeLast();
+    		for (PositionListedNeighbors neighbor : current.listNeighbors())
+    		{
+    			if (!m.inRange(neighbor) || !m.isWall(neighbor) || getParent(neighbor) != null)
+    				continue;
+    			else
+    				{
+    					setParent(neighbor, current);
+
+    					//this means we reached a valid endpoint and have found
+    					//the shortest wall path
+    					if (neighbor.i == 0 || neighbor.j == N-1) 
+    						return (Position) neighbor;
+
+    					queue.addFirst(neighbor);
+    				}
+    		}
+    	}
+
+    	return null; //this means we didn't find a wall path
+    }
+
+    private static Deque<Position> unpackWallPathPhantom(Position start)
+    {
+    	Deque<Position> pth = new LinkedDeque<Position>();
+    	for (Position u = start; !u.equals(phantom); u = getParent(u))
+    		pth.addLast(u);
+    	return pth;
+    }
+
+    private static Deque<Position> unpackWallPath(Position start, Position end) 
+    {
+    	Deque<Position> pth = new LinkedDeque<Position>();
+
+    	for (Position u=start; !u.equals(end); u=getParent(u))
+            pth.addLast(u);
+        pth.addLast(end);
+        return pth;
+    	
+    }
+
+    private static Position bfsWall(Position end) 
+    {
+    	Deque<Position> queue = new LinkedDeque<Position>();
+    	//setParent(end, end);
+    	queue.addFirst(end);
+    	wallCount = 1;
+    	while(!queue.isEmpty())
+    	{
+    		Position current = queue.removeLast();
+    		wallCount++;
+
+    		for(int i = 0; i < 8; i++)
+    		{
+    			Position neighbor = current.neighbor(i);
+    			if(!m.inRange(neighbor) || m.isOpen(neighbor) || getParent(neighbor) != null)
+    				continue;
+    			else {
+
+
+    			setParent(neighbor, current);
+    			if(neighbor.i == 0 || neighbor.j == N-1)
+    				return neighbor;
+
+    			queue.addFirst(neighbor);
+    			}
+    		}
+    	}
+    	wallCount = -1;
+    	return null; // didn't find a valid startPoint
+    }
 
     // Command-line usage:
     //
