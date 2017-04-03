@@ -39,6 +39,57 @@ A TUTOR OR CODE WRITTEN BY OTHER STUDENTS.  __ANDREW C JONES 4/1/17__
 
 public class PathFinder
 {
+
+	static class PhantomPosition extends Position 
+	{
+		public PhantomPosition(int i, int j) 
+		{
+			super(i, j); //call base class constructor
+		}
+
+
+		// this phantom position is adjascent to all positions in the first
+		// column or last row 
+		// i==N-1 or j==0
+		public Deque<Position> listNeighbors() 
+		{
+			Deque<Position> list = new LinkedDeque<Position>();
+
+			for (int j = 0; j < N; j++)
+				list.addFirst(new PositionListedNeighbors(N-1, j));
+
+			for (int i = 0; i < N; i++)
+				list.addFirst(new PositionListedNeighbors(i, 0));
+
+			return list;
+		}
+	}
+
+	static class PositionListedNeighbors extends Position 
+	{
+		public PositionListedNeighbors(int i, int j)
+		{
+			super(i, j); //call base class constructor
+		}
+
+		public Deque<Position> listNeighbors()
+		{
+			Deque<Position> list = new LinkedDeque<Position>();
+
+			//this is on an open path so only up down left right
+			if (m.isOpen(this)) 
+				for (int i = 0; i < 4; i++)
+					list.addFirst(this.neighbor(i));
+			else
+				for (int i = 0; i < 8; i++)
+					list.addFirst(this.neighbor(i));
+
+			return list;
+		}
+	}
+
+
+
     // Any data fields here should be private and static.  They exist
     // only as a convenient way to share search context between your
     // static methods here.   It should be possible to call your
