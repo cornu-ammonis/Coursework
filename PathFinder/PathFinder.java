@@ -92,11 +92,9 @@ public class PathFinder
         //dfs(S, S);
         //dfsNonRecursive(S);
         bfs(S, T);
-        System.out.println("returned control flow");
         // If T has no parent, it is not reachable, so no path.
         if (getParent(T)==null)
         {
-        	System.out.println("didnt find path");
             return null;
         }
         // Otherwise, we can reconstruct a path from S to T.
@@ -127,7 +125,6 @@ public class PathFinder
     	
     	while(!queue.isEmpty())
     	{
-    		System.out.println("looping");
     		Position current = queue.removeLast();
     		for (int i = 0; i < 4; i++)
     		{
@@ -141,7 +138,6 @@ public class PathFinder
     			}
     		}
     	}
-    	System.out.println("left loop");
     	return;
     }
 
@@ -180,6 +176,14 @@ public class PathFinder
         Position S = new Position(0,0);     // start of maze
         Position T = new Position(N-1,N-1); // end of maze
         Deque<Position> path = null;
+        
+        if(m.isWall(T))
+        {
+        	path = new LinkedDeque<Position>();
+        	path.addFirst(T);
+        	return path;
+        }
+
         if(m.isWall(S))
         {
         	path = new LinkedDeque<Position>();
@@ -187,12 +191,7 @@ public class PathFinder
         	return path;
         }
 
-        if(m.isWall(T))
-        {
-        	path = new LinkedDeque<Position>();
-        	path.addFirst(T);
-        	return path;
-        }
+
 
         //if there are no 1 bits in first row or far right column
         //there cannot be a wall path
@@ -240,7 +239,10 @@ public class PathFinder
         		if (wallCount > - 1 )
         		{
         			if (wallCount < currentMin)
+        			{
         				path = unpackWallPath(start, end);
+        				currentMin = wallCount;
+        			}
         		}
         	}
         }
@@ -255,11 +257,15 @@ public class PathFinder
         		if (wallCount > - 1 )
         		{
         			if (wallCount < currentMin)
+        			{
         				path = unpackWallPath(start, end);
+        				currentMin = wallCount;
+        			}
         		}
         	}
         }
-
+        if(path != null)
+        	System.out.println("Found path of length " + currentMin +" , " + path.size());
         return path;            // up to you (EC)
     }
 
@@ -277,9 +283,9 @@ public class PathFinder
     private static Position bfsWall(Position end) 
     {
     	Deque<Position> queue = new LinkedDeque<Position>();
-    	setParent(end, end);
+    	//setParent(end, end);
     	queue.addFirst(end);
-    	wallCount = 0;
+    	wallCount = 1;
     	while(!queue.isEmpty())
     	{
     		Position current = queue.removeLast();
@@ -290,13 +296,15 @@ public class PathFinder
     			Position neighbor = current.neighbor(i);
     			if(!m.inRange(neighbor) || m.isOpen(neighbor) || getParent(neighbor) != null)
     				continue;
+    			else {
+
 
     			setParent(neighbor, current);
     			if(neighbor.i == 0 || neighbor.j == N-1)
     				return neighbor;
 
     			queue.addFirst(neighbor);
-
+    			}
     		}
     	}
     	wallCount = -1;
