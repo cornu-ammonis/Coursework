@@ -40,7 +40,7 @@ A TUTOR OR CODE WRITTEN BY OTHER STUDENTS.  __ANDREW C JONES 4/1/17__
 public class PathFinder
 {
 
-	static class PhantomPosition extends Position 
+	static class PhantomPosition extends PositionListedNeighbors 
 	{
 		public PhantomPosition(int i, int j) 
 		{
@@ -51,9 +51,9 @@ public class PathFinder
 		// this phantom position is adjascent to all positions in the first
 		// column or last row 
 		// i==N-1 or j==0
-		public Deque<Position> listNeighbors() 
+		public Deque<PositionListedNeighbors> listNeighbors() 
 		{
-			Deque<Position> list = new LinkedDeque<Position>();
+			Deque<PositionListedNeighbors> list = new LinkedDeque<PositionListedNeighbors>();
 
 			for (int j = 0; j < N; j++)
 				list.addFirst(new PositionListedNeighbors(N-1, j));
@@ -72,9 +72,9 @@ public class PathFinder
 			super(i, j); //call base class constructor
 		}
 
-		public Deque<Position> listNeighbors()
+		public Deque<PositionListedNeighbors> listNeighbors()
 		{
-			Deque<Position> list = new LinkedDeque<Position>();
+			Deque<PositionListedNeighbors> list = new LinkedDeque<PositionListedNeighbors>();
 
 			//this is on an open path so only up down left right
 			if (m.isOpen(this)) 
@@ -86,6 +86,23 @@ public class PathFinder
 
 			return list;
 		}
+
+		public PositionListedNeighbors neighbor(int direction) 
+		{
+			switch (direction) {
+	            // cardinal directions:
+	        case 0: return new PositionListedNeighbors(i-1, j  ); // 1 row up
+	        case 1: return new PositionListedNeighbors(i+1, j  ); // 1 row down
+	        case 2: return new PositionListedNeighbors(i  , j-1); // 1 column left
+	        case 3: return new PositionListedNeighbors(i  , j+1); // 1 column right
+	            // diagonal directions:
+	        case 4: return new PositionListedNeighbors(i-1, j-1); // up and left
+	        case 5: return new PositionListedNeighbors(i+1, j+1); // down and right
+	        case 6: return new PositionListedNeighbors(i-1, j+1); // up and right
+	        case 7: return new PositionListedNeighbors(i+1, j-1); // down and left
+	        }
+	        throw new RuntimeException("bad direction " + direction);			
+		}
 	}
 
 
@@ -96,6 +113,7 @@ public class PathFinder
     // findPath() method more than once, on different mazes, and
     // to get valid results for each maze.
 
+	private static PhantomPosition phantom;
     private static int wallCount;
 
     // The maze we are currently searching, and its size.
@@ -217,10 +235,10 @@ public class PathFinder
     	}
     }
 
-    // Return a wall path separating S and T, or null.
-    // Note: must begin at i==0 or j==N-1 (first row or far right column)
-    // must end at i==N-1 or j==0 (last row or far left column)
-    public static Deque<Position> findWallPath(Maze maze)
+    
+
+    //old method kept for comparison
+    /* public static Deque<Position> findWallPath(Maze maze)
     {
     	m = maze;                           // save the maze
         N = m.size();                       // save size (maze is N by N)
@@ -320,49 +338,9 @@ public class PathFinder
         if(path != null)
         	System.out.println("Found path of length " + currentMin +" , " + path.size());
         return path;            // up to you (EC)
-    }
+    } */
 
-    private static Deque<Position> unpackWallPath(Position start, Position end) 
-    {
-    	Deque<Position> pth = new LinkedDeque<Position>();
-
-    	for (Position u=start; !u.equals(end); u=getParent(u))
-            pth.addLast(u);
-        pth.addLast(end);
-        return pth;
-    	
-    }
-
-    private static Position bfsWall(Position end) 
-    {
-    	Deque<Position> queue = new LinkedDeque<Position>();
-    	//setParent(end, end);
-    	queue.addFirst(end);
-    	wallCount = 1;
-    	while(!queue.isEmpty())
-    	{
-    		Position current = queue.removeLast();
-    		wallCount++;
-
-    		for(int i = 0; i < 8; i++)
-    		{
-    			Position neighbor = current.neighbor(i);
-    			if(!m.inRange(neighbor) || m.isOpen(neighbor) || getParent(neighbor) != null)
-    				continue;
-    			else {
-
-
-    			setParent(neighbor, current);
-    			if(neighbor.i == 0 || neighbor.j == N-1)
-    				return neighbor;
-
-    			queue.addFirst(neighbor);
-    			}
-    		}
-    	}
-    	wallCount = -1;
-    	return null; // didn't find a valid startPoint
-    }
+	
 
     // Command-line usage:
     //
