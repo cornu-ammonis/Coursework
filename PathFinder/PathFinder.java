@@ -39,12 +39,93 @@ A TUTOR OR CODE WRITTEN BY OTHER STUDENTS.  __ANDREW C JONES 4/1/17__
 
 public class PathFinder
 {
+	// this subclass of position has a custom method listNeighbors 
+	// that will return all appropriate neighbors of the current position. 
+	// if it is an open position, it will return 4 neighbors 
+	// (up, down, left, right) if it is a wall (closed position) it 
+	// will return 8 (those above and diagonals)
+	static class PositionListedNeighbors extends Position 
+	{
+		public PositionListedNeighbors(int i, int j)
+		{
+			super(i, j); //call base class constructor
+		}
+
+		// returns a list of this positions neigbors which are 
+		// valid candidates for traversal 
+		public Deque<PositionListedNeighbors> listNeighbors()
+		{
+			Deque<PositionListedNeighbors> list = 
+				new LinkedDeque<PositionListedNeighbors>();
+
+			//this is on an open path so only up down left right
+			if (m.isOpen(this)) 
+				for (int i = 0; i < 4; i++)
+					list.addFirst(this.neighbor(i));
+			else
+				for (int i = 0; i < 8; i++)
+					list.addFirst(this.neighbor(i));
+
+			return list;
+		}
+
+		public PositionListedNeighbors neighbor(int direction) 
+		{
+			switch (direction) {
+	            // cardinal directions:
+	        case 0: return new PositionListedNeighbors(i-1, j  ); // 1 row up
+	        case 1: return new PositionListedNeighbors(i+1, j  ); // 1 row down
+	        case 2: return new PositionListedNeighbors(i  , j-1); // 1 column left
+	        case 3: return new PositionListedNeighbors(i  , j+1); // 1 column right
+	            // diagonal directions:
+	        case 4: return new PositionListedNeighbors(i-1, j-1); // up and left
+	        case 5: return new PositionListedNeighbors(i+1, j+1); // down and right
+	        case 6: return new PositionListedNeighbors(i-1, j+1); // up and right
+	        case 7: return new PositionListedNeighbors(i+1, j-1); // down and left
+	        }
+	        throw new RuntimeException("bad direction " + direction);			
+		}
+	}
+
+	// this "phantom position" class is solely for the purpose of more 
+	// efficiently implementing bfs for finding shortest wall path.
+	// because thare are a range of possible "starting points" 
+	// for the wall path, this phantom position is a vertex which is 
+	// "neigbors" with (adjascent to) all those positions which are valid
+	// start points for the wall path
+	static class PhantomPosition extends PositionListedNeighbors 
+	{
+		public PhantomPosition(int i, int j) 
+		{
+			super(i, j); //call base class constructor
+		}
+
+
+		// this phantom position is adjascent to all positions in the first
+		// column or last row 
+		// i==N-1 or j==0
+		public Deque<PositionListedNeighbors> listNeighbors() 
+		{
+			Deque<PositionListedNeighbors> list = 
+				new LinkedDeque<PositionListedNeighbors>();
+
+			for (int j = 0; j < N; j++)
+				list.addFirst(new PositionListedNeighbors(N-1, j));
+
+			for (int i = 0; i < N; i++)
+				list.addFirst(new PositionListedNeighbors(i, 0));
+
+			return list;
+		}
+	}
+
     // Any data fields here should be private and static.  They exist
     // only as a convenient way to share search context between your
     // static methods here.   It should be possible to call your
     // findPath() method more than once, on different mazes, and
     // to get valid results for each maze.
 
+	private static PhantomPosition phantom;
     private static int wallCount;
 
     // The maze we are currently searching, and its size.
@@ -166,109 +247,58 @@ public class PathFinder
     	}
     }
 
-    // Return a wall path separating S and T, or null.
+	// Return a wall path separating S and T, or null.
     // Note: must begin at i==0 or j==N-1 (first row or far right column)
     // must end at i==N-1 or j==0 (last row or far left column)
     public static Deque<Position> findWallPath(Maze maze)
     {
-    	m = maze;                           // save the maze
-        N = m.size();                       // save size (maze is N by N)
-        Position S = new Position(0,0);     // start of maze
-        Position T = new Position(N-1,N-1); // end of maze
-        Deque<Position> path = null;
-        
-        if(m.isWall(T))
-        {
-        	path = new LinkedDeque<Position>();
-        	path.addFirst(T);
-        	return path;
-        }
+    	m = maze;
+    	N = m.size();
+    	Deque<Position> path = null;
+    	phantom = new PhantomPosition(-1, -1);
+    	Position start = bfsWallPhantom();
+    	if (start == null)
+    		return null;
 
-        if(m.isWall(S))
-        {
-        	path = new LinkedDeque<Position>();
-        	path.addFirst(S);
-        	return path;
-        }
+    	path = unpackWallPathPhantom(start);
+    	return path;
+    }
 
+    private static Position bfsWallPhantom()
+    {
+    	Deque<PositionListedNeighbors> queue = 
+    		new LinkedDeque<PositionListedNeighbors>();
+    	queue.addFirst(phantom);
+    	while(!queue.isEmpty())
+    	{
+    		PositionListedNeighbors current = queue.removeLast();
+    		for (PositionListedNeighbors neighbor : current.listNeighbors())
+    		{
+    			if (!m.inRange(neighbor) || !m.isWall(neighbor) || getParent(neighbor) != null)
+    				continue;
+    			else
+    				{
+    					setParent(neighbor, current);
 
+    					//this means we reached a valid endpoint and have found
+    					//the shortest wall path
+    					if (neighbor.i == 0 || neighbor.j == N-1) 
+    						return (Position) neighbor;
 
-        //if there are no 1 bits in first row or far right column
-        //there cannot be a wall path
-        boolean validStart = false; 
-        
-        //if there are no 1 bits in last row or far left column 
-        //there cannot be a valid wall path
-        boolean validEnd = false;
+    					queue.addFirst(neighbor);
+    				}
+    		}
+    	}
 
-        //checks for valid start in first row
-        for(int j = 0; j < N && validStart == false; j++)
-        	if (m.isWall(new Position(0, j)))
-        		validStart = true;
+    	return null; //this means we didn't find a wall path
+    }
 
-        //checks for valid start in last column
-        for(int i = 0; i < N && validStart == false; i++)
-        	if (m.isWall(new Position(i, N-1)))
-        		validStart = true;
-
-        if(!validStart)
-        	return null;
-
-        //checks for valid end at left column
-        for(int i = 0; i < N && validEnd == false; i++)
-        	if(m.isWall(new Position(i, 0)))
-        		validEnd = true;
-
-        for(int j = 0; j < N && validEnd == false; j++)
-        	if(m.isWall(new Position(N-1, j)))
-        		validEnd = true;
-
-        if(!validEnd)
-        	return null;
-
-        int currentMin = Integer.MAX_VALUE;
-        
-
-        for(int i = 0; i < N; i++)
-        {
-        	Position end = new Position(i, 0);
-        	if(m.isWall(end))
-        	{
-        		parent = new Position[N][N];
-        		Position start = bfsWall(end);
-        		if (start != null) 
-        		{
-        			Deque<Position> tmp = unpackWallPath(start, end);
-        			if (tmp.size() < currentMin)
-        			{
-        				currentMin = tmp.size();
-        				path = tmp;
-        			}
-        		}
-        	}
-        }
-
-        for (int j = 0; j < N; j++) 
-        {
-        	Position end = new Position(N-1, j);
-        	if(m.isWall(end))
-        	{
-        		parent = new Position[N][N];
-        		Position start = bfsWall(end);
-        		if (start != null) 
-        		{
-        			Deque<Position> tmp = unpackWallPath(start, end);
-        			if (tmp.size() < currentMin)
-        			{
-        				currentMin = tmp.size();
-        				path = tmp;
-        			}
-        		}
-        	}
-        }
-        if(path != null)
-        	System.out.println("Found path of length " + currentMin +" , " + path.size());
-        return path;            // up to you (EC)
+    private static Deque<Position> unpackWallPathPhantom(Position start)
+    {
+    	Deque<Position> pth = new LinkedDeque<Position>();
+    	for (Position u = start; !u.equals(phantom); u = getParent(u))
+    		pth.addLast(u);
+    	return pth;
     }
 
     private static Deque<Position> unpackWallPath(Position start, Position end) 
