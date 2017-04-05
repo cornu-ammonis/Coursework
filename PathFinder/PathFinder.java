@@ -55,7 +55,8 @@ public class PathFinder
 		// valid candidates for traversal 
 		public Deque<PositionListedNeighbors> listNeighbors()
 		{
-			Deque<PositionListedNeighbors> list = new LinkedDeque<PositionListedNeighbors>();
+			Deque<PositionListedNeighbors> list = 
+				new LinkedDeque<PositionListedNeighbors>();
 
 			//this is on an open path so only up down left right
 			if (m.isOpen(this)) 
@@ -105,7 +106,8 @@ public class PathFinder
 		// i==N-1 or j==0
 		public Deque<PositionListedNeighbors> listNeighbors() 
 		{
-			Deque<PositionListedNeighbors> list = new LinkedDeque<PositionListedNeighbors>();
+			Deque<PositionListedNeighbors> list = 
+				new LinkedDeque<PositionListedNeighbors>();
 
 			for (int j = 0; j < N; j++)
 				list.addFirst(new PositionListedNeighbors(N-1, j));
@@ -264,7 +266,8 @@ public class PathFinder
 
     private static Position bfsWallPhantom()
     {
-    	Deque<PositionListedNeighbors> queue = new LinkedDeque<PositionListedNeighbors>();
+    	Deque<PositionListedNeighbors> queue = 
+    		new LinkedDeque<PositionListedNeighbors>();
     	queue.addFirst(phantom);
     	while(!queue.isEmpty())
     	{
