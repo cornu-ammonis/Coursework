@@ -166,6 +166,11 @@ public class PathFinder
 
     	}
     }
+
+    private static void aStarBFS(Position start, Position target)
+    {
+    	minHeapPositions heap = new minHeapPositions((N*N)/2);
+    }
 	
 
 	//formula taken from stackoverflow:
