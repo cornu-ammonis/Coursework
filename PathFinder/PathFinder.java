@@ -355,7 +355,7 @@ public class PathFinder
     // maze with the path highlighted.
     public static void main(String[] args)
     {
-        Maze m = Maze.mazeFromArgs(args);
+       /* Maze m = Maze.mazeFromArgs(args);
         System.out.println(m);
         Deque<Position> oPath = findPath(m);
         if (oPath != null)
@@ -383,7 +383,9 @@ public class PathFinder
             for (Position p: wPath)
                 map[p.i][p.j] = 'w';
         // Now print the marked map.
-        System.out.println(Maze.toString(map));
+        System.out.println(Maze.toString(map));*/
+
+
     }
 
     // Java "defensive programming": we should not instantiate this
@@ -412,12 +414,12 @@ public class PathFinder
     	private PositionListedNeighbors[] heap;
     	 
 
-    	public minHeap(int capacity) 
+    	public minHeapPositions(int capacity) 
     	{
     		heap = new PositionListedNeighbors[capacity];
     	}
 
-    	public minHeap()
+    	public minHeapPositions()
     	{
     		heap = new PositionListedNeighbors[50];
     	}
@@ -453,7 +455,7 @@ public class PathFinder
 
 
     	//returns true if heap[i] < heap[j] false otherwise
-    	private boolean less(i, j)
+    	private boolean less(int i, int j)
     	{
     		if (i >= N || j >= N)
     			throw new NoSuchElementException();
