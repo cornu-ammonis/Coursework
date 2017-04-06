@@ -51,6 +51,8 @@ public class PathFinder
 			super(i, j); //call base class constructor
 		}
 
+		public int distance;
+
 		// returns a list of this positions neigbors which are 
 		// valid candidates for traversal 
 		public Deque<PositionListedNeighbors> listNeighbors()
@@ -274,7 +276,8 @@ public class PathFinder
     		PositionListedNeighbors current = queue.removeLast();
     		for (PositionListedNeighbors neighbor : current.listNeighbors())
     		{
-    			if (!m.inRange(neighbor) || !m.isWall(neighbor) || getParent(neighbor) != null)
+    			if (!m.inRange(neighbor) || !m.isWall(neighbor) || 
+    				getParent(neighbor) != null)
     				continue;
     			else
     				{
@@ -352,7 +355,7 @@ public class PathFinder
     // maze with the path highlighted.
     public static void main(String[] args)
     {
-        Maze m = Maze.mazeFromArgs(args);
+       /* Maze m = Maze.mazeFromArgs(args);
         System.out.println(m);
         Deque<Position> oPath = findPath(m);
         if (oPath != null)
@@ -380,10 +383,178 @@ public class PathFinder
             for (Position p: wPath)
                 map[p.i][p.j] = 'w';
         // Now print the marked map.
-        System.out.println(Maze.toString(map));
+        System.out.println(Maze.toString(map));*/
+
+        minHeapPositions heapTest = new minHeapPositions(1);
+        PositionListedNeighbors a = new PositionListedNeighbors(1, 2);
+        a.distance = 4;
+        PositionListedNeighbors b = new PositionListedNeighbors(4, 5);
+        b.distance = 5;
+        PositionListedNeighbors c = new PositionListedNeighbors(3, 4);
+        c.distance = 2;
+        PositionListedNeighbors d = new PositionListedNeighbors(6, 7);
+        d.distance = 3;
+
+        heapTest.add(a);
+        heapTest.add(b);
+        heapTest.add(c);
+        heapTest.add(d);
+
+        while(heapTest.N > 3)
+        	System.out.println(heapTest.removeMin().distance + "\n");
+
+        PositionListedNeighbors e = new PositionListedNeighbors(8, 9);
+        e.distance = 80;
+        heapTest.add(e);
+        PositionListedNeighbors f = new PositionListedNeighbors(3, 8);
+        f.distance = 4;
+        heapTest.add(f);
+        PositionListedNeighbors g = new PositionListedNeighbors(1, 2);
+        g.distance = 2;
+        heapTest.add(g);
+
+        while(heapTest.N > 0)
+        	System.out.println(heapTest.removeMin().distance + "\n");
+
+
     }
 
     // Java "defensive programming": we should not instantiate this
     // class.  To enforce that, we give it a private constructor.
     private PathFinder() {}
+
+    //taken from given code for EMD
+    public static class KVPair<K, V> 
+    {
+        public K key;
+        public V value;
+
+        public KVPair(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public String toString() {
+            return this.key + ": " + this.value;
+        }
+    }
+
+
+    // heap data structure which sorts PositionListedNeighbor instances 
+    // according to the value of their distance property such that the 
+    // smallest distance is always returned first
+    
+    // note that an element found at position i has its "parent" at 
+    // position (i-1)/2 (unless it is the first element)
+    // and that an element at position i has its children at positions
+    // 2*i +1 and 2*i +2 (if they exist)
+    static class minHeapPositions 
+    {
+    	//count of elements currently in the list. also points to the first
+    	//available index.
+    	private int N;
+    	private PositionListedNeighbors[] heap;
+    	 
+    	//constructor with a specified capacity, auto doubles when capacity is reached
+    	public minHeapPositions(int capacity) 
+    	{
+    		heap = new PositionListedNeighbors[capacity];
+    	}
+
+    	//constructor with default capacity, auto-doubles when capacity is reached
+    	public minHeapPositions()
+    	{
+    		heap = new PositionListedNeighbors[50];
+    	}
+
+
+    	//adds position p to the current heap and doubles heap capacity if it is full
+    	public void add(PositionListedNeighbors p)
+    	{
+    		if (N == 0)
+    		{
+    			heap[N++] = p;
+    			return;
+    		}
+
+    		if (N >= heap.length)
+    			doubleHeap();
+
+    		heap[N] = p;
+    		if (p.distance < heap[(N-1)/2].distance)
+    			swim(N);
+    		N++;
+    	}
+
+    	public PositionListedNeighbors removeMin()
+    	{
+    		if (N == 0)
+    			throw new IllegalStateException("no item to remove");
+    		PositionListedNeighbors toReturn = heap[0];
+    		heap[0] = heap[--N];
+    		heap[N] = null;
+
+    		if (N > 0)
+    			sink(0);
+
+    		return toReturn;
+    	}
+
+
+    	//returns true if heap[i] < heap[j] false otherwise
+    	private boolean less(int i, int j)
+    	{
+    		if (i >= N || j >= N)
+    			throw new IllegalStateException("invalid less call - indexes out of range");
+
+    		return heap[i].distance < heap[j].distance;
+    	}
+    	private void swim(int i)
+    	{
+    		while (i > 0)
+    		{
+    			if (heap[i].distance < heap[(i-1)/2].distance)
+    			{
+    				swap(i, (i-1)/2);
+    				i = (i-1)/2;
+    			} 
+    			else
+    				break;
+    		}
+    	}
+
+    	private void sink(int i)
+    	{
+    		while((2*i + 1) < N)
+    		{
+    			int j = 2*i + 1;
+    			//if the other child is smaller select it
+    			if (j+1 < N && less(j+1, j)) j++;
+
+    			//if i is smaller than both its children we're done
+    			if (less(i, j)) break;
+    			swap(i, j);
+    			i = j;
+    		}
+    	}
+
+    	private void swap(int i, int j)
+    	{
+    		PositionListedNeighbors tmp = heap[j];
+    		heap[j] = heap[i];
+    		heap[i] = tmp;
+    	}
+
+    	private void doubleHeap()
+    	{
+    		PositionListedNeighbors[] newHeap = new PositionListedNeighbors[2*N];
+    		for(int i = 0; i < N; i++)
+    			newHeap[i] = heap[i];
+
+    		heap = newHeap;
+    		
+    	}
+    }
+
+
 }
