@@ -439,22 +439,36 @@ public class PathFinder
         }
     }
 
+
+    // heap data structure which sorts PositionListedNeighbor instances 
+    // according to the value of their distance property such that the 
+    // smallest distance is always returned first
+    
+    // note that an element found at position i has its "parent" at 
+    // position (i-1)/2 (unless it is the first element)
+    // and that an element at position i has its children at positions
+    // 2*i +1 and 2*i +2 (if they exist)
     static class minHeapPositions 
     {
+    	//count of elements currently in the list. also points to the first
+    	//available index.
     	private int N;
     	private PositionListedNeighbors[] heap;
     	 
-
+    	//constructor with a specified capacity, auto doubles when capacity is reached
     	public minHeapPositions(int capacity) 
     	{
     		heap = new PositionListedNeighbors[capacity];
     	}
 
+    	//constructor with default capacity, auto-doubles when capacity is reached
     	public minHeapPositions()
     	{
     		heap = new PositionListedNeighbors[50];
     	}
 
+
+    	//adds position p to the current heap and doubles heap capacity if it is full
     	public void add(PositionListedNeighbors p)
     	{
     		if (N == 0)
