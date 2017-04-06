@@ -434,17 +434,29 @@ public class PathFinder
     			doubleHeap();
 
     		heap[N] = p;
-    		if (p.distance > heap[(n-1)/2].distance)
+    		if (p.distance < heap[(n-1)/2].distance)
     			swim(N);
-
-
+    		N++;
     	}
+
+    	public PositionListedNeighbors removeMin()
+    	{
+    		if (N == 0)
+    			throw new NoSuchElementException();
+    		PositionListedNeighbors toReturn = heap[0];
+    		heap[0] = heap[--N];
+    		heap[N] = null;
+
+    		if (N > 0)
+    			sink(0);
+    	}
+
 
     	private void swim(int i)
     	{
     		while (i > 0)
     		{
-    			if (heap[i].distance > heap[(i-1)/2].distance)
+    			if (heap[i].distance < heap[(i-1)/2].distance)
     			{
     				swap(i, (i-1)/2);
     			} 
