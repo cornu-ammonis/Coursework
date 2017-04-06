@@ -47,6 +47,7 @@ public class PathFinder
 
 	private static PhantomPosition phantom;
     private static int wallCount;
+    private static int stepCount; //used to measure difference between A* and regular bfs
 
     // The maze we are currently searching, and its size.
     private static Maze m;      // current maze
@@ -68,6 +69,49 @@ public class PathFinder
         parent[p.i][p.j] = par;
         return true;
     }
+
+    //old implementation used to comapre to A*
+    public static Deque<Position> findPathRegularBFS(Maze maze)
+    {
+        m = maze;                           // save the maze
+        N = m.size();                       // save size (maze is N by N)
+        parent = new PositionLN[N][N];        // initially all null
+        PositionLN S = new PositionLN(0,0);     // start of open path
+        PositionLN T = new PositionLN(N-1,N-1); // end of open path
+
+        // If either of these is a wall, there is no open path.
+        if (!m.isOpen(S)) return null;
+        if (!m.isOpen(T)) return null;
+
+        // GOAL: for each reachable open position p, parent[p.i][p.j]
+        // should be an open position one step closer to S.  That is,
+        // it is the position that first discovered a route to p.
+        // These parent links will form a tree, rooted at S.
+
+        // Compute parent for each position reachable from S.
+        // Since S is the root, we will let S be its own parent.
+
+        // Compute parent links, by recursive depth-first-search!
+        //dfs(S, S);
+        //dfsNonRecursive(S);
+        
+        stepCount = 0;
+        bfs(S, T);
+        //aStarBFS(S, T);
+        // If T has no parent, it is not reachable, so no path.
+        if (getParent(T)==null)
+        {
+            return null;
+        }
+        System.out.println("regular found path in  " + stepCount +" steps\n");
+        // Otherwise, we can reconstruct a path from S to T.
+        Deque<Position> path = new LinkedDeque<Position>();
+        for (Position u=T; !u.equals(S); u=getParent(u))
+            path.addFirst(u);
+        path.addFirst(S);
+        return path;
+    }
+
 
     public static Deque<Position> findPath(Maze maze)
     {
@@ -92,12 +136,15 @@ public class PathFinder
         // Compute parent links, by recursive depth-first-search!
         //dfs(S, S);
         //dfsNonRecursive(S);
-        bfs(S, T);
+        //bfs(S, T);
+        stepCount = 0;
+        aStarBFS(S, T);
         // If T has no parent, it is not reachable, so no path.
         if (getParent(T)==null)
         {
             return null;
         }
+        System.out.println("A* found path in  " + stepCount +" steps\n");
         // Otherwise, we can reconstruct a path from S to T.
         Deque<Position> path = new LinkedDeque<Position>();
         for (Position u=T; !u.equals(S); u=getParent(u))
@@ -150,6 +197,7 @@ public class PathFinder
     	while(!queue.isEmpty())
     	{
     		Position current = queue.removeLast();
+    		stepCount++;
     		for (int i = 0; i < 4; i++)
     		{
     			Position neighbor = current.neighbor(i);
@@ -179,6 +227,7 @@ public class PathFinder
     	while(heap.N > 0)
     	{
     		PositionLN current = heap.removeMin();
+    		stepCount++;
     		for (PositionLN neighbor : current.listNeighbors())
     		{
     			if (!m.inRange(neighbor) || !m.isOpen(neighbor) || getParent(neighbor) != null)
@@ -313,11 +362,15 @@ public class PathFinder
     // maze with the path highlighted.
     public static void main(String[] args)
     {
-       /* Maze m = Maze.mazeFromArgs(args);
-        System.out.println(m);
+        Maze m = Maze.mazeFromArgs(args);
+        //System.out.println(m);
         Deque<Position> oPath = findPath(m);
         if (oPath != null)
             System.out.println("findPath() found an open path of size "
+                               + oPath.size());
+        Deque<Position> oPathRegularBFS = findPathRegularBFS(m);
+        if (oPathRegularBFS != null)
+        	System.out.println("findPathRegular() found an open path of size "
                                + oPath.size());
         Deque<Position> wPath = findWallPath(m);
         if (wPath != null)
@@ -333,7 +386,7 @@ public class PathFinder
             System.out.println("WARNING: cannot have both paths!");
 
         // Copy map of maze, and mark oPath with 'o', wPath with 'w'.
-        char[][] map = m.copyArray();
+        /*char[][] map = m.copyArray();
         if (oPath != null)
             for (Position p: oPath)
                 map[p.i][p.j] = 'o';
@@ -343,6 +396,7 @@ public class PathFinder
         // Now print the marked map.
         System.out.println(Maze.toString(map));*/
 
+        /*
         minHeapPositions heapTest = new minHeapPositions(1);
         PositionLN a = new PositionLN(1, 2);
         a.distance = 4;
@@ -372,7 +426,7 @@ public class PathFinder
         heapTest.add(g);
 
         while(heapTest.N > 0)
-        	System.out.println(heapTest.removeMin().distance + "\n");
+        	System.out.println(heapTest.removeMin().distance + "\n"); */
 
 
     }
