@@ -51,6 +51,8 @@ public class PathFinder
 			super(i, j); //call base class constructor
 		}
 
+		public int distance;
+
 		// returns a list of this positions neigbors which are 
 		// valid candidates for traversal 
 		public Deque<PositionListedNeighbors> listNeighbors()
@@ -274,7 +276,8 @@ public class PathFinder
     		PositionListedNeighbors current = queue.removeLast();
     		for (PositionListedNeighbors neighbor : current.listNeighbors())
     		{
-    			if (!m.inRange(neighbor) || !m.isWall(neighbor) || getParent(neighbor) != null)
+    			if (!m.inRange(neighbor) || !m.isWall(neighbor) || 
+    				getParent(neighbor) != null)
     				continue;
     			else
     				{
@@ -386,4 +389,44 @@ public class PathFinder
     // Java "defensive programming": we should not instantiate this
     // class.  To enforce that, we give it a private constructor.
     private PathFinder() {}
+
+    //taken from given code for EMD
+    public static class KVPair<K, V> 
+    {
+        public K key;
+        public V value;
+
+        public KVPair(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public String toString() {
+            return this.key + ": " + this.value;
+        }
+    }
+
+    public class minHeapPositions 
+    {
+    	private int N;
+    	private PositionListedNeighbors[] valueHeap;
+    	 
+
+    	public minHeap(int capacity) 
+    	{
+    		heap = new PositionListedNeighbors[capacity];
+    	}
+
+    	public minHeap()
+    	{
+    		heap = new PositionListedNeighbors[50];
+    	}
+
+    	public void add(PositionListedNeighbors p)
+    	{
+    		
+    	}
+    }
+
+
 }
