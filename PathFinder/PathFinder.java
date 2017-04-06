@@ -409,7 +409,7 @@ public class PathFinder
     public class minHeapPositions 
     {
     	private int N;
-    	private PositionListedNeighbors[] valueHeap;
+    	private PositionListedNeighbors[] heap;
     	 
 
     	public minHeap(int capacity) 
@@ -424,7 +424,40 @@ public class PathFinder
 
     	public void add(PositionListedNeighbors p)
     	{
-    		
+    		if (N == 0)
+    		{
+    			heap[N++] = p;
+    			return;
+    		}
+
+    		if (N >= heap.length)
+    			doubleHeap();
+
+    		heap[N] = p;
+    		if (p.distance > heap[(n-1)/2].distance)
+    			swim(N);
+
+
+    	}
+
+    	private void swim(int i)
+    	{
+    		while (i > 0)
+    		{
+    			if (heap[i].distance > heap[(i-1)/2].distance)
+    			{
+    				swap(i, (i-1)/2);
+    			} 
+    			else
+    				break;
+    		}
+    	}
+
+    	private void swap(int i, int j)
+    	{
+    		PositionListedNeighbors tmp = heap[j];
+    		heap[j] = heap[i];
+    		heap[i] = tmp;
     	}
     }
 
