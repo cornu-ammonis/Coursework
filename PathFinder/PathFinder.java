@@ -39,88 +39,6 @@ A TUTOR OR CODE WRITTEN BY OTHER STUDENTS.  __ANDREW C JONES 4/1/17__
 
 public class PathFinder
 {
-	// this subclass of position has a custom method listNeighbors 
-	// that will return all appropriate neighbors of the current position. 
-	// if it is an open position, it will return 4 neighbors 
-	// (up, down, left, right) if it is a wall (closed position) it 
-	// will return 8 (those above and diagonals)
-	static class PositionListedNeighbors extends Position 
-	{
-		public PositionListedNeighbors(int i, int j)
-		{
-			super(i, j); //call base class constructor
-		}
-
-		public int distance;
-
-		// returns a list of this positions neigbors which are 
-		// valid candidates for traversal 
-		public Deque<PositionListedNeighbors> listNeighbors()
-		{
-			Deque<PositionListedNeighbors> list = 
-				new LinkedDeque<PositionListedNeighbors>();
-
-			//this is on an open path so only up down left right
-			if (m.isOpen(this)) 
-				for (int i = 0; i < 4; i++)
-					list.addFirst(this.neighbor(i));
-			else
-				for (int i = 0; i < 8; i++)
-					list.addFirst(this.neighbor(i));
-
-			return list;
-		}
-
-		public PositionListedNeighbors neighbor(int direction) 
-		{
-			switch (direction) {
-	            // cardinal directions:
-	        case 0: return new PositionListedNeighbors(i-1, j  ); // 1 row up
-	        case 1: return new PositionListedNeighbors(i+1, j  ); // 1 row down
-	        case 2: return new PositionListedNeighbors(i  , j-1); // 1 column left
-	        case 3: return new PositionListedNeighbors(i  , j+1); // 1 column right
-	            // diagonal directions:
-	        case 4: return new PositionListedNeighbors(i-1, j-1); // up and left
-	        case 5: return new PositionListedNeighbors(i+1, j+1); // down and right
-	        case 6: return new PositionListedNeighbors(i-1, j+1); // up and right
-	        case 7: return new PositionListedNeighbors(i+1, j-1); // down and left
-	        }
-	        throw new RuntimeException("bad direction " + direction);			
-		}
-	}
-
-	// this "phantom position" class is solely for the purpose of more 
-	// efficiently implementing bfs for finding shortest wall path.
-	// because thare are a range of possible "starting points" 
-	// for the wall path, this phantom position is a vertex which is 
-	// "neigbors" with (adjascent to) all those positions which are valid
-	// start points for the wall path
-	static class PhantomPosition extends PositionListedNeighbors 
-	{
-		public PhantomPosition(int i, int j) 
-		{
-			super(i, j); //call base class constructor
-		}
-
-
-		// this phantom position is adjascent to all positions in the first
-		// column or last row 
-		// i==N-1 or j==0
-		public Deque<PositionListedNeighbors> listNeighbors() 
-		{
-			Deque<PositionListedNeighbors> list = 
-				new LinkedDeque<PositionListedNeighbors>();
-
-			for (int j = 0; j < N; j++)
-				list.addFirst(new PositionListedNeighbors(N-1, j));
-
-			for (int i = 0; i < N; i++)
-				list.addFirst(new PositionListedNeighbors(i, 0));
-
-			return list;
-		}
-	}
-
     // Any data fields here should be private and static.  They exist
     // only as a convenient way to share search context between your
     // static methods here.   It should be possible to call your
@@ -438,6 +356,88 @@ public class PathFinder
             return this.key + ": " + this.value;
         }
     }
+
+    // this subclass of position has a custom method listNeighbors 
+	// that will return all appropriate neighbors of the current position. 
+	// if it is an open position, it will return 4 neighbors 
+	// (up, down, left, right) if it is a wall (closed position) it 
+	// will return 8 (those above and diagonals)
+	static class PositionListedNeighbors extends Position 
+	{
+		public PositionListedNeighbors(int i, int j)
+		{
+			super(i, j); //call base class constructor
+		}
+
+		public int distance;
+
+		// returns a list of this positions neigbors which are 
+		// valid candidates for traversal 
+		public Deque<PositionListedNeighbors> listNeighbors()
+		{
+			Deque<PositionListedNeighbors> list = 
+				new LinkedDeque<PositionListedNeighbors>();
+
+			//this is on an open path so only up down left right
+			if (m.isOpen(this)) 
+				for (int i = 0; i < 4; i++)
+					list.addFirst(this.neighbor(i));
+			else
+				for (int i = 0; i < 8; i++)
+					list.addFirst(this.neighbor(i));
+
+			return list;
+		}
+
+		public PositionListedNeighbors neighbor(int direction) 
+		{
+			switch (direction) {
+	            // cardinal directions:
+	        case 0: return new PositionListedNeighbors(i-1, j  ); // 1 row up
+	        case 1: return new PositionListedNeighbors(i+1, j  ); // 1 row down
+	        case 2: return new PositionListedNeighbors(i  , j-1); // 1 column left
+	        case 3: return new PositionListedNeighbors(i  , j+1); // 1 column right
+	            // diagonal directions:
+	        case 4: return new PositionListedNeighbors(i-1, j-1); // up and left
+	        case 5: return new PositionListedNeighbors(i+1, j+1); // down and right
+	        case 6: return new PositionListedNeighbors(i-1, j+1); // up and right
+	        case 7: return new PositionListedNeighbors(i+1, j-1); // down and left
+	        }
+	        throw new RuntimeException("bad direction " + direction);			
+		}
+	}
+
+	// this "phantom position" class is solely for the purpose of more 
+	// efficiently implementing bfs for finding shortest wall path.
+	// because thare are a range of possible "starting points" 
+	// for the wall path, this phantom position is a vertex which is 
+	// "neigbors" with (adjascent to) all those positions which are valid
+	// start points for the wall path
+	static class PhantomPosition extends PositionListedNeighbors 
+	{
+		public PhantomPosition(int i, int j) 
+		{
+			super(i, j); //call base class constructor
+		}
+
+
+		// this phantom position is adjascent to all positions in the first
+		// column or last row 
+		// i==N-1 or j==0
+		public Deque<PositionListedNeighbors> listNeighbors() 
+		{
+			Deque<PositionListedNeighbors> list = 
+				new LinkedDeque<PositionListedNeighbors>();
+
+			for (int j = 0; j < N; j++)
+				list.addFirst(new PositionListedNeighbors(N-1, j));
+
+			for (int i = 0; i < N; i++)
+				list.addFirst(new PositionListedNeighbors(i, 0));
+
+			return list;
+		}
+	}
 
 
     // heap data structure which sorts PositionListedNeighbor instances 
