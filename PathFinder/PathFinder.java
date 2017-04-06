@@ -460,7 +460,7 @@ public class PathFinder
     		if (i >= N || j >= N)
     			throw new NoSuchElementException();
 
-    		return heap[i] < heap[j];
+    		return heap[i].distance < heap[j].distance;
     	}
     	private void swim(int i)
     	{
