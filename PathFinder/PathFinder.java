@@ -452,6 +452,14 @@ public class PathFinder
     	}
 
 
+    	//returns true if heap[i] < heap[j] false otherwise
+    	private boolean less(i, j)
+    	{
+    		if (i >= N || j >= N)
+    			throw new NoSuchElementException();
+
+    		return heap[i] < heap[j];
+    	}
     	private void swim(int i)
     	{
     		while (i > 0)
@@ -462,6 +470,20 @@ public class PathFinder
     			} 
     			else
     				break;
+    		}
+    	}
+
+    	private void sink(int i)
+    	{
+    		while((2*i + 1) < N)
+    		{
+    			int j = 2*i + 1;
+    			//if the other child is smaller select it
+    			if (j+1 < N && less(j+1, j)) j++;
+
+    			//if i is smaller than both its children we're done
+    			if (less(i, j)) break;
+    			swap(i, j);
     		}
     	}
 
