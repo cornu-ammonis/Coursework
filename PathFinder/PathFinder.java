@@ -385,6 +385,37 @@ public class PathFinder
         // Now print the marked map.
         System.out.println(Maze.toString(map));*/
 
+        minHeapPositions heapTest = new minHeapPositions(1);
+        PositionListedNeighbors a = new PositionListedNeighbors(1, 2);
+        a.distance = 4;
+        PositionListedNeighbors b = new PositionListedNeighbors(4, 5);
+        b.distance = 5;
+        PositionListedNeighbors c = new PositionListedNeighbors(3, 4);
+        c.distance = 2;
+        PositionListedNeighbors d = new PositionListedNeighbors(6, 7);
+        d.distance = 3;
+
+        heapTest.add(a);
+        heapTest.add(b);
+        heapTest.add(c);
+        heapTest.add(d);
+
+        while(heapTest.N > 3)
+        	System.out.println(heapTest.removeMin().distance + "\n");
+
+        PositionListedNeighbors e = new PositionListedNeighbors(8, 9);
+        e.distance = 80;
+        heapTest.add(e);
+        PositionListedNeighbors f = new PositionListedNeighbors(3, 8);
+        f.distance = 4;
+        heapTest.add(f);
+        PositionListedNeighbors g = new PositionListedNeighbors(1, 2);
+        g.distance = 2;
+        heapTest.add(g);
+
+        while(heapTest.N > 0)
+        	System.out.println(heapTest.removeMin().distance + "\n");
+
 
     }
 
@@ -408,7 +439,7 @@ public class PathFinder
         }
     }
 
-    public class minHeapPositions 
+    static class minHeapPositions 
     {
     	private int N;
     	private PositionListedNeighbors[] heap;
@@ -436,7 +467,7 @@ public class PathFinder
     			doubleHeap();
 
     		heap[N] = p;
-    		if (p.distance < heap[(n-1)/2].distance)
+    		if (p.distance < heap[(N-1)/2].distance)
     			swim(N);
     		N++;
     	}
@@ -444,13 +475,15 @@ public class PathFinder
     	public PositionListedNeighbors removeMin()
     	{
     		if (N == 0)
-    			throw new NoSuchElementException();
+    			throw new IllegalStateException("no item to remove");
     		PositionListedNeighbors toReturn = heap[0];
     		heap[0] = heap[--N];
     		heap[N] = null;
 
     		if (N > 0)
     			sink(0);
+
+    		return toReturn;
     	}
 
 
@@ -458,7 +491,7 @@ public class PathFinder
     	private boolean less(int i, int j)
     	{
     		if (i >= N || j >= N)
-    			throw new NoSuchElementException();
+    			throw new IllegalStateException("invalid less call - indexes out of range");
 
     		return heap[i].distance < heap[j].distance;
     	}
@@ -469,6 +502,7 @@ public class PathFinder
     			if (heap[i].distance < heap[(i-1)/2].distance)
     			{
     				swap(i, (i-1)/2);
+    				i = (i-1)/2;
     			} 
     			else
     				break;
@@ -486,6 +520,7 @@ public class PathFinder
     			//if i is smaller than both its children we're done
     			if (less(i, j)) break;
     			swap(i, j);
+    			i = j;
     		}
     	}
 
@@ -494,6 +529,16 @@ public class PathFinder
     		PositionListedNeighbors tmp = heap[j];
     		heap[j] = heap[i];
     		heap[i] = tmp;
+    	}
+
+    	private void doubleHeap()
+    	{
+    		PositionListedNeighbors[] newHeap = new PositionListedNeighbors[2*N];
+    		for(int i = 0; i < N; i++)
+    			newHeap[i] = heap[i];
+
+    		heap = newHeap;
+    		
     	}
     }
 
