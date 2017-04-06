@@ -167,7 +167,7 @@ public class PathFinder
     	}
     }
 
-    private static void aStarBFS(Position start, Position target)
+    private static void aStarBFS(PositionLN start, PositionLN target)
     {
     	minHeapPositions heap = new minHeapPositions((N*N)/2);
     }
