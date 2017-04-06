@@ -166,6 +166,14 @@ public class PathFinder
 
     	}
     }
+	
+
+	//formula taken from stackoverflow:
+	// int distance = Math.abs(x1-x0) + Math.abs(y1-y0);
+    private static int manhattanDistance(Position from, Position to)
+    {
+    	return Math.abs(from.i - to.i) + Math.abs(from.j - to.j);
+    }
 
 	// Return a wall path separating S and T, or null.
     // Note: must begin at i==0 or j==N-1 (first row or far right column)
