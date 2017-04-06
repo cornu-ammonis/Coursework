@@ -73,9 +73,9 @@ public class PathFinder
     {
         m = maze;                           // save the maze
         N = m.size();                       // save size (maze is N by N)
-        parent = new Position[N][N];        // initially all null
-        Position S = new Position(0,0);     // start of open path
-        Position T = new Position(N-1,N-1); // end of open path
+        parent = new PositionLN[N][N];        // initially all null
+        PositionLN S = new PositionLN(0,0);     // start of open path
+        PositionLN T = new PositionLN(N-1,N-1); // end of open path
 
         // If either of these is a wall, there is no open path.
         if (!m.isOpen(S)) return null;
@@ -170,6 +170,33 @@ public class PathFinder
     private static void aStarBFS(PositionLN start, PositionLN target)
     {
     	minHeapPositions heap = new minHeapPositions((N*N)/2);
+
+    	setParent(start, start);
+    	start.distanceFromOrigin = 0;
+    	start.distance = manhattanDistance(start, target);
+    	heap.add(start);
+
+    	while(heap.N > 0)
+    	{
+    		PositionLN current = heap.removeMin();
+    		for (PositionLN neighbor : current.listNeighbors())
+    		{
+    			if (!m.inRange(neighbor) || !m.isOpen(neighbor) || getParent(neighbor) != null)
+    				continue;
+
+    			setParent(neighbor, current);
+
+    			if (neighbor.equals(target))
+    			{
+    				target.distanceFromOrigin = current.distanceFromOrigin + 1;
+    				return;
+    			}
+
+    			neighbor.distanceFromOrigin = current.distanceFromOrigin + 1;
+    			neighbor.distance = neighbor.distanceFromOrigin + manhattanDistance(neighbor, target);
+    			heap.add(neighbor);
+    		}
+    	}
     }
 	
 
