@@ -370,6 +370,7 @@ public class PathFinder
 		}
 
 		public int distance;
+		public int distanceFromOrigin;
 
 		// returns a list of this positions neigbors which are 
 		// valid candidates for traversal 
