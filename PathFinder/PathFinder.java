@@ -46,8 +46,8 @@ public class PathFinder
     // to get valid results for each maze.
 
 	private static PhantomPosition phantom;
-    private static int wallCount;
-    private static int stepCount; //used to measure difference between A* and regular bfs
+    //private static int wallCount;
+    //private static int stepCount; //used to measure difference between A* and regular bfs
 
     // The maze we are currently searching, and its size.
     private static Maze m;      // current maze
@@ -95,7 +95,7 @@ public class PathFinder
         //dfs(S, S);
         //dfsNonRecursive(S);
         
-        stepCount = 0;
+        //stepCount = 0;
         bfs(S, T);
         //aStarBFS(S, T);
         // If T has no parent, it is not reachable, so no path.
@@ -103,7 +103,7 @@ public class PathFinder
         {
             return null;
         }
-        System.out.println("regular found path in  " + stepCount +" steps\n");
+        //System.out.println("regular found path in  " + stepCount +" steps\n");
         // Otherwise, we can reconstruct a path from S to T.
         Deque<Position> path = new LinkedDeque<Position>();
         for (Position u=T; !u.equals(S); u=getParent(u))
@@ -117,7 +117,7 @@ public class PathFinder
     {
         m = maze;                           // save the maze
         N = m.size();                       // save size (maze is N by N)
-        parent = new PositionLN[N][N];        // initially all null
+        parent = new Position[N][N];        // initially all null
         PositionLN S = new PositionLN(0,0);     // start of open path
         PositionLN T = new PositionLN(N-1,N-1); // end of open path
 
@@ -136,57 +136,21 @@ public class PathFinder
         // Compute parent links, by recursive depth-first-search!
         //dfs(S, S);
         //dfsNonRecursive(S);
-        //bfs(S, T);
-        stepCount = 0;
+         //bfs(S, T);
+        //stepCount = 0;
         aStarBFS(S, T);
         // If T has no parent, it is not reachable, so no path.
         if (getParent(T)==null)
         {
             return null;
         }
-        System.out.println("A* found path in  " + stepCount +" steps\n");
+        //System.out.println("A* found path in  " + stepCount +" steps\n");
         // Otherwise, we can reconstruct a path from S to T.
         Deque<Position> path = new LinkedDeque<Position>();
         for (Position u=T; !u.equals(S); u=getParent(u))
             path.addFirst(u);
         path.addFirst(S);
         return path;
-    }
-
-    // depth-first-search: set parent for each newly reachable p.
-    private static void dfs(Position p, Position from)
-    {
-        if (!m.inRange(p) || !m.isOpen(p) || getParent(p) != null)
-            return;
-        // System.out.println("found " + p + " via parent " + from);
-        setParent(p, from);
-        // Now recursively try the four neighbors of p.
-        for (int dir=0; dir<4; ++dir)
-            dfs(p.neighbor(dir), p);
-    }
-
-    private static void dfsNonRecursive(Position start) 
-    {
-    	Deque<Position> queue = new LinkedDeque<Position>();
-    	setParent(start, start);
-    	queue.addLast(start);
-    	
-    	while(!queue.isEmpty())
-    	{
-    		Position current = queue.removeLast();
-    		for (int i = 0; i < 4; i++)
-    		{
-    			Position neighbor = current.neighbor(i);
-    			if(!m.inRange(neighbor) || !m.isOpen(neighbor) || getParent(neighbor) != null)
-    				continue;
-    			else
-    			{
-    				setParent(neighbor, current);
-    				queue.addLast(neighbor);
-    			}
-    		}
-    	}
-    	return;
     }
 
     private static void bfs(Position start, Position target)
@@ -197,7 +161,7 @@ public class PathFinder
     	while(!queue.isEmpty())
     	{
     		Position current = queue.removeLast();
-    		stepCount++;
+    		//stepCount++;
     		for (int i = 0; i < 4; i++)
     		{
     			Position neighbor = current.neighbor(i);
@@ -223,11 +187,11 @@ public class PathFinder
     	start.distanceFromOrigin = 0;
     	start.distance = manhattanDistance(start, target);
     	heap.add(start);
-
-    	while(heap.N > 0)
+    	
+    	while(heap.count > 0)
     	{
     		PositionLN current = heap.removeMin();
-    		stepCount++;
+    		//stepCount++;
     		for (PositionLN neighbor : current.listNeighbors())
     		{
     			if (!m.inRange(neighbor) || !m.isOpen(neighbor) || getParent(neighbor) != null)
@@ -238,6 +202,7 @@ public class PathFinder
     			if (neighbor.equals(target))
     			{
     				target.distanceFromOrigin = current.distanceFromOrigin + 1;
+    				//heap = null;
     				return;
     			}
 
@@ -263,6 +228,7 @@ public class PathFinder
     {
     	m = maze;
     	N = m.size();
+    	parent = new Position[N][N]; 
     	Deque<Position> path = null;
     	phantom = new PhantomPosition(-1, -1);
     	Position start = bfsWallPhantom();
@@ -311,48 +277,6 @@ public class PathFinder
     	return pth;
     }
 
-    private static Deque<Position> unpackWallPath(Position start, Position end) 
-    {
-    	Deque<Position> pth = new LinkedDeque<Position>();
-
-    	for (Position u=start; !u.equals(end); u=getParent(u))
-            pth.addLast(u);
-        pth.addLast(end);
-        return pth;
-    	
-    }
-
-    private static Position bfsWall(Position end) 
-    {
-    	Deque<Position> queue = new LinkedDeque<Position>();
-    	//setParent(end, end);
-    	queue.addFirst(end);
-    	wallCount = 1;
-    	while(!queue.isEmpty())
-    	{
-    		Position current = queue.removeLast();
-    		wallCount++;
-
-    		for(int i = 0; i < 8; i++)
-    		{
-    			Position neighbor = current.neighbor(i);
-    			if(!m.inRange(neighbor) || m.isOpen(neighbor) || getParent(neighbor) != null)
-    				continue;
-    			else {
-
-
-    			setParent(neighbor, current);
-    			if(neighbor.i == 0 || neighbor.j == N-1)
-    				return neighbor;
-
-    			queue.addFirst(neighbor);
-    			}
-    		}
-    	}
-    	wallCount = -1;
-    	return null; // didn't find a valid startPoint
-    }
-
     // Command-line usage:
     //
     //    java PathFinder ARGS...
@@ -368,10 +292,10 @@ public class PathFinder
         if (oPath != null)
             System.out.println("findPath() found an open path of size "
                                + oPath.size());
-        Deque<Position> oPathRegularBFS = findPathRegularBFS(m);
-        if (oPathRegularBFS != null)
-        	System.out.println("findPathRegular() found an open path of size "
-                               + oPath.size());
+        //Deque<Position> oPathRegularBFS = findPathRegularBFS(m);
+        //if (oPathRegularBFS != null)
+        //	System.out.println("findPathRegular() found an open path of size "
+        //                       + oPath.size());
         Deque<Position> wPath = findWallPath(m);
         if (wPath != null)
             System.out.println("findWallPath() found a wall path of size "
@@ -547,7 +471,7 @@ public class PathFinder
     {
     	//count of elements currently in the list. also points to the first
     	//available index.
-    	private int N;
+    	private int count;
     	private PositionLN[] heap;
     	 
     	//constructor with a specified capacity, auto doubles when capacity is reached
@@ -566,30 +490,30 @@ public class PathFinder
     	//adds position p to the current heap and doubles heap capacity if it is full
     	public void add(PositionLN p)
     	{
-    		if (N == 0)
+    		if (count == 0)
     		{
-    			heap[N++] = p;
+    			heap[count++] = p;
     			return;
     		}
 
-    		if (N >= heap.length)
+    		if (count >= heap.length)
     			doubleHeap();
 
-    		heap[N] = p;
-    		if (p.distance < heap[(N-1)/2].distance)
-    			swim(N);
-    		N++;
+    		heap[count] = p;
+    		if (p.distance < heap[(count-1)/2].distance)
+    			swim(count);
+    		count++;
     	}
 
     	public PositionLN removeMin()
     	{
-    		if (N == 0)
+    		if (count == 0)
     			throw new IllegalStateException("no item to remove");
     		PositionLN toReturn = heap[0];
-    		heap[0] = heap[--N];
-    		heap[N] = null;
+    		heap[0] = heap[--count];
+    		heap[count] = null;
 
-    		if (N > 0)
+    		if (count > 0)
     			sink(0);
 
     		return toReturn;
@@ -599,7 +523,7 @@ public class PathFinder
     	//returns true if heap[i] < heap[j] false otherwise
     	private boolean less(int i, int j)
     	{
-    		if (i >= N || j >= N)
+    		if (i >= count || j >= count)
     			throw new IllegalStateException("invalid less call - indexes out of range");
 
     		return heap[i].distance < heap[j].distance;
@@ -620,11 +544,11 @@ public class PathFinder
 
     	private void sink(int i)
     	{
-    		while((2*i + 1) < N)
+    		while((2*i + 1) < count)
     		{
     			int j = 2*i + 1;
     			//if the other child is smaller select it
-    			if (j+1 < N && less(j+1, j)) j++;
+    			if (j+1 < count && less(j+1, j)) j++;
 
     			//if i is smaller than both its children we're done
     			if (less(i, j)) break;
@@ -642,8 +566,8 @@ public class PathFinder
 
     	private void doubleHeap()
     	{
-    		PositionLN[] newHeap = new PositionLN[2*N];
-    		for(int i = 0; i < N; i++)
+    		PositionLN[] newHeap = new PositionLN[2*count];
+    		for(int i = 0; i < count; i++)
     			newHeap[i] = heap[i];
 
     		heap = newHeap;
