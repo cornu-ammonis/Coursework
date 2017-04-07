@@ -1,19 +1,19 @@
 package ds;
 
-class minHeap<K extends Comparable<K>>
+class MinHeap<K extends Comparable<K>>
 {
 	private static final int defaultCapcity = 20;
 	private int count;
 	private K[] heap;
 
 	@SuppressWarnings("unchecked")
-	public minHeap(int capacity)
+	public MinHeap(int capacity)
 	{
 		heap = (K[]) new Comparable[capacity];
 	}
 
 	@SuppressWarnings("unchecked")
-	public minHeap()
+	public MinHeap()
 	{
 		heap = (K[]) new Comparable[defaultCapcity];
 	}
@@ -94,5 +94,14 @@ class minHeap<K extends Comparable<K>>
 			newHeap[i] = heap[i];
 
 		heap = newHeap;
+	}
+
+	//for testing
+	public static void main(String[] args)
+	{
+		String test1 = "aasdfhajsdhfgxvhbaweryawegrybsfnzzyqx";
+		MinHeap testHeap =
+
+		for (char c : testq.toCharArray())
 	}
 }
