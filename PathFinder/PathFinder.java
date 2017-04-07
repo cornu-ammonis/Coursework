@@ -380,11 +380,12 @@ public class PathFinder
 	// if it is an open position, it will return 4 neighbors 
 	// (up, down, left, right) if it is a wall (closed position) it 
 	// will return 8 (those above and diagonals)
-	static class PositionLN extends Position 
+	static class PositionLN extends Position implements Comparable<PositionLN>
 	{
 		public PositionLN(int i, int j)
 		{
 			super(i, j); //call base class constructor
+			distance = Integer.MAX_VALUE;
 		}
 
 		public int distance;
@@ -423,6 +424,13 @@ public class PathFinder
 	        case 7: return new PositionLN(i+1, j-1); // down and left
 	        }
 	        throw new RuntimeException("bad direction " + direction);			
+		}
+
+		public int compareTo(PositionLN p)
+		{
+			if (this.distance > p.distance) return 1;
+			if (this.distance < p.distance) return -1;
+			return 0;
 		}
 	}
 
