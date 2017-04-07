@@ -40,4 +40,15 @@ class minHeap<K extends Comparable<K>>
 		heap[i] = heap[j];
 		heap[j] = tmp;
 	}
+
+	@SuppressWarnings("unchecked")
+	private void doubleHeapSize()
+	{
+		K[] newHeap = (K[]) new Comparable[heap.length * 2];
+
+		for(int i = 0; i < count; i++)
+			newHeap[i] = heap[i];
+
+		heap = newHeap;
+	}
 }
