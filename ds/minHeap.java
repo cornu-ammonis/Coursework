@@ -39,6 +39,11 @@ class MinHeap<K extends Comparable<K>>
 			sinkFirstElement();
 	}
 
+	public boolean isEmpty()
+	{
+		return count == 0;
+	}
+
 	private void sinkFirstElement()
 	{
 		int i = 0;
@@ -103,5 +108,6 @@ class MinHeap<K extends Comparable<K>>
 		MinHeap testHeap =
 
 		for (char c : testq.toCharArray())
+			testHeap.add(c);
 	}
 }
