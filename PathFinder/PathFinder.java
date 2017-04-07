@@ -39,88 +39,6 @@ A TUTOR OR CODE WRITTEN BY OTHER STUDENTS.  __ANDREW C JONES 4/1/17__
 
 public class PathFinder
 {
-	// this subclass of position has a custom method listNeighbors 
-	// that will return all appropriate neighbors of the current position. 
-	// if it is an open position, it will return 4 neighbors 
-	// (up, down, left, right) if it is a wall (closed position) it 
-	// will return 8 (those above and diagonals)
-	static class PositionListedNeighbors extends Position 
-	{
-		public PositionListedNeighbors(int i, int j)
-		{
-			super(i, j); //call base class constructor
-		}
-
-		public int distance;
-
-		// returns a list of this positions neigbors which are 
-		// valid candidates for traversal 
-		public Deque<PositionListedNeighbors> listNeighbors()
-		{
-			Deque<PositionListedNeighbors> list = 
-				new LinkedDeque<PositionListedNeighbors>();
-
-			//this is on an open path so only up down left right
-			if (m.isOpen(this)) 
-				for (int i = 0; i < 4; i++)
-					list.addFirst(this.neighbor(i));
-			else
-				for (int i = 0; i < 8; i++)
-					list.addFirst(this.neighbor(i));
-
-			return list;
-		}
-
-		public PositionListedNeighbors neighbor(int direction) 
-		{
-			switch (direction) {
-	            // cardinal directions:
-	        case 0: return new PositionListedNeighbors(i-1, j  ); // 1 row up
-	        case 1: return new PositionListedNeighbors(i+1, j  ); // 1 row down
-	        case 2: return new PositionListedNeighbors(i  , j-1); // 1 column left
-	        case 3: return new PositionListedNeighbors(i  , j+1); // 1 column right
-	            // diagonal directions:
-	        case 4: return new PositionListedNeighbors(i-1, j-1); // up and left
-	        case 5: return new PositionListedNeighbors(i+1, j+1); // down and right
-	        case 6: return new PositionListedNeighbors(i-1, j+1); // up and right
-	        case 7: return new PositionListedNeighbors(i+1, j-1); // down and left
-	        }
-	        throw new RuntimeException("bad direction " + direction);			
-		}
-	}
-
-	// this "phantom position" class is solely for the purpose of more 
-	// efficiently implementing bfs for finding shortest wall path.
-	// because thare are a range of possible "starting points" 
-	// for the wall path, this phantom position is a vertex which is 
-	// "neigbors" with (adjascent to) all those positions which are valid
-	// start points for the wall path
-	static class PhantomPosition extends PositionListedNeighbors 
-	{
-		public PhantomPosition(int i, int j) 
-		{
-			super(i, j); //call base class constructor
-		}
-
-
-		// this phantom position is adjascent to all positions in the first
-		// column or last row 
-		// i==N-1 or j==0
-		public Deque<PositionListedNeighbors> listNeighbors() 
-		{
-			Deque<PositionListedNeighbors> list = 
-				new LinkedDeque<PositionListedNeighbors>();
-
-			for (int j = 0; j < N; j++)
-				list.addFirst(new PositionListedNeighbors(N-1, j));
-
-			for (int i = 0; i < N; i++)
-				list.addFirst(new PositionListedNeighbors(i, 0));
-
-			return list;
-		}
-	}
-
     // Any data fields here should be private and static.  They exist
     // only as a convenient way to share search context between your
     // static methods here.   It should be possible to call your
@@ -128,7 +46,8 @@ public class PathFinder
     // to get valid results for each maze.
 
 	private static PhantomPosition phantom;
-    private static int wallCount;
+    //private static int wallCount;
+    //private static int stepCount; //used to measure difference between A* and regular bfs
 
     // The maze we are currently searching, and its size.
     private static Maze m;      // current maze
@@ -151,13 +70,14 @@ public class PathFinder
         return true;
     }
 
-    public static Deque<Position> findPath(Maze maze)
+    //old implementation used to comapre to A*
+    public static Deque<Position> findPathRegularBFS(Maze maze)
     {
         m = maze;                           // save the maze
         N = m.size();                       // save size (maze is N by N)
-        parent = new Position[N][N];        // initially all null
-        Position S = new Position(0,0);     // start of open path
-        Position T = new Position(N-1,N-1); // end of open path
+        parent = new PositionLN[N][N];        // initially all null
+        PositionLN S = new PositionLN(0,0);     // start of open path
+        PositionLN T = new PositionLN(N-1,N-1); // end of open path
 
         // If either of these is a wall, there is no open path.
         if (!m.isOpen(S)) return null;
@@ -174,12 +94,16 @@ public class PathFinder
         // Compute parent links, by recursive depth-first-search!
         //dfs(S, S);
         //dfsNonRecursive(S);
+        
+        //stepCount = 0;
         bfs(S, T);
+        //aStarBFS(S, T);
         // If T has no parent, it is not reachable, so no path.
         if (getParent(T)==null)
         {
             return null;
         }
+        //System.out.println("regular found path in  " + stepCount +" steps\n");
         // Otherwise, we can reconstruct a path from S to T.
         Deque<Position> path = new LinkedDeque<Position>();
         for (Position u=T; !u.equals(S); u=getParent(u))
@@ -188,40 +112,45 @@ public class PathFinder
         return path;
     }
 
-    // depth-first-search: set parent for each newly reachable p.
-    private static void dfs(Position p, Position from)
-    {
-        if (!m.inRange(p) || !m.isOpen(p) || getParent(p) != null)
-            return;
-        // System.out.println("found " + p + " via parent " + from);
-        setParent(p, from);
-        // Now recursively try the four neighbors of p.
-        for (int dir=0; dir<4; ++dir)
-            dfs(p.neighbor(dir), p);
-    }
 
-    private static void dfsNonRecursive(Position start) 
+    public static Deque<Position> findPath(Maze maze)
     {
-    	Deque<Position> queue = new LinkedDeque<Position>();
-    	setParent(start, start);
-    	queue.addLast(start);
-    	
-    	while(!queue.isEmpty())
-    	{
-    		Position current = queue.removeLast();
-    		for (int i = 0; i < 4; i++)
-    		{
-    			Position neighbor = current.neighbor(i);
-    			if(!m.inRange(neighbor) || !m.isOpen(neighbor) || getParent(neighbor) != null)
-    				continue;
-    			else
-    			{
-    				setParent(neighbor, current);
-    				queue.addLast(neighbor);
-    			}
-    		}
-    	}
-    	return;
+        m = maze;                           // save the maze
+        N = m.size();                       // save size (maze is N by N)
+        parent = new Position[N][N];        // initially all null
+        PositionLN S = new PositionLN(0,0);     // start of open path
+        PositionLN T = new PositionLN(N-1,N-1); // end of open path
+
+        // If either of these is a wall, there is no open path.
+        if (!m.isOpen(S)) return null;
+        if (!m.isOpen(T)) return null;
+
+        // GOAL: for each reachable open position p, parent[p.i][p.j]
+        // should be an open position one step closer to S.  That is,
+        // it is the position that first discovered a route to p.
+        // These parent links will form a tree, rooted at S.
+
+        // Compute parent for each position reachable from S.
+        // Since S is the root, we will let S be its own parent.
+
+        // Compute parent links, by recursive depth-first-search!
+        //dfs(S, S);
+        //dfsNonRecursive(S);
+         //bfs(S, T);
+        //stepCount = 0;
+        aStarBFS(S, T);
+        // If T has no parent, it is not reachable, so no path.
+        if (getParent(T)==null)
+        {
+            return null;
+        }
+        //System.out.println("A* found path in  " + stepCount +" steps\n");
+        // Otherwise, we can reconstruct a path from S to T.
+        Deque<Position> path = new LinkedDeque<Position>();
+        for (Position u=T; !u.equals(S); u=getParent(u))
+            path.addFirst(u);
+        path.addFirst(S);
+        return path;
     }
 
     private static void bfs(Position start, Position target)
@@ -232,6 +161,7 @@ public class PathFinder
     	while(!queue.isEmpty())
     	{
     		Position current = queue.removeLast();
+    		//stepCount++;
     		for (int i = 0; i < 4; i++)
     		{
     			Position neighbor = current.neighbor(i);
@@ -249,6 +179,48 @@ public class PathFinder
     	}
     }
 
+    private static void aStarBFS(PositionLN start, PositionLN target)
+    {
+    	minHeapPositions heap = new minHeapPositions((N*N)/2);
+
+    	setParent(start, start);
+    	start.distanceFromOrigin = 0;
+    	start.distance = manhattanDistance(start, target);
+    	heap.add(start);
+    	
+    	while(heap.count > 0)
+    	{
+    		PositionLN current = heap.removeMin();
+    		//stepCount++;
+    		for (PositionLN neighbor : current.listNeighbors())
+    		{
+    			if (!m.inRange(neighbor) || !m.isOpen(neighbor) || getParent(neighbor) != null)
+    				continue;
+
+    			setParent(neighbor, current);
+
+    			if (neighbor.equals(target))
+    			{
+    				target.distanceFromOrigin = current.distanceFromOrigin + 1;
+    				//heap = null;
+    				return;
+    			}
+
+    			neighbor.distanceFromOrigin = current.distanceFromOrigin + 1;
+    			neighbor.distance = neighbor.distanceFromOrigin + manhattanDistance(neighbor, target);
+    			heap.add(neighbor);
+    		}
+    	}
+    }
+	
+
+	//formula taken from stackoverflow:
+	// int distance = Math.abs(x1-x0) + Math.abs(y1-y0);
+    private static int manhattanDistance(Position from, Position to)
+    {
+    	return Math.abs(from.i - to.i) + Math.abs(from.j - to.j);
+    }
+
 	// Return a wall path separating S and T, or null.
     // Note: must begin at i==0 or j==N-1 (first row or far right column)
     // must end at i==N-1 or j==0 (last row or far left column)
@@ -256,6 +228,7 @@ public class PathFinder
     {
     	m = maze;
     	N = m.size();
+    	parent = new Position[N][N]; 
     	Deque<Position> path = null;
     	phantom = new PhantomPosition(-1, -1);
     	Position start = bfsWallPhantom();
@@ -268,13 +241,13 @@ public class PathFinder
 
     private static Position bfsWallPhantom()
     {
-    	Deque<PositionListedNeighbors> queue = 
-    		new LinkedDeque<PositionListedNeighbors>();
+    	Deque<PositionLN> queue = 
+    		new LinkedDeque<PositionLN>();
     	queue.addFirst(phantom);
     	while(!queue.isEmpty())
     	{
-    		PositionListedNeighbors current = queue.removeLast();
-    		for (PositionListedNeighbors neighbor : current.listNeighbors())
+    		PositionLN current = queue.removeLast();
+    		for (PositionLN neighbor : current.listNeighbors())
     		{
     			if (!m.inRange(neighbor) || !m.isWall(neighbor) || 
     				getParent(neighbor) != null)
@@ -304,48 +277,6 @@ public class PathFinder
     	return pth;
     }
 
-    private static Deque<Position> unpackWallPath(Position start, Position end) 
-    {
-    	Deque<Position> pth = new LinkedDeque<Position>();
-
-    	for (Position u=start; !u.equals(end); u=getParent(u))
-            pth.addLast(u);
-        pth.addLast(end);
-        return pth;
-    	
-    }
-
-    private static Position bfsWall(Position end) 
-    {
-    	Deque<Position> queue = new LinkedDeque<Position>();
-    	//setParent(end, end);
-    	queue.addFirst(end);
-    	wallCount = 1;
-    	while(!queue.isEmpty())
-    	{
-    		Position current = queue.removeLast();
-    		wallCount++;
-
-    		for(int i = 0; i < 8; i++)
-    		{
-    			Position neighbor = current.neighbor(i);
-    			if(!m.inRange(neighbor) || m.isOpen(neighbor) || getParent(neighbor) != null)
-    				continue;
-    			else {
-
-
-    			setParent(neighbor, current);
-    			if(neighbor.i == 0 || neighbor.j == N-1)
-    				return neighbor;
-
-    			queue.addFirst(neighbor);
-    			}
-    		}
-    	}
-    	wallCount = -1;
-    	return null; // didn't find a valid startPoint
-    }
-
     // Command-line usage:
     //
     //    java PathFinder ARGS...
@@ -355,12 +286,16 @@ public class PathFinder
     // maze with the path highlighted.
     public static void main(String[] args)
     {
-       /* Maze m = Maze.mazeFromArgs(args);
-        System.out.println(m);
+        Maze m = Maze.mazeFromArgs(args);
+        //System.out.println(m);
         Deque<Position> oPath = findPath(m);
         if (oPath != null)
             System.out.println("findPath() found an open path of size "
                                + oPath.size());
+        //Deque<Position> oPathRegularBFS = findPathRegularBFS(m);
+        //if (oPathRegularBFS != null)
+        //	System.out.println("findPathRegular() found an open path of size "
+        //                       + oPath.size());
         Deque<Position> wPath = findWallPath(m);
         if (wPath != null)
             System.out.println("findWallPath() found a wall path of size "
@@ -375,7 +310,7 @@ public class PathFinder
             System.out.println("WARNING: cannot have both paths!");
 
         // Copy map of maze, and mark oPath with 'o', wPath with 'w'.
-        char[][] map = m.copyArray();
+        /*char[][] map = m.copyArray();
         if (oPath != null)
             for (Position p: oPath)
                 map[p.i][p.j] = 'o';
@@ -385,14 +320,15 @@ public class PathFinder
         // Now print the marked map.
         System.out.println(Maze.toString(map));*/
 
+        /*
         minHeapPositions heapTest = new minHeapPositions(1);
-        PositionListedNeighbors a = new PositionListedNeighbors(1, 2);
+        PositionLN a = new PositionLN(1, 2);
         a.distance = 4;
-        PositionListedNeighbors b = new PositionListedNeighbors(4, 5);
+        PositionLN b = new PositionLN(4, 5);
         b.distance = 5;
-        PositionListedNeighbors c = new PositionListedNeighbors(3, 4);
+        PositionLN c = new PositionLN(3, 4);
         c.distance = 2;
-        PositionListedNeighbors d = new PositionListedNeighbors(6, 7);
+        PositionLN d = new PositionLN(6, 7);
         d.distance = 3;
 
         heapTest.add(a);
@@ -403,18 +339,18 @@ public class PathFinder
         while(heapTest.N > 3)
         	System.out.println(heapTest.removeMin().distance + "\n");
 
-        PositionListedNeighbors e = new PositionListedNeighbors(8, 9);
+        PositionLN e = new PositionLN(8, 9);
         e.distance = 80;
         heapTest.add(e);
-        PositionListedNeighbors f = new PositionListedNeighbors(3, 8);
+        PositionLN f = new PositionLN(3, 8);
         f.distance = 4;
         heapTest.add(f);
-        PositionListedNeighbors g = new PositionListedNeighbors(1, 2);
+        PositionLN g = new PositionLN(1, 2);
         g.distance = 2;
         heapTest.add(g);
 
         while(heapTest.N > 0)
-        	System.out.println(heapTest.removeMin().distance + "\n");
+        	System.out.println(heapTest.removeMin().distance + "\n"); */
 
 
     }
@@ -439,6 +375,89 @@ public class PathFinder
         }
     }
 
+    // this subclass of position has a custom method listNeighbors 
+	// that will return all appropriate neighbors of the current position. 
+	// if it is an open position, it will return 4 neighbors 
+	// (up, down, left, right) if it is a wall (closed position) it 
+	// will return 8 (those above and diagonals)
+	static class PositionLN extends Position 
+	{
+		public PositionLN(int i, int j)
+		{
+			super(i, j); //call base class constructor
+		}
+
+		public int distance;
+		public int distanceFromOrigin;
+
+		// returns a list of this positions neigbors which are 
+		// valid candidates for traversal 
+		public Deque<PositionLN> listNeighbors()
+		{
+			Deque<PositionLN> list = 
+				new LinkedDeque<PositionLN>();
+
+			//this is on an open path so only up down left right
+			if (m.isOpen(this)) 
+				for (int i = 0; i < 4; i++)
+					list.addFirst(this.neighbor(i));
+			else
+				for (int i = 0; i < 8; i++)
+					list.addFirst(this.neighbor(i));
+
+			return list;
+		}
+
+		public PositionLN neighbor(int direction) 
+		{
+			switch (direction) {
+	            // cardinal directions:
+	        case 0: return new PositionLN(i-1, j  ); // 1 row up
+	        case 1: return new PositionLN(i+1, j  ); // 1 row down
+	        case 2: return new PositionLN(i  , j-1); // 1 column left
+	        case 3: return new PositionLN(i  , j+1); // 1 column right
+	            // diagonal directions:
+	        case 4: return new PositionLN(i-1, j-1); // up and left
+	        case 5: return new PositionLN(i+1, j+1); // down and right
+	        case 6: return new PositionLN(i-1, j+1); // up and right
+	        case 7: return new PositionLN(i+1, j-1); // down and left
+	        }
+	        throw new RuntimeException("bad direction " + direction);			
+		}
+	}
+
+	// this "phantom position" class is solely for the purpose of more 
+	// efficiently implementing bfs for finding shortest wall path.
+	// because thare are a range of possible "starting points" 
+	// for the wall path, this phantom position is a vertex which is 
+	// "neigbors" with (adjascent to) all those positions which are valid
+	// start points for the wall path
+	static class PhantomPosition extends PositionLN 
+	{
+		public PhantomPosition(int i, int j) 
+		{
+			super(i, j); //call base class constructor
+		}
+
+
+		// this phantom position is adjascent to all positions in the first
+		// column or last row 
+		// i==N-1 or j==0
+		public Deque<PositionLN> listNeighbors() 
+		{
+			Deque<PositionLN> list = 
+				new LinkedDeque<PositionLN>();
+
+			for (int j = 0; j < N; j++)
+				list.addFirst(new PositionLN(N-1, j));
+
+			for (int i = 0; i < N; i++)
+				list.addFirst(new PositionLN(i, 0));
+
+			return list;
+		}
+	}
+
 
     // heap data structure which sorts PositionListedNeighbor instances 
     // according to the value of their distance property such that the 
@@ -452,49 +471,49 @@ public class PathFinder
     {
     	//count of elements currently in the list. also points to the first
     	//available index.
-    	private int N;
-    	private PositionListedNeighbors[] heap;
+    	private int count;
+    	private PositionLN[] heap;
     	 
     	//constructor with a specified capacity, auto doubles when capacity is reached
     	public minHeapPositions(int capacity) 
     	{
-    		heap = new PositionListedNeighbors[capacity];
+    		heap = new PositionLN[capacity];
     	}
 
     	//constructor with default capacity, auto-doubles when capacity is reached
     	public minHeapPositions()
     	{
-    		heap = new PositionListedNeighbors[50];
+    		heap = new PositionLN[50];
     	}
 
 
     	//adds position p to the current heap and doubles heap capacity if it is full
-    	public void add(PositionListedNeighbors p)
+    	public void add(PositionLN p)
     	{
-    		if (N == 0)
+    		if (count == 0)
     		{
-    			heap[N++] = p;
+    			heap[count++] = p;
     			return;
     		}
 
-    		if (N >= heap.length)
+    		if (count >= heap.length)
     			doubleHeap();
 
-    		heap[N] = p;
-    		if (p.distance < heap[(N-1)/2].distance)
-    			swim(N);
-    		N++;
+    		heap[count] = p;
+    		if (p.distance < heap[(count-1)/2].distance)
+    			swim(count);
+    		count++;
     	}
 
-    	public PositionListedNeighbors removeMin()
+    	public PositionLN removeMin()
     	{
-    		if (N == 0)
+    		if (count == 0)
     			throw new IllegalStateException("no item to remove");
-    		PositionListedNeighbors toReturn = heap[0];
-    		heap[0] = heap[--N];
-    		heap[N] = null;
+    		PositionLN toReturn = heap[0];
+    		heap[0] = heap[--count];
+    		heap[count] = null;
 
-    		if (N > 0)
+    		if (count > 0)
     			sink(0);
 
     		return toReturn;
@@ -504,7 +523,7 @@ public class PathFinder
     	//returns true if heap[i] < heap[j] false otherwise
     	private boolean less(int i, int j)
     	{
-    		if (i >= N || j >= N)
+    		if (i >= count || j >= count)
     			throw new IllegalStateException("invalid less call - indexes out of range");
 
     		return heap[i].distance < heap[j].distance;
@@ -525,11 +544,11 @@ public class PathFinder
 
     	private void sink(int i)
     	{
-    		while((2*i + 1) < N)
+    		while((2*i + 1) < count)
     		{
     			int j = 2*i + 1;
     			//if the other child is smaller select it
-    			if (j+1 < N && less(j+1, j)) j++;
+    			if (j+1 < count && less(j+1, j)) j++;
 
     			//if i is smaller than both its children we're done
     			if (less(i, j)) break;
@@ -540,15 +559,15 @@ public class PathFinder
 
     	private void swap(int i, int j)
     	{
-    		PositionListedNeighbors tmp = heap[j];
+    		PositionLN tmp = heap[j];
     		heap[j] = heap[i];
     		heap[i] = tmp;
     	}
 
     	private void doubleHeap()
     	{
-    		PositionListedNeighbors[] newHeap = new PositionListedNeighbors[2*N];
-    		for(int i = 0; i < N; i++)
+    		PositionLN[] newHeap = new PositionLN[2*count];
+    		for(int i = 0; i < count; i++)
     			newHeap[i] = heap[i];
 
     		heap = newHeap;
