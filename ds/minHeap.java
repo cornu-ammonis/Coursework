@@ -18,6 +18,17 @@ class minHeap<K extends Comparable<K>>
 		heap = (K[]) new Comparable[defaultCapcity];
 	}
 
+	public void add (K item)
+	{
+		if (count > heap.length)
+			throw new IllegalStateException("count pointer error");
+		if(count == heap.length)
+			doubleHeapSize();
+
+		heap[count] = item;
+		swim(count++);
+	}
+
 	private void swim(int i)
 	{
 		while(i > 0)
