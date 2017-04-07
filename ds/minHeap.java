@@ -39,6 +39,29 @@ class minHeap<K extends Comparable<K>>
 			sinkFirstElement();
 	}
 
+	private void sinkFirstElement()
+	{
+		int i = 0;
+		while ((2*i) + 1 < count)
+		{
+			int j = 2*i + 1;
+
+			//if the other child exists and is smaller select it instead
+			if (j + 1 < count && heap[j+1].compareTo(heap[j]) < 0)
+				j++;
+
+
+			//if current element is smaller than both its children we are finished
+			if (heap[i].compareTo(heap[j]) <= 0) break;
+
+			//otherwise swap it with its smallest child
+			swap(i, j);
+
+			//repeat with the original element now in its child's position
+			i = j;
+		}
+	}
+
 	private void swim(int i)
 	{
 		while(i > 0)
