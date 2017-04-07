@@ -37,6 +37,8 @@ class MinHeap<K extends Comparable<K>>
 
 		if (count > 0)
 			sinkFirstElement();
+
+		return toReturn;
 	}
 
 	public boolean isEmpty()
@@ -105,9 +107,12 @@ class MinHeap<K extends Comparable<K>>
 	public static void main(String[] args)
 	{
 		String test1 = "aasdfhajsdhfgxvhbaweryawegrybsfnzzyqx";
-		MinHeap testHeap =
+		MinHeap testHeap = new MinHeap();
 
-		for (char c : testq.toCharArray())
+		for (char c : test1.toCharArray())
 			testHeap.add(c);
+
+		while(!testHeap.isEmpty())
+			System.out.println(testHeap.removeMin());
 	}
 }
