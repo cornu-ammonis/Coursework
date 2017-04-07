@@ -29,6 +29,16 @@ class minHeap<K extends Comparable<K>>
 		swim(count++);
 	}
 
+	public K removeMin()
+	{
+		K toReturn = heap[0];
+		heap[0] = heap[--count];
+		heap[count] = null;
+
+		if (count > 0)
+			sinkFirstElement();
+	}
+
 	private void swim(int i)
 	{
 		while(i > 0)
