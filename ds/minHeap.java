@@ -17,4 +17,11 @@ class minHeap<K extends Comparable<K>>
 	{
 		heap = (K[]) new Comparable[defaultCapcity];
 	}
+	
+	private void swap (int i, int j)
+	{
+		K tmp = heap[i];
+		heap[i] = heap[j];
+		heap[j] = tmp;
+	}
 }
