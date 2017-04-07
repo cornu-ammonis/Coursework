@@ -17,7 +17,23 @@ class minHeap<K extends Comparable<K>>
 	{
 		heap = (K[]) new Comparable[defaultCapcity];
 	}
-	
+
+	private void swim(int i)
+	{
+		while(i > 0)
+		{	
+			int parentIndex = (i-1)/2;
+			if (heap[i].compareTo(heap[parentIndex]) < 0)
+			{
+				swap(i, parentIndex);
+				i = parentIndex;
+			}
+			else
+				break;
+
+		}
+	}
+
 	private void swap (int i, int j)
 	{
 		K tmp = heap[i];
