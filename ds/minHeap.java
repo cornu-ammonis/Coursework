@@ -1,4 +1,4 @@
-package ds;
+
 
 class MinHeap<K extends Comparable<K>>
 {
@@ -103,16 +103,5 @@ class MinHeap<K extends Comparable<K>>
 		heap = newHeap;
 	}
 
-	//for testing
-	public static void main(String[] args)
-	{
-		String test1 = "aasdfhajsdhfgxvhbaweryawegrybsfnzzyqx";
-		MinHeap testHeap = new MinHeap();
-
-		for (char c : test1.toCharArray())
-			testHeap.add(c);
-
-		while(!testHeap.isEmpty())
-			System.out.println(testHeap.removeMin());
-	}
+	
 }
