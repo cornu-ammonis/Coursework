@@ -286,8 +286,12 @@ public class PathFinder
     // maze with the path highlighted.
     public static void main(String[] args)
     {
-        Maze m = Maze.mazeFromArgs(args);
+        
         //System.out.println(m);
+
+      	for (int i = 0; i < args.length * 2; i++){
+      	String[] arg = {args[i/2]};
+      	Maze m = Maze.mazeFromArgs(arg);
         Deque<Position> oPath = findPath(m);
         if (oPath != null)
             System.out.println("findPath() found an open path of size "
@@ -310,7 +314,7 @@ public class PathFinder
             System.out.println("WARNING: cannot have both paths!");
 
         // Copy map of maze, and mark oPath with 'o', wPath with 'w'.
-        /*char[][] map = m.copyArray();
+        char[][] map = m.copyArray();
         if (oPath != null)
             for (Position p: oPath)
                 map[p.i][p.j] = 'o';
@@ -318,7 +322,8 @@ public class PathFinder
             for (Position p: wPath)
                 map[p.i][p.j] = 'w';
         // Now print the marked map.
-        System.out.println(Maze.toString(map));*/
+        System.out.println(Maze.toString(map));
+    }
 
         /*
         minHeapPositions heapTest = new minHeapPositions(1);
@@ -380,11 +385,12 @@ public class PathFinder
 	// if it is an open position, it will return 4 neighbors 
 	// (up, down, left, right) if it is a wall (closed position) it 
 	// will return 8 (those above and diagonals)
-	static class PositionLN extends Position 
+	static class PositionLN extends Position implements Comparable<PositionLN>
 	{
 		public PositionLN(int i, int j)
 		{
 			super(i, j); //call base class constructor
+			distance = Integer.MAX_VALUE;
 		}
 
 		public int distance;
@@ -423,6 +429,13 @@ public class PathFinder
 	        case 7: return new PositionLN(i+1, j-1); // down and left
 	        }
 	        throw new RuntimeException("bad direction " + direction);			
+		}
+
+		public int compareTo(PositionLN p)
+		{
+			if (this.distance > p.distance) return 1;
+			if (this.distance < p.distance) return -1;
+			return 0;
 		}
 	}
 
