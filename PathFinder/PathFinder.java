@@ -1,9 +1,37 @@
 /*
 THIS CODE IS MY OWN WORK, IT WAS WRITTEN WITHOUT CONSULTING
-A TUTOR OR CODE WRITTEN BY OTHER STUDENTS.  __ANDREW C JONES 4/1/17__
+A TUTOR OR CODE WRITTEN BY OTHER STUDENTS.  
+__ANDREW C JONES 4/1/17 - 4/10/17__
 */
 
-// Homework: revise this file, WRITE YOUR NAME UPSTAIRS, see TODO items below.
+// NOTE - this file contains three nested static classes at the
+// bottom of the file (which I wrote myself, consulting the Sedgwick 
+// book in the case of the minheap) -- much of the magic happens here. 
+// I would normally put these in separate files, but nesting made it  
+// easier when repeatedly uploading to mimir for testing.
+//
+// The classes are as follows:
+//
+// @CLASS PositionLN, or position listed neighbor, extends Position 
+// and implements Comparable<PositionLN> - it has a listNeighbors()
+// method which will list the 4 reachable neighbors of an 
+// open position and the 8 of a wall (conveniently delineating so that
+// it can be reused between findpath and findwallpath)
+// it also has a distance property which is used to A* search, and 
+// a its compareTo method is based on this property,
+// which makes it easier to implement the custom minHeap queue for A*
+//
+// @CLASS PhantomPosition - extends PositionLN - differs from PositionLN
+// in that its listNeighbors function instead returns all positions
+// in the first column or last row (j == 0 or i == N-1)
+// this allows us to implement bfs on a "range" of starting positions 
+// for the findWallPath algorithm. when reconstructing the path, 
+// PhantomPosition is omitted, so the final result is a path of just walls
+// which is one of the shortes possible paths (or null if DNE)
+//
+// @CLASS MinHeapPositions
+
+// Deleted all non-clarifying comments from the original file
 
 // Given a maze of size N, the method findPath(maze) finds an open
 // path from (0,0) to (N-1,N-1), if such a path exists.
@@ -248,6 +276,7 @@ public class PathFinder
     }
 
 	// Return a wall path separating S and T, or null.
+    
     // Note: must begin at i==0 or j==N-1 (first row or far right column)
     // must end at i==N-1 or j==0 (last row or far left column)
     public static Deque<Position> findWallPath(Maze maze)
@@ -406,6 +435,7 @@ public class PathFinder
         }
     }
 
+   	// PositionLN - Position (with) Listed Neighbors
     // this subclass of position has a custom method listNeighbors 
 	// that will return all appropriate neighbors of the current position. 
 	// if it is an open position, it will return 4 neighbors 
