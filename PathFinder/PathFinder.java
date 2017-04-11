@@ -164,6 +164,19 @@ public class PathFinder
     	}
     }
 
+    // implementation A* bfs which is in this case about 30% more efficient 
+    // than normal bfs. the algorithm is inspired by the approach given in
+    // lecture. it uses manhattan distance as the estimation function 
+    // for a neighbor's distance to the target, and 
+    // uses a minheap to traverse neighbors with the shortest 
+    // estimated distance first.
+
+    // see the PositionLN class at the bottom of the file(under main)
+    // for details about its API, but it is basically a modified 
+    // verison of Position with a method listNeighbors() which returns
+    // an iterable of the position's neighbors (4 if open, 8 if a wall)
+    // because those are the neighbors under consideration for findpath
+    // and findwallpath respectively
     private static void aStarBFS(PositionLN start, PositionLN target)
     {
     	minHeapPositions heap = new minHeapPositions((N*N)/2);
