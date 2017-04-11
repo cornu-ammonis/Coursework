@@ -4,7 +4,7 @@ A TUTOR OR CODE WRITTEN BY OTHER STUDENTS.
 __ANDREW C JONES 4/1/17 - 4/10/17__
 */
 
-// NOTE - this file contains three nested static classes at the
+// NOTE - @line 432 this file contains three nested static classes at the
 // bottom of the file (which I wrote myself, consulting the Sedgwick 
 // book in the case of the minheap) -- much of the magic happens here. 
 // I would normally put these in separate files, but nesting made it  
@@ -38,21 +38,6 @@ __ANDREW C JONES 4/1/17 - 4/10/17__
 
 // Deleted all non-clarifying comments from the original file
 
-// Given a maze of size N, the method findPath(maze) finds an open
-// path from (0,0) to (N-1,N-1), if such a path exists.
-//
-// See main() comments for its command line usage.
-
-// TODO: the current solution is recursive (dfs() calls itself).  You
-// need to make it non-recursive.  One way is to use an explicit stack
-// instead of the runtime stack.  You do not need to find exactly the
-// same open paths as found by the given code.
-
-// TODO(EC): modify findPath so it finds a *shortest* open path from
-// (0,0) to (N-1,N-1), when one exists.  You can read about a method
-// for this, "breadth first search", in Section 4.1 of your book.
-
-// TODO(EC): define method findWallPath (it currently returns null).
 // When findPath fails to find a path, there should be a "blocking"
 // path of walls separating S and T.  This path can start at any wall
 // on the top row or right column of the maze (i==0 or j==N-1), and
@@ -61,23 +46,8 @@ __ANDREW C JONES 4/1/17 - 4/10/17__
 // a diagonal step (so, each wall has 8 potential neighbors).  Again,
 // recursion is not allowed here.
 
-// TODO(EC): Finding a wall path is good, finding a shortest wall path
-// is even better.  Note that if S (or T) is a wall, it is a wall path
-// of size one, the smallest possible.
-
-// TODO: Write your name in the header!
-
-// For grading, we ignore the main() method, so do what you like with
-// that.  We only test your findPath and findWallPath methods.
-
 public class PathFinder
 {
-    // Any data fields here should be private and static.  They exist
-    // only as a convenient way to share search context between your
-    // static methods here.   It should be possible to call your
-    // findPath() method more than once, on different mazes, and
-    // to get valid results for each maze.
-
 	// see PhantomPosition class at bottom of file for details:
 	// this is a fake position which is adjascent to 
 	// a range of starting positions for wall paths. 
@@ -458,21 +428,8 @@ public class PathFinder
     // class.  To enforce that, we give it a private constructor.
     private PathFinder() {}
 
-    //taken from given code for EMD
-    public static class KVPair<K, V> 
-    {
-        public K key;
-        public V value;
 
-        public KVPair(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-
-        public String toString() {
-            return this.key + ": " + this.value;
-        }
-    }
+// BEGIN OF CUSTOM CLASSES 
 
    	// PositionLN - Position (with) Listed Neighbors
     // this subclass of position has a custom method listNeighbors 
