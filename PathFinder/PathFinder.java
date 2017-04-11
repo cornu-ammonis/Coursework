@@ -45,9 +45,11 @@ public class PathFinder
     // findPath() method more than once, on different mazes, and
     // to get valid results for each maze.
 
+	// see PhantomPosition class at bottom of file for details:
+	// this is a fake position which is adjascent to 
+	// a range of starting positions for wall paths. 
+	// it helps to simplify bfs for wallpaths. 
 	private static PhantomPosition phantom;
-    //private static int wallCount;
-    //private static int stepCount; //used to measure difference between A* and regular bfs
 
     // The maze we are currently searching, and its size.
     private static Maze m;      // current maze
