@@ -34,7 +34,7 @@ __ANDREW C JONES 4/1/17 - 4/10/17__
 // "priority queue" (not using the actual queue API, 
 // because its not needed and would violate the rules of the hw)
 // for A* search. It has a removeMin method, an add method, and an 
-// isEmpty() method
+// isEmpty() method.
 
 // Deleted all non-clarifying comments from the original file
 
