@@ -290,28 +290,52 @@ public class PathFinder
     	N = m.size();
     	parent = new Position[N][N]; 
     	Deque<Position> path = null;
+
+    	// see comments for this class at top of file
+    	// this position is adjacent to all valid 
+    	// "end" points for wallpath - (counterintuitively, we begin
+    	// our search from an "end" point, this means 
+    	// that we reconstruct the resulting path in its 
+    	// actual order. note that there is only a semantic
+    	// distinction between "start" and "end" as outlined 
+    	// in the file and implicit in mimir tests, i.e. the 
+    	// first column/last row can be thought of as start
+    	// just as easily as last column/first row)
     	phantom = new PhantomPosition(-1, -1);
+
+
     	Position start = bfsWallPhantom();
     	if (start == null)
     		return null;
 
+    	// this method reconstructs the wallpath from start to end
     	path = unpackWallPathPhantom(start);
     	return path;
     }
 
+    // implements BFS exactly as in the openPath bfs, except that there 
+    // is a range of "targets" which can cause early return, rather than one
     private static Position bfsWallPhantom()
     {
+
+    	// fifo queue for bfs
     	Deque<PositionLN> queue = 
     		new LinkedDeque<PositionLN>();
     	queue.addFirst(phantom);
+    	
+    	// runs until we run out of options or find a target
     	while(!queue.isEmpty())
     	{
     		PositionLN current = queue.removeLast();
+
+    		// lists all 8 neighbors of our current node
     		for (PositionLN neighbor : current.listNeighbors())
     		{
+    			// if its not in range, not a wall, or already been seen we skip
     			if (!m.inRange(neighbor) || !m.isWall(neighbor) || 
     				getParent(neighbor) != null)
-    				continue;
+    				continue; //skip
+
     			else
     				{
     					setParent(neighbor, current);
@@ -321,6 +345,7 @@ public class PathFinder
     					if (neighbor.i == 0 || neighbor.j == N-1) 
     						return (Position) neighbor;
 
+    					//otherwise add it to back of queue
     					queue.addFirst(neighbor);
     				}
     		}
@@ -329,6 +354,15 @@ public class PathFinder
     	return null; //this means we didn't find a wall path
     }
 
+
+    // builds a path from start to end by adding Position's
+    // parents (more accurately, children) to the end of the path
+    // until we reach the phantom position
+    
+    // i organized it like this because it makes it simpler to know when we 
+    // have reached the end of a path -- i.e. the Position whose parent
+    // in the parent array is PhantomPosition will always be the last one we 
+    // add to the path.
     private static Deque<Position> unpackWallPathPhantom(Position start)
     {
     	Deque<Position> pth = new LinkedDeque<Position>();
@@ -492,6 +526,8 @@ public class PathFinder
 	        throw new RuntimeException("bad direction " + direction);			
 		}
 
+		// returns -1 if this position's distance is smaller than the argument's, 
+		// 1 if the argument's distance is smaller, 0 otherwise
 		public int compareTo(PositionLN p)
 		{
 			if (this.distance > p.distance) return 1;
@@ -579,11 +615,16 @@ public class PathFinder
     		count++;
     	}
 
+
+    	// retunrs true if we have no elements in the heap
     	public boolean isEmpty()
     	{
     		return !(count > 0);
     	}
 
+
+    	// returns and removes the position with the smallest distance value 
+        // in our heap
     	public PositionLN removeMin()
     	{
     		if (count == 0)
@@ -607,6 +648,8 @@ public class PathFinder
 
     		return heap[i].distance < heap[j].distance;
     	}
+
+    	// taken from sedgwick
     	private void swim(int i)
     	{
     		while (i > 0)
@@ -621,6 +664,8 @@ public class PathFinder
     		}
     	}
 
+
+    	//taken from sedgwick
     	private void sink(int i)
     	{
     		while((2*i + 1) < count)
@@ -636,6 +681,7 @@ public class PathFinder
     		}
     	}
 
+    	//swaps heap[i] with heap[j]
     	private void swap(int i, int j)
     	{
     		PositionLN tmp = heap[j];
@@ -643,6 +689,9 @@ public class PathFinder
     		heap[i] = tmp;
     	}
 
+
+    	// creates a new heap array of double the size and copies all our elements to it
+    	// then sets heap = newHeap
     	private void doubleHeap()
     	{
     		PositionLN[] newHeap = new PositionLN[2*count];
