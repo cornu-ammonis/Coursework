@@ -29,7 +29,12 @@ __ANDREW C JONES 4/1/17 - 4/10/17__
 // PhantomPosition is omitted, so the final result is a path of just walls
 // which is one of the shortes possible paths (or null if DNE)
 //
-// @CLASS MinHeapPositions
+// @CLASS MinHeapOfPositions creates a min heap of PositionLN arranged
+// according to their distance value so that we can have an efficient
+// "priority queue" (not using the actual queue API, 
+// because its not needed and would violate the rules of the hw)
+// for A* search. It has a removeMin method, an add method, and an 
+// isEmpty() method
 
 // Deleted all non-clarifying comments from the original file
 
@@ -206,7 +211,7 @@ public class PathFinder
     // because those are the neighbors under consideration for findpath
     // and findwallpath respectively
 
-    // see the minHeapPositions class at the bottom of the file for 
+    // see the MinHeapOfPositions class at the bottom of the file for 
     // details, but essentially it is an implementation of minHeap where 
     // the "key" value for a position p is p.distance, where distance 
     // is the estimated manhattan distance to target plus the known 
@@ -222,7 +227,7 @@ public class PathFinder
     {
     	// initializes a min heap with an initiual size of 
     	// half the total board
-    	minHeapPositions heap = new minHeapPositions((N*N)/2);
+    	MinHeapOfPositions heap = new MinHeapOfPositions((N*N)/2);
 
     	setParent(start, start);
     	start.distanceFromOrigin = 0; //starts distance from itself is 0
@@ -232,7 +237,7 @@ public class PathFinder
     	start.distance = manhattanDistance(start, target);
     	heap.add(start);
     	
-    	while(heap.count > 0)
+    	while(!heap.isEmpty())
     	{
     		PositionLN current = heap.removeMin();
 
@@ -381,7 +386,7 @@ public class PathFinder
     }
 
         /*
-        minHeapPositions heapTest = new minHeapPositions(1);
+        MinHeapOfPositions heapTest = new MinHeapOfPositions(1);
         PositionLN a = new PositionLN(1, 2);
         a.distance = 4;
         PositionLN b = new PositionLN(4, 5);
@@ -536,7 +541,7 @@ public class PathFinder
     // position (i-1)/2 (unless it is the first element)
     // and that an element at position i has its children at positions
     // 2*i +1 and 2*i +2 (if they exist)
-    static class minHeapPositions 
+    static class MinHeapOfPositions 
     {
     	//count of elements currently in the list. also points to the first
     	//available index.
@@ -544,13 +549,13 @@ public class PathFinder
     	private PositionLN[] heap;
     	 
     	//constructor with a specified capacity, auto doubles when capacity is reached
-    	public minHeapPositions(int capacity) 
+    	public MinHeapOfPositions(int capacity) 
     	{
     		heap = new PositionLN[capacity];
     	}
 
     	//constructor with default capacity, auto-doubles when capacity is reached
-    	public minHeapPositions()
+    	public MinHeapOfPositions()
     	{
     		heap = new PositionLN[50];
     	}
@@ -572,6 +577,11 @@ public class PathFinder
     		if (p.distance < heap[(count-1)/2].distance)
     			swim(count);
     		count++;
+    	}
+
+    	public boolean isEmpty()
+    	{
+    		return !(count > 0);
     	}
 
     	public PositionLN removeMin()
