@@ -71,7 +71,7 @@ public class PathFinder
         parent[p.i][p.j] = par;
         return true;
     }
-    
+
     public static Deque<Position> findPath(Maze maze)
     {
         m = maze;                           // save the maze
@@ -89,23 +89,20 @@ public class PathFinder
         // it is the position that first discovered a route to p.
         // These parent links will form a tree, rooted at S.
 
-        // Compute parent for each position reachable from S.
-        // Since S is the root, we will let S be its own parent.
-
-        // Compute parent links, by recursive depth-first-search!
-        //dfs(S, S);
-        //dfsNonRecursive(S);
-         //bfs(S, T);
-        //stepCount = 0;
+        // compute parent links using A* search
         aStarBFS(S, T);
+        
         // If T has no parent, it is not reachable, so no path.
         if (getParent(T)==null)
         {
             return null;
         }
-        //System.out.println("A* found path in  " + stepCount +" steps\n");
+      
         // Otherwise, we can reconstruct a path from S to T.
         Deque<Position> path = new LinkedDeque<Position>();
+        
+        // beginning at the end of the path, adds each position's parent 
+        // to the front of the path queue, effectively reconstructing the path
         for (Position u=T; !u.equals(S); u=getParent(u))
             path.addFirst(u);
         path.addFirst(S);
