@@ -177,36 +177,64 @@ public class PathFinder
     // an iterable of the position's neighbors (4 if open, 8 if a wall)
     // because those are the neighbors under consideration for findpath
     // and findwallpath respectively
+
+    // see the minHeapPositions class at the bottom of the file for 
+    // details, but essentially it is an implementation of minHeap where 
+    // the "key" value for a position p is p.distance, where distance 
+    // is the estimated manhattan distance to target plus the known 
+    // distance from origin.
+    // heap.removeMin will return the position in the heap with the smallest
+    // such distance, and will remove it from the heap.
+
+
+    // @param start - the beginning position for bfs 
+    // @param target - the endpoint to which we want to find the 
+    //     shortest path, if there is one 
     private static void aStarBFS(PositionLN start, PositionLN target)
     {
+    	// initializes a min heap with an initiual size of 
+    	// half the total board
     	minHeapPositions heap = new minHeapPositions((N*N)/2);
 
     	setParent(start, start);
-    	start.distanceFromOrigin = 0;
+    	start.distanceFromOrigin = 0; //starts distance from itself is 0
+
+    	// estimated distance (best case distance) to the target is it's 
+    	// manhattan distance, which is the 
     	start.distance = manhattanDistance(start, target);
     	heap.add(start);
     	
     	while(heap.count > 0)
     	{
     		PositionLN current = heap.removeMin();
-    		//stepCount++;
+
+    		// iterates over each neighbor of current
     		for (PositionLN neighbor : current.listNeighbors())
     		{
+    			// if the neighbor is out or range, is a wall, or has been seem
+    			// already, we skip it
     			if (!m.inRange(neighbor) || !m.isOpen(neighbor) || getParent(neighbor) != null)
     				continue;
 
+    			// current is neighbor's parent
     			setParent(neighbor, current);
 
+    			// if neighbor is the target we're done 
     			if (neighbor.equals(target))
     			{
+    				//saves total distance for some testing i did 
     				target.distanceFromOrigin = current.distanceFromOrigin + 1;
-    				//heap = null;
+    				heap = null; // help with garbage collection
     				return;
     			}
 
+    			// a node's distance from origin is its parents + 1
     			neighbor.distanceFromOrigin = current.distanceFromOrigin + 1;
+
+    			// estimated distance is actual distance from origin 
+    			// + manhattan distance to target
     			neighbor.distance = neighbor.distanceFromOrigin + manhattanDistance(neighbor, target);
-    			heap.add(neighbor);
+    			heap.add(neighbor); // add neighbor to heap
     		}
     	}
     }
