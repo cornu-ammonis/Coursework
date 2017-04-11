@@ -71,50 +71,7 @@ public class PathFinder
         parent[p.i][p.j] = par;
         return true;
     }
-
-    //old implementation used to comapre to A*
-    public static Deque<Position> findPathRegularBFS(Maze maze)
-    {
-        m = maze;                           // save the maze
-        N = m.size();                       // save size (maze is N by N)
-        parent = new PositionLN[N][N];        // initially all null
-        PositionLN S = new PositionLN(0,0);     // start of open path
-        PositionLN T = new PositionLN(N-1,N-1); // end of open path
-
-        // If either of these is a wall, there is no open path.
-        if (!m.isOpen(S)) return null;
-        if (!m.isOpen(T)) return null;
-
-        // GOAL: for each reachable open position p, parent[p.i][p.j]
-        // should be an open position one step closer to S.  That is,
-        // it is the position that first discovered a route to p.
-        // These parent links will form a tree, rooted at S.
-
-        // Compute parent for each position reachable from S.
-        // Since S is the root, we will let S be its own parent.
-
-        // Compute parent links, by recursive depth-first-search!
-        //dfs(S, S);
-        //dfsNonRecursive(S);
-        
-        //stepCount = 0;
-        bfs(S, T);
-        //aStarBFS(S, T);
-        // If T has no parent, it is not reachable, so no path.
-        if (getParent(T)==null)
-        {
-            return null;
-        }
-        //System.out.println("regular found path in  " + stepCount +" steps\n");
-        // Otherwise, we can reconstruct a path from S to T.
-        Deque<Position> path = new LinkedDeque<Position>();
-        for (Position u=T; !u.equals(S); u=getParent(u))
-            path.addFirst(u);
-        path.addFirst(S);
-        return path;
-    }
-
-
+    
     public static Deque<Position> findPath(Maze maze)
     {
         m = maze;                           // save the maze
