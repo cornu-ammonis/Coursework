@@ -109,25 +109,54 @@ public class PathFinder
         return path;
     }
 
+
+    // deprecated method left for comparison -- final version of FindPath
+    // uses the aStarBFS method below
+
+    // @param start - the beginning position for bfs 
+    // @param target - the endpoint to which we want to find the 
+    //     shortest path, if there is one 
+    // 
     private static void bfs(Position start, Position target)
     {
+    	
+    	// fifo queue used to investigate vertices in the order in which 
+    	// they are found
     	Deque<Position> queue = new LinkedDeque<Position>();
+    	
+    	//start is its own parent (prevents it from being traversed again)
     	setParent(start, start);
+
+    	//initialize queue so that the loop may proceed
     	queue.addFirst(start);
+    	
+    	//runs until we have exhausted all options or have found the target
     	while(!queue.isEmpty())
     	{
     		Position current = queue.removeLast();
-    		//stepCount++;
+
+    		// for each of the current position's neighbors
     		for (int i = 0; i < 4; i++)
     		{
     			Position neighbor = current.neighbor(i);
+
+    			// if the neighbor is out or range, is a wall, or has been seem
+    			// already, we skip it
     			if(!m.inRange(neighbor) || !m.isOpen(neighbor) || getParent(neighbor) != null)
-    				continue;
+    				continue; //skip 
+    			
     			else
     			{
+    				// current node is neighbor's parent
     				setParent(neighbor, current);
+
+    				// if it's target we are done
     				if (neighbor.equals(target))
     					return;
+
+    				//otherwise add the neighbor to the front of the queue 
+    				//so that it is processed after all other 
+    				//verticies at current's layer
     				queue.addFirst(neighbor);
     			}
     		}
