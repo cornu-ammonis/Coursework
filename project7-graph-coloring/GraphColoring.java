@@ -50,6 +50,8 @@ public class GraphColoring
     private int[] color;       // color[v] is color of vertex v
     // private int maxColor;   // maximum color used (K)
 
+    private boolean isTwoColorable;
+
     // Accessor methods:
     public Graph graph() { return G; }
     public int color(int v) { return color[v]; }
@@ -68,14 +70,87 @@ public class GraphColoring
     {
         this.G = G;
         this.color = greedyColoring(G);
+        if (twoColor(G))
+            System.out.println("found bipartite!");
+        else
+            System.out.println("no two color");
         // TODO: if G is bipartite, then you should find a 2-coloring
         // here in the constructor.
     }
+
+    // taken from sedgewick textbook chapter 4
+
+    private boolean twoColor(Graph G)
+    {
+        boolean[] marked = new boolean[G.V()];
+        boolean[] colorbool = new boolean[G.V()];
+        this.isTwoColorable = true;
+        for(int s = 0; s < G.V(); s++ )
+            if (!marked[s] && isTwoColorable)
+                bipartDfs(G, s, marked, colorbool);
+
+        if (isTwoColorable)
+        {
+            this.color = new int[G.V()];
+            for (int i = 0; i < G.V(); i++)
+            {
+                if (colorbool[i]) color[i] = 1;
+                else color[i] = 2;
+            }
+            return true;
+        }
+        else
+            return false;
+    }
+
+    private void bipartDfs(Graph G, int s, boolean[] marked, boolean[] colorbool)
+    {
+        marked[s] = true;
+        for (int w : G.adj(s))
+        {
+            if (!marked[w])
+            {
+                colorbool[w] = !colorbool[s];
+                bipartDfs(G, w, marked, colorbool); 
+            }
+            else if (colorbool[w] == colorbool[s]) isTwoColorable = false;
+        }
+    }
+
+    /*private boolean twoColor(Graph G)
+    {
+        int V = G.V();
+        int[] color = new int[V];
+        boolean[] marked = new boolean[V];
+        Stack<Integer> stack = new Stack<Integer>();
+        color[0] = 1;
+        stack.push(0);
+
+        while(!stack.isEmpty())
+        {
+            int v = stack.pop();
+            marked[v] = true;
+            for (int w : G.adj(v))
+            {
+                if (!marked[w])
+                {
+                    if (color[v] == 1) color[w] = 2;
+                    else color[w] = 1;
+                    stack.push(w);
+                }
+                else if (color[w] == color[v]) return false;
+            }
+
+        }
+        this.color = color;
+        return true; 
+    }*/
 
     // The greedy coloring heuristic.  You may replace this with something
     // better, if you want.
     private static int[] greedyColoring(Graph G)
     {
+        System.out.println("didnt find bipartite");
         int V = G.V();
         assert V >= 1;
         // This will be our coloring array.
