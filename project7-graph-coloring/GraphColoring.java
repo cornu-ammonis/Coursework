@@ -1,3 +1,9 @@
+
+/*
+THIS CODE IS MY OWN WORK, IT WAS WRITTEN WITHOUT CONSULTING
+A TUTOR OR CODE WRITTEN BY OTHER STUDENTS.  
+__ANDREW C JONES 4/13/17 __
+*/
 // Students should edit this file for homework.
 
 // NOTE: to compile and run this, put graph.jar on your CLASSPATH
