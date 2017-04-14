@@ -1,4 +1,4 @@
-
+import java.util.*;
 /*
 THIS CODE IS MY OWN WORK, IT WAS WRITTEN WITHOUT CONSULTING
 A TUTOR OR CODE WRITTEN BY OTHER STUDENTS.  
@@ -48,7 +48,7 @@ public class GraphColoring
     // Internal data for our coloring object.
     private Graph G;           // the Graph (from the constructor)
     private int[] color;       // color[v] is color of vertex v
-    // private int maxColor;   // maximum color used (K)
+    private int maxColor;   // maximum color used (K)
 
     private boolean isTwoColorable;
 
@@ -128,6 +128,7 @@ public class GraphColoring
                 else color[i] = 2;
             }
 
+            this.maxColor = 2;
             // return true so that constructor knows we succeeded and greedyColoring
             // call can be skipped. 
             return true;
@@ -200,7 +201,7 @@ public class GraphColoring
         // This will be our coloring array.
         int[] color = new int[V];
         // In loop, we keep track of the maximum color used so far.
-        int maxColor = 0;
+        maxColor = 0;
         // For each vertex v, we let color[v] be the first color which
         // is not already taken by the neighbors of v.
         for (int v=0; v<V; ++v)
@@ -264,6 +265,25 @@ public class GraphColoring
         return sb.toString();
     }
 
+
+    // taken from http://stackoverflow.com/questions/1519736/random-shuffling-of-an-array/21454317#21454317
+    //shuffles the given array
+    public static void shuffleArray(int[] array) 
+    {   
+        List<Integer> list = new ArrayList<>();
+        for (int i : array) 
+        {
+            list.add(i);
+        }
+
+        Collections.shuffle(list);
+
+        for (int i = 0; i < list.size(); i++) 
+        {
+            array[i] = list.get(i);
+        }    
+    }
+
     // Method tryImprove(secs) is where we may implement some more
     // time-consuming graph coloring heuristic, which tries to improve
     // the current coloring.  The boolean return value indicates
@@ -293,7 +313,61 @@ public class GraphColoring
         // the code in main.
 
         // As given, this does nothing at all, it just stops early.
+
+        // convert to ms because why bother with seconds
+        long start = System.currentTimeMillis();
+        double secs = secs*1000;
+        boolean foundBetterColoring = false;
+        int V = G.V();
+        int oldMaxColor = maxColor;
+        while (System.currentTimeMillis() - start < secs)
+        {
+            int[] shuffleTranslationArray = new int[G.V()];
+
+            for (int i = 0; i < V; i++)
+                shuffleTranslationArray[i] = i;
+
+            shuffleArray(shuffleTranslationArray);
+            int[] betterColor = greedyColoringShuffled(G, shuffleTranslationArray);
+
+            if (maxColor < oldMaxColor)
+            {
+                this.color = betterColor;
+                return true;
+            }
+        }
         return false;
+    }
+
+
+    private static int[] greedyColoringShuffled(Graph G, int[] shuffleTranslation)
+    {
+        System.out.println("didnt find bipartite");
+        int V = G.V();
+        assert V >= 1;
+        // This will be our coloring array.
+        int[] color = new int[V];
+        // In loop, we keep track of the maximum color used so far.
+        int maxColor = 0;
+        // For each vertex v, we let color[v] be the first color which
+        // is not already taken by the neighbors of v.
+        for (int v=0; v<V; ++v)
+        {
+            boolean[] taken = new boolean[maxColor+1];
+            for (int u: G.adj(v))
+                taken[color[u]] = true;
+            // Find the first color c not taken by neighbors of v.
+            int c = 1;
+            while (c <= maxColor && taken[c])
+                ++c;
+            color[v] = c;
+            // Maybe we started using a new color at v.
+            if (c > maxColor)
+                maxColor = c;
+        }
+
+        // All done, return the array.
+        return color;
     }
 
     // Print a warning message to System.err (not System.out).
