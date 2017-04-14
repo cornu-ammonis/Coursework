@@ -133,7 +133,7 @@ public class GraphColoring
             return true;
         }
 
-        //return false so that constructor knows its not bipartite; must call greedyColoring
+        //return false so that constructor knows it must call greedyColoring
         else return false;
     }
 
