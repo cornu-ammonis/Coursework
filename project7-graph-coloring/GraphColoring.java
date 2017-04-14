@@ -137,16 +137,26 @@ public class GraphColoring
         else return false;
     }
 
+    // recursive dfs. will call recursively on each neighbor of s which is not marked
+    // in @param marked. will set isTwoColorable to false if one of s's neighbors 
+    // has the same color as s. 
     private void bipartDfs(Graph G, int s, boolean[] marked, boolean[] colorbool)
     {
+        //mark visited
         marked[s] = true;
+
+        //for each vertex connected to s 
         for (int w : G.adj(s))
-        {
+        {   
+            //if it isnt marked, give it the opposite color as s, and recur on it
             if (!marked[w])
             {
                 colorbool[w] = !colorbool[s];
                 bipartDfs(G, w, marked, colorbool); 
             }
+
+            // otherwise it is marked; if the graph is bipartite, it must not 
+            // have the same color as s 
             else if (colorbool[w] == colorbool[s]) isTwoColorable = false;
         }
     }
