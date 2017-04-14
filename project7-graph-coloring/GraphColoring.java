@@ -69,11 +69,13 @@ public class GraphColoring
     public GraphColoring(Graph G)
     {
         this.G = G;
-        this.color = greedyColoring(G);
-        if (twoColor(G))
-            System.out.println("found bipartite!");
+        
+        // if the graph is bipartite, no need to call greedyColoring, 
+        // twoColor suffices
+        if (!twoColor(G))
+            this.color = greedyColoring(G);
         else
-            System.out.println("no two color");
+            System.out.println("found bipartite!");
         // TODO: if G is bipartite, then you should find a 2-coloring
         // here in the constructor.
     }
