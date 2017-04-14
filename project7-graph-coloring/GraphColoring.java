@@ -1,3 +1,9 @@
+
+/*
+THIS CODE IS MY OWN WORK, IT WAS WRITTEN WITHOUT CONSULTING
+A TUTOR OR CODE WRITTEN BY OTHER STUDENTS.  
+__ANDREW C JONES 4/13/17 __
+*/
 // Students should edit this file for homework.
 
 // NOTE: to compile and run this, put graph.jar on your CLASSPATH
@@ -44,6 +50,8 @@ public class GraphColoring
     private int[] color;       // color[v] is color of vertex v
     // private int maxColor;   // maximum color used (K)
 
+    private boolean isTwoColorable;
+
     // Accessor methods:
     public Graph graph() { return G; }
     public int color(int v) { return color[v]; }
@@ -61,15 +69,132 @@ public class GraphColoring
     public GraphColoring(Graph G)
     {
         this.G = G;
-        this.color = greedyColoring(G);
+        
+        // if the graph is bipartite, no need to call greedyColoring, 
+        // twoColor suffices
+        if (!twoColor(G))
+            this.color = greedyColoring(G);
+        else
+            System.out.println("found bipartite!");
         // TODO: if G is bipartite, then you should find a 2-coloring
         // here in the constructor.
     }
+
+
+
+    // *** inspired by Sedgewick and Wayne textbook chapter 4 pp. 547 ***
+    // with modifications (it finds 2-coloring at the same time as finding
+    // whether it is bipartite, discards if it isnt bipartite)
+
+    // given a graph G, determines if the graph is bipartite (i.e., if it 
+    // is two-colorable)
+    // 
+    // @returns true if the graph is bipartite and a 2-coloring was found
+    // @returns false if the graph is not bipartite.
+    private boolean twoColor(Graph G)
+    {
+        // marked[i] == true if we have visited vertex i
+        boolean[] marked = new boolean[G.V()];
+
+        // indicates which of two colors is vertex i this both allows us
+        // to detect if a graph is not bipartite (because some vertex will 
+        // have same color as neighbor) and allows us to create a 
+        // two-coloring if it is bipartite (because we know which verticies
+        // must be one color and which must be the other)
+        boolean[] colorbool = new boolean[G.V()];
+        
+        // property flips to false once we find adjascent vertices with same
+        // color
+        this.isTwoColorable = true;
+
+        // recursive dfs on each vertex if its not visited. necessary because 
+        // recursion is insufficient if there are disconnected components
+        for(int s = 0; s < G.V(); s++ )
+            if (!marked[s] && isTwoColorable)
+                bipartDfs(G, s, marked, colorbool);
+
+
+        // if it is bipartite, translate the boolean colorbool array into the
+        // color array for output. - if colorbool is false, that vertex color 1,
+        // if its true make it color 2. 
+        if (isTwoColorable)
+        {
+            this.color = new int[G.V()];
+
+            // assign color to each vertex
+            for (int i = 0; i < G.V(); i++)
+            {
+                if (colorbool[i]) color[i] = 1;
+                else color[i] = 2;
+            }
+
+            // return true so that constructor knows we succeeded and greedyColoring
+            // call can be skipped. 
+            return true;
+        }
+
+        //return false so that constructor knows it must call greedyColoring
+        else return false;
+    }
+
+    // recursive dfs. will call recursively on each neighbor of s which is not marked
+    // in @param marked. will set isTwoColorable to false if one of s's neighbors 
+    // has the same color as s. 
+    private void bipartDfs(Graph G, int s, boolean[] marked, boolean[] colorbool)
+    {
+        //mark visited
+        marked[s] = true;
+
+        //for each vertex connected to s 
+        for (int w : G.adj(s))
+        {   
+            //if it isnt marked, give it the opposite color as s, and recur on it
+            if (!marked[w])
+            {
+                colorbool[w] = !colorbool[s];
+                bipartDfs(G, w, marked, colorbool); 
+            }
+
+            // otherwise it is marked; if the graph is bipartite, it must not 
+            // have the same color as s 
+            else if (colorbool[w] == colorbool[s]) isTwoColorable = false;
+        }
+    }
+
+    /*private boolean twoColor(Graph G)
+    {
+        int V = G.V();
+        int[] color = new int[V];
+        boolean[] marked = new boolean[V];
+        Stack<Integer> stack = new Stack<Integer>();
+        color[0] = 1;
+        stack.push(0);
+
+        while(!stack.isEmpty())
+        {
+            int v = stack.pop();
+            marked[v] = true;
+            for (int w : G.adj(v))
+            {
+                if (!marked[w])
+                {
+                    if (color[v] == 1) color[w] = 2;
+                    else color[w] = 1;
+                    stack.push(w);
+                }
+                else if (color[w] == color[v]) return false;
+            }
+
+        }
+        this.color = color;
+        return true; 
+    }*/
 
     // The greedy coloring heuristic.  You may replace this with something
     // better, if you want.
     private static int[] greedyColoring(Graph G)
     {
+        System.out.println("didnt find bipartite");
         int V = G.V();
         assert V >= 1;
         // This will be our coloring array.
