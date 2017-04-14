@@ -80,29 +80,61 @@ public class GraphColoring
         // here in the constructor.
     }
 
-    // taken from sedgewick textbook chapter 4
 
+
+    // *** inspired by Sedgewick and Wayne textbook chapter 4 pp. 547 ***
+    // with modifications (it finds 2-coloring at the same time as finding
+    // whether it is bipartite, discards if it isnt bipartite)
+
+    // given a graph G, determines if the graph is bipartite (i.e., if it 
+    // is two-colorable)
+    // 
+    // @returns true if the graph is bipartite and a 2-coloring was found
+    // @returns false if the graph is not bipartite.
     private boolean twoColor(Graph G)
     {
+        // marked[i] == true if we have visited vertex i
         boolean[] marked = new boolean[G.V()];
+
+        // indicates which of two colors is vertex i this both allows us
+        // to detect if a graph is not bipartite (because some vertex will 
+        // have same color as neighbor) and allows us to create a 
+        // two-coloring if it is bipartite (because we know which verticies
+        // must be one color and which must be the other)
         boolean[] colorbool = new boolean[G.V()];
+        
+        // property flips to false once we find adjascent vertices with same
+        // color
         this.isTwoColorable = true;
+
+        // recursive dfs on each vertex if its not visited. necessary because 
+        // recursion is insufficient if there are disconnected components
         for(int s = 0; s < G.V(); s++ )
             if (!marked[s] && isTwoColorable)
                 bipartDfs(G, s, marked, colorbool);
 
+
+        // if it is bipartite, translate the boolean colorbool array into the
+        // color array for output. - if colorbool is false, that vertex color 1,
+        // if its true make it color 2. 
         if (isTwoColorable)
         {
             this.color = new int[G.V()];
+
+            // assign color to each vertex
             for (int i = 0; i < G.V(); i++)
             {
                 if (colorbool[i]) color[i] = 1;
                 else color[i] = 2;
             }
+
+            // return true so that constructor knows we succeeded and greedyColoring
+            // call can be skipped. 
             return true;
         }
-        else
-            return false;
+
+        //return false so that constructor knows its not bipartite; must call greedyColoring
+        else return false;
     }
 
     private void bipartDfs(Graph G, int s, boolean[] marked, boolean[] colorbool)
