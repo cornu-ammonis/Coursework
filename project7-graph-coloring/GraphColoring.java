@@ -63,6 +63,7 @@ public class GraphColoring
     private boolean degreeTiesExist = false;
     private int shuffledTiesAttemptCount = 0;
     private int vanillaShuffledAttemptCount = 0;
+    private int neighborRankedAttemptCount = 0;
 
     // Accessor methods:
     public Graph graph() { return G; }
