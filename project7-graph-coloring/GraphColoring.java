@@ -414,7 +414,7 @@ public class GraphColoring
 
         Arrays.sort(arr);
 
-        for (int i = G.V()-1; i >0; i--)
+        for (int i = G.V()-1; i >=0; i--)
         {
             int v = arr[i].vertex;
             
