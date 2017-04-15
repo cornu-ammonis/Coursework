@@ -334,6 +334,13 @@ public class GraphColoring
             int[] res = greedyColoringDegreeOrdered(G);
             System.out.println("GreedyColoring took " + (System.currentTimeMillis() - degreeOrderStart) );
             alreadyDegreeOrderColored = true;
+
+            if (maxColor < oldMaxColor)
+            {
+                System.out.println("Degree ordered found better!!!");
+                this.color = res;
+                return true;
+            }
         }
 
 
