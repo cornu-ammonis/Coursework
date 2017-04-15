@@ -468,19 +468,12 @@ public class GraphColoring
     private int[] greedyColoringDegreeOrdered(Graph G)
     {
         int V = G.V();
-        VertexDegree[] arr = new VertexDegree[V];
+        VertexDegree[] arr = vertexDegrees;
 
         // This will be our coloring array.
         int[] color = new int[V];
         // In loop, we keep track of the maximum color used so far.
         int maxColor = 0;
-
-        for(int v = 0; v < G.V(); v++)
-        {
-            arr[v] = new VertexDegree(v, G.degree(v));
-        }
-
-        Arrays.sort(arr);
 
         for (int i = G.V()-1; i >=0; i--)
         {
@@ -509,19 +502,12 @@ public class GraphColoring
     private int[] greedyDegreeOrderedShuffledTies(Graph G)
     {
         int V = G.V();
-        VertexDegree[] arr = new VertexDegree[V];
+        VertexDegree[] arr = vertexDegrees;
 
         // This will be our coloring array.
         int[] color = new int[V];
         // In loop, we keep track of the maximum color used so far.
         int maxColor = 0;
-
-        for(int v = 0; v < G.V(); v++)
-        {
-            arr[v] = new VertexDegree(v, G.degree(v));
-        }
-
-        Arrays.sort(arr);
 
         for (int i = G.V()-1; i >=0; i--)
         {
