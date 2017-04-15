@@ -334,6 +334,9 @@ public class GraphColoring
         int V = G.V();
         int oldMaxColor = maxColor;
 
+
+        // we want to do greedy algorithm on vertices ordered according to their
+        // degree at least once 
         if (!alreadyDegreeOrderColored)
         {
             long degreeOrderStart = System.currentTimeMillis();
@@ -349,6 +352,10 @@ public class GraphColoring
             }
         }
 
+
+        // repeatedly tries greedyDegreeOrdered with shuffled ties 
+        // unless thare are no ties or we run out of time. it tries 10 times, which i chose 
+        // completely arbitrarily (TODO: this number could potentially be raised or lowered)
         while (System.currentTimeMillis() - start < secs && shuffledTiesAttemptCount < 10
             && degreeTiesExist)
         {
@@ -365,8 +372,18 @@ public class GraphColoring
         System.out.println("shuffled tries attempt count: " + shuffledTiesAttemptCount);
 
 
+        // keeps trying vanilla greedy with shuffled vertex order until 
+        // runs out of time
         while (System.currentTimeMillis() - start < secs)
         {
+            // this array allows us to associate sequential indexes 0 through V-1
+            // with one and only one random vertex 
+            // this is accomplished by assigning values i {0 through V - 1}
+            // to index position i (arr[i] = i) , and then shuffling the array randomly.
+            // the only modiication then required to the greedy implementation 
+            // is to loop i from 0 to V -1, and say v = shuffleTranslationArray[i]
+            // this will in effect visit each vertex once in a random order. 
+
             int[] shuffleTranslationArray = new int[G.V()];
 
             for (int i = 0; i < V; i++)
@@ -386,6 +403,17 @@ public class GraphColoring
     }
 
 
+    // implements greedy coloring with a random order using a translation array - 
+    // see extensive notes in tryImprove
+    //
+    // we pass the translation array as a parameter instead of constructing it in 
+    // this method to decouple the method from a particular shuffling implementation
+    // -- i might investigate other ways to shuffle the array for better or more efficient
+    // randomization
+
+    // @param shuffleTranslation - an array of size V where values are in range 
+    //     0 - V-1. shuffleTranslation[i] = some vertex v, where the relationship
+    //     between i and v has been randomized. 
     private int[] greedyColoringShuffled(Graph G, int[] shuffleTranslation)
     {
         int V = G.V();
