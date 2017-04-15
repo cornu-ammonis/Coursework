@@ -52,6 +52,16 @@ public class GraphColoring
 
     private boolean isTwoColorable;
 
+    //used so that tryImprove does greedy coloring on degree ordered 
+    //graph exactly once
+    private boolean alreadyDegreeOrderColored = false;
+
+    // if there are no ties its a waste of time to keep running 
+    // the degree oredered algorithm because its the same each time so we 
+    // track if there are ties and only run it multiple times if there are 
+    private boolean degreeTiesExist = false;
+    private int shuffledTiesAttemptCount = 0;
+
     // Accessor methods:
     public Graph graph() { return G; }
     public int color(int v) { return color[v]; }
@@ -323,8 +333,57 @@ public class GraphColoring
         boolean foundBetterColoring = false;
         int V = G.V();
         int oldMaxColor = maxColor;
+
+
+        // we want to do greedy algorithm on vertices ordered according to their
+        // degree at least once 
+        if (!alreadyDegreeOrderColored)
+        {
+            long degreeOrderStart = System.currentTimeMillis();
+            int[] res = greedyDegreeOrderedShuffledTies(G);
+            System.out.println("GreedyColoring took " + (System.currentTimeMillis() - degreeOrderStart) );
+            alreadyDegreeOrderColored = true;
+
+            if (maxColor < oldMaxColor)
+            {
+                System.out.println("Degree ordered found better!!!");
+                this.color = res;
+                return true;
+            }
+        }
+
+
+        // repeatedly tries greedyDegreeOrdered with shuffled ties 
+        // unless thare are no ties or we run out of time. it tries 10 times, which i chose 
+        // completely arbitrarily (TODO: this number could potentially be raised or lowered)
+        while (System.currentTimeMillis() - start < secs && shuffledTiesAttemptCount < 10
+            && degreeTiesExist)
+        {
+            int[] res = greedyDegreeOrderedShuffledTies(G);
+            shuffledTiesAttemptCount++;
+            if (maxColor < oldMaxColor)
+            {
+                System.out.println("Shuffled ties found better! at attempt " + shuffledTiesAttemptCount);
+                this.color = res;
+                return true;
+            }
+        }
+
+        System.out.println("shuffled tries attempt count: " + shuffledTiesAttemptCount);
+
+
+        // keeps trying vanilla greedy with shuffled vertex order until 
+        // runs out of time
         while (System.currentTimeMillis() - start < secs)
         {
+            // this array allows us to associate sequential indexes 0 through V-1
+            // with one and only one random vertex 
+            // this is accomplished by assigning values i {0 through V - 1}
+            // to index position i (arr[i] = i) , and then shuffling the array randomly.
+            // the only modiication then required to the greedy implementation 
+            // is to loop i from 0 to V -1, and say v = shuffleTranslationArray[i]
+            // this will in effect visit each vertex once in a random order. 
+
             int[] shuffleTranslationArray = new int[G.V()];
 
             for (int i = 0; i < V; i++)
@@ -344,6 +403,17 @@ public class GraphColoring
     }
 
 
+    // implements greedy coloring with a random order using a translation array - 
+    // see extensive notes in tryImprove
+    //
+    // we pass the translation array as a parameter instead of constructing it in 
+    // this method to decouple the method from a particular shuffling implementation
+    // -- i might investigate other ways to shuffle the array for better or more efficient
+    // randomization
+
+    // @param shuffleTranslation - an array of size V where values are in range 
+    //     0 - V-1. shuffleTranslation[i] = some vertex v, where the relationship
+    //     between i and v has been randomized. 
     private int[] greedyColoringShuffled(Graph G, int[] shuffleTranslation)
     {
         int V = G.V();
@@ -368,6 +438,123 @@ public class GraphColoring
             // Maybe we started using a new color at v.
             if (c > maxColor)
                 maxColor = c;
+        }
+
+        if (this.maxColor > maxColor)
+            this.maxColor = maxColor;
+        // All done, return the array.
+        return color;
+    }
+
+
+    // visits vertices from highest degree to lowest degree
+    // TODO: randomize order of visiting vertices between ties,
+    // so that this can be run multiple times to potentially find a 
+    // better result
+    private int[] greedyColoringDegreeOrdered(Graph G)
+    {
+        int V = G.V();
+        VertexDegree[] arr = new VertexDegree[V];
+
+        // This will be our coloring array.
+        int[] color = new int[V];
+        // In loop, we keep track of the maximum color used so far.
+        int maxColor = 0;
+
+        for(int v = 0; v < G.V(); v++)
+        {
+            arr[v] = new VertexDegree(v, G.degree(v));
+        }
+
+        Arrays.sort(arr);
+
+        for (int i = G.V()-1; i >=0; i--)
+        {
+            int v = arr[i].vertex;
+            
+            boolean[] taken = new boolean[maxColor+1];
+            for (int u: G.adj(v))
+                taken[color[u]] = true;
+            // Find the first color c not taken by neighbors of v.
+            int c = 1;
+            while (c <= maxColor && taken[c])
+                ++c;
+            color[v] = c;
+            // Maybe we started using a new color at v.
+            if (c > maxColor)
+                maxColor = c;
+        }
+
+        if (this.maxColor > maxColor)
+            this.maxColor = maxColor;
+        // All done, return the array.
+        return color;
+
+    }
+
+    private int[] greedyDegreeOrderedShuffledTies(Graph G)
+    {
+        int V = G.V();
+        VertexDegree[] arr = new VertexDegree[V];
+
+        // This will be our coloring array.
+        int[] color = new int[V];
+        // In loop, we keep track of the maximum color used so far.
+        int maxColor = 0;
+
+        for(int v = 0; v < G.V(); v++)
+        {
+            arr[v] = new VertexDegree(v, G.degree(v));
+        }
+
+        Arrays.sort(arr);
+
+        for (int i = G.V()-1; i >=0; i--)
+        {
+            if (i == 0 || arr[i].degree != arr[i-1].degree)
+            {
+                int v = arr[i].vertex;
+                
+                boolean[] taken = new boolean[maxColor+1];
+                for (int u: G.adj(v))
+                    taken[color[u]] = true;
+                // Find the first color c not taken by neighbors of v.
+                int c = 1;
+                while (c <= maxColor && taken[c])
+                    ++c;
+                color[v] = c;
+                // Maybe we started using a new color at v.
+                if (c > maxColor)
+                    maxColor = c;
+            }
+            else
+            {
+                degreeTiesExist = true;
+                ArrayList<Integer> sameDegree = new ArrayList<Integer>();
+                sameDegree.add(arr[i].vertex);
+                while ( i > 0 && arr[i].degree == arr[i-1].degree)
+                {
+                    i--;
+                    sameDegree.add(arr[i].vertex);
+                }
+                Collections.shuffle(sameDegree);
+
+                for (int v : sameDegree)
+                {
+                    boolean[] taken = new boolean[maxColor+1];
+                    for (int u: G.adj(v))
+                        taken[color[u]] = true;
+                    // Find the first color c not taken by neighbors of v.
+                    int c = 1;
+                    while (c <= maxColor && taken[c])
+                        ++c;
+                    color[v] = c;
+                    // Maybe we started using a new color at v.
+                    if (c > maxColor)
+                        maxColor = c;
+                }
+            }
+            
         }
 
         if (this.maxColor > maxColor)
@@ -439,6 +626,23 @@ public class GraphColoring
             if (K >= lastK)
                 warn("tryImprove returned true, but not really improved");
             lastK = K;
+        }
+    }
+
+    public static class VertexDegree implements Comparable<VertexDegree> 
+    {
+        public int degree;
+        public int vertex;
+
+        public VertexDegree(int v, int degree)
+        {
+            this.vertex = v;
+            this.degree = degree;
+        }
+
+        public int compareTo (VertexDegree other)
+        {
+            return degree - other.degree;
         }
     }
 }
