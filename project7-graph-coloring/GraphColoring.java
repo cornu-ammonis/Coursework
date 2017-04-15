@@ -62,6 +62,7 @@ public class GraphColoring
     // track if there are ties and only run it multiple times if there are 
     private boolean degreeTiesExist = false;
     private int shuffledTiesAttemptCount = 0;
+    private int vanillaShuffledAttemptCount = 0;
 
     // Accessor methods:
     public Graph graph() { return G; }
@@ -386,6 +387,10 @@ public class GraphColoring
         System.out.println("shuffled tries attempt count: " + shuffledTiesAttemptCount);
 
 
+        int[] shuffleTranslationArray = new int[G.V()];
+
+        for (int i = 0; i < V; i++)
+            shuffleTranslationArray[i] = i;
         // keeps trying vanilla greedy with shuffled vertex order until 
         // runs out of time
         while (System.currentTimeMillis() - start < secs)
@@ -398,21 +403,19 @@ public class GraphColoring
             // is to loop i from 0 to V -1, and say v = shuffleTranslationArray[i]
             // this will in effect visit each vertex once in a random order. 
 
-            int[] shuffleTranslationArray = new int[G.V()];
-
-            for (int i = 0; i < V; i++)
-                shuffleTranslationArray[i] = i;
-
             shuffleArray(shuffleTranslationArray);
 
             int[] betterColor = greedyColoringShuffled(G, shuffleTranslationArray);
-
+            vanillaShuffledAttemptCount++;
             if (maxColor < oldMaxColor)
             {
+                System.out.println("shuffled vanilla found better at attempt: " + vanillaShuffledAttemptCount);
                 this.color = betterColor;
                 return true;
             }
         }
+
+        System.out.println("exiting after: " + vanillaShuffledAttemptCount + " vanilla shuffled attempts");
         return false;
     }
 
