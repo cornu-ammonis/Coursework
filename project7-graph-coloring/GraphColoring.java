@@ -56,6 +56,7 @@ public class GraphColoring
     //graph exactly once
     private boolean alreadyDegreeOrderColored = false;
     private VertexDegree[] vertexDegrees;
+    private VertexDegree[] vertexDegreesNeighborRanked;
 
     // if there are no ties its a waste of time to keep running 
     // the degree oredered algorithm because its the same each time so we 
@@ -369,6 +370,8 @@ public class GraphColoring
         }
 
 
+
+
         // repeatedly tries greedyDegreeOrdered with shuffled ties 
         // unless thare are no ties or we run out of time. it tries 10 times, which i chose 
         // completely arbitrarily (TODO: this number could potentially be raised or lowered)
@@ -567,6 +570,11 @@ public class GraphColoring
         return color;
     }
 
+    private int[] greedyNeighborOrdered(Graph G)
+    {
+
+    }
+
     // Print a warning message to System.err (not System.out).
     static void warn(String msg) { System.err.println("WARNING: "+msg); }
 
@@ -637,7 +645,6 @@ public class GraphColoring
     {
         public int degree;
         public int vertex;
-        public int neighborDegreeSum;
 
         public VertexDegree(int v, int degree)
         {
@@ -648,6 +655,26 @@ public class GraphColoring
         public int compareTo (VertexDegree other)
         {
             return degree - other.degree;
+        }
+    }
+
+    public static class VertexNeighborRanked implements Comparable<VertexDegree>
+    {
+        public int vertex;
+        public int neighborDegreeSum;
+
+        public VertexDegree(int v, Graph G)
+        {
+            this.vertex = v;
+            this.neighborDegreeSum = 0;
+
+            for (int n : G.adj(v))
+                this.neighborDegreeSum += G.degree(n);
+        }
+
+        public int compareTo(VertexNeighborRanked other)
+        {
+            return this.neighborDegreeSum - other.neighborDegreeSum;
         }
     }
 }
