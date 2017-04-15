@@ -633,6 +633,7 @@ public class GraphColoring
     {
         public int degree;
         public int vertex;
+        public int neighborDegreeSum;
 
         public VertexDegree(int v, int degree)
         {
