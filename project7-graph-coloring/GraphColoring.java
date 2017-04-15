@@ -55,6 +55,7 @@ public class GraphColoring
     //used so that tryImprove does greedy coloring on degree ordered 
     //graph exactly once
     private boolean alreadyDegreeOrderColored = false;
+    private VertexDegree[] vertexDegrees;
 
     // if there are no ties its a waste of time to keep running 
     // the degree oredered algorithm because its the same each time so we 
@@ -337,6 +338,9 @@ public class GraphColoring
 
         // we want to do greedy algorithm on vertices ordered according to their
         // degree at least once 
+        // we also go ahead and populate the array of VertexDegree so taht 
+        // we dont have to recreate it on subsequent runs (if their are ties
+        // we will run this multiple times with shuffled order for tied degrees)
         if (!alreadyDegreeOrderColored)
         {
             long degreeOrderStart = System.currentTimeMillis();
