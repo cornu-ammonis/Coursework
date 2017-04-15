@@ -327,6 +327,16 @@ public class GraphColoring
         boolean foundBetterColoring = false;
         int V = G.V();
         int oldMaxColor = maxColor;
+
+        if (!alreadyDegreeOrderColored)
+        {
+            long degreeOrderStart = System.currentTimeMillis();
+            int[] res = greedyColoringDegreeOrdered(G);
+            System.out.println("GreedyColoring took " + (System.currentTimeMillis() - degreeOrderStart) );
+            alreadyDegreeOrderColored = true;
+        }
+
+
         while (System.currentTimeMillis() - start < secs)
         {
             int[] shuffleTranslationArray = new int[G.V()];
@@ -380,9 +390,45 @@ public class GraphColoring
         return color;
     }
 
-    private int[] greedyColoringDegreeOrdered(Graph g)
+    private int[] greedyColoringDegreeOrdered(Graph G)
     {
-        return null;
+        int V = G.V();
+        VertexDegree[] arr = new VertexDegree[V];
+
+        // This will be our coloring array.
+        int[] color = new int[V];
+        // In loop, we keep track of the maximum color used so far.
+        int maxColor = 0;
+
+        for(int v = 0; v < G.V(); v++)
+        {
+            arr[v] = new VertexDegree(v, G.degree(v));
+        }
+
+        Arrays.sort(arr);
+
+        for (int i = G.V()-1; i >0; i--)
+        {
+            int v = arr[i].vertex;
+            
+            boolean[] taken = new boolean[maxColor+1];
+            for (int u: G.adj(v))
+                taken[color[u]] = true;
+            // Find the first color c not taken by neighbors of v.
+            int c = 1;
+            while (c <= maxColor && taken[c])
+                ++c;
+            color[v] = c;
+            // Maybe we started using a new color at v.
+            if (c > maxColor)
+                maxColor = c;
+        }
+
+        if (this.maxColor > maxColor)
+            this.maxColor = maxColor;
+        // All done, return the array.
+        return color;
+
     }
 
     // Print a warning message to System.err (not System.out).
@@ -451,10 +497,16 @@ public class GraphColoring
         }
     }
 
-    public static class VertexDegree implements comparable<VertexDegree> 
+    public static class VertexDegree implements Comparable<VertexDegree> 
     {
         public int degree;
         public int vertex;
+
+        public VertexDegree(int v, int degree)
+        {
+            this.vertex = v;
+            this.degree = degree;
+        }
 
         public int compareTo (VertexDegree other)
         {
