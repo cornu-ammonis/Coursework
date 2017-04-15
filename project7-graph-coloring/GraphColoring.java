@@ -372,13 +372,13 @@ public class GraphColoring
 
         if (System.currentTimeMillis() - start < secs && neighborRankedAttemptCount == 0)
         {
-            long neighborRankedStart = System.currentTimeMillis()
+            long neighborRankedStart = System.currentTimeMillis();
             oldMaxColor = maxColor;
 
             //initialize verticesNeighborRanked
             verticesNeighborRanked = new VertexNeighborRanked[V];
             for(int i = 0; i < V; i++)
-                verticesNeighborRanked[i] = ne VertexNeighborRanked(i, G);
+                verticesNeighborRanked[i] = new VertexNeighborRanked(i, G);
 
             Arrays.sort(verticesNeighborRanked);
 
