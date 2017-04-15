@@ -658,12 +658,12 @@ public class GraphColoring
         }
     }
 
-    public static class VertexNeighborRanked implements Comparable<VertexDegree>
+    public static class VertexNeighborRanked implements Comparable<VertexNeighborRanked>
     {
         public int vertex;
         public int neighborDegreeSum;
 
-        public VertexDegree(int v, Graph G)
+        public VertexNeighborRanked(int v, Graph G)
         {
             this.vertex = v;
             this.neighborDegreeSum = 0;
