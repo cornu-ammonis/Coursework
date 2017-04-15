@@ -331,7 +331,7 @@ public class GraphColoring
         if (!alreadyDegreeOrderColored)
         {
             long degreeOrderStart = System.currentTimeMillis();
-            int[] res = greedyColoringDegreeOrdered(G);
+            int[] res = greedyDegreeOrderedShuffledTies(G);
             System.out.println("GreedyColoring took " + (System.currentTimeMillis() - degreeOrderStart) );
             alreadyDegreeOrderColored = true;
 
@@ -441,6 +441,76 @@ public class GraphColoring
         // All done, return the array.
         return color;
 
+    }
+
+    private int[] greedyDegreeOrderedShuffledTies(Graph G)
+    {
+        int V = G.V();
+        VertexDegree[] arr = new VertexDegree[V];
+
+        // This will be our coloring array.
+        int[] color = new int[V];
+        // In loop, we keep track of the maximum color used so far.
+        int maxColor = 0;
+
+        for(int v = 0; v < G.V(); v++)
+        {
+            arr[v] = new VertexDegree(v, G.degree(v));
+        }
+
+        Arrays.sort(arr);
+
+        for (int i = G.V()-1; i >=0; i--)
+        {
+            if (i == 0 || arr[i].degree != arr[i-1].degree)
+            {
+                int v = arr[i].vertex;
+                
+                boolean[] taken = new boolean[maxColor+1];
+                for (int u: G.adj(v))
+                    taken[color[u]] = true;
+                // Find the first color c not taken by neighbors of v.
+                int c = 1;
+                while (c <= maxColor && taken[c])
+                    ++c;
+                color[v] = c;
+                // Maybe we started using a new color at v.
+                if (c > maxColor)
+                    maxColor = c;
+            }
+            else
+            {
+                ArrayList<Integer> sameDegree = new ArrayList<Integer>();
+                sameDegree.add(arr[i].vertex);
+                while ( i > 0 && arr[i].degree == arr[i-1].degree)
+                {
+                    i--;
+                    sameDegree.add(arr[i].vertex);
+                }
+                Collections.shuffle(sameDegree);
+
+                for (int v : sameDegree)
+                {
+                    boolean[] taken = new boolean[maxColor+1];
+                    for (int u: G.adj(v))
+                        taken[color[u]] = true;
+                    // Find the first color c not taken by neighbors of v.
+                    int c = 1;
+                    while (c <= maxColor && taken[c])
+                        ++c;
+                    color[v] = c;
+                    // Maybe we started using a new color at v.
+                    if (c > maxColor)
+                        maxColor = c;
+                }
+            }
+            
+        }
+
+        if (this.maxColor > maxColor)
+            this.maxColor = maxColor;
+        // All done, return the array.
+        return color;
     }
 
     // Print a warning message to System.err (not System.out).
