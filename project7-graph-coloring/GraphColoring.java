@@ -52,6 +52,10 @@ public class GraphColoring
 
     private boolean isTwoColorable;
 
+    //used so that tryImprove does greedy coloring on degree ordered 
+    //graph exactly once
+    private boolean alreadyDegreeOrderColored = false;
+
     // Accessor methods:
     public Graph graph() { return G; }
     public int color(int v) { return color[v]; }
@@ -376,6 +380,11 @@ public class GraphColoring
         return color;
     }
 
+    private int[] greedyColoringDegreeOrdered(Graph g)
+    {
+        return null;
+    }
+
     // Print a warning message to System.err (not System.out).
     static void warn(String msg) { System.err.println("WARNING: "+msg); }
 
@@ -439,6 +448,17 @@ public class GraphColoring
             if (K >= lastK)
                 warn("tryImprove returned true, but not really improved");
             lastK = K;
+        }
+    }
+
+    public static class VertexDegree implements comparable<VertexDegree> 
+    {
+        public int degree;
+        public int vertex;
+
+        public int compareTo (VertexDegree other)
+        {
+            return degree - other.degree;
         }
     }
 }
