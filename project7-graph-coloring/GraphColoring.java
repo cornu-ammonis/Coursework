@@ -73,7 +73,10 @@ public class GraphColoring
         // if the graph is bipartite, no need to call greedyColoring, 
         // twoColor suffices
         if (!twoColor(G))
+        {
             this.color = greedyColoring(G);
+            maxColor = maxColor();
+        }
         else
             System.out.println("found bipartite!");
         // TODO: if G is bipartite, then you should find a 2-coloring
@@ -201,7 +204,7 @@ public class GraphColoring
         // This will be our coloring array.
         int[] color = new int[V];
         // In loop, we keep track of the maximum color used so far.
-        maxColor = 0;
+        int maxColor = 0;
         // For each vertex v, we let color[v] be the first color which
         // is not already taken by the neighbors of v.
         for (int v=0; v<V; ++v)
@@ -316,7 +319,7 @@ public class GraphColoring
 
         // convert to ms because why bother with seconds
         long start = System.currentTimeMillis();
-        double secs = secs*1000;
+        secs = secs*1000;
         boolean foundBetterColoring = false;
         int V = G.V();
         int oldMaxColor = maxColor;
@@ -328,6 +331,7 @@ public class GraphColoring
                 shuffleTranslationArray[i] = i;
 
             shuffleArray(shuffleTranslationArray);
+
             int[] betterColor = greedyColoringShuffled(G, shuffleTranslationArray);
 
             if (maxColor < oldMaxColor)
@@ -340,9 +344,8 @@ public class GraphColoring
     }
 
 
-    private static int[] greedyColoringShuffled(Graph G, int[] shuffleTranslation)
+    private int[] greedyColoringShuffled(Graph G, int[] shuffleTranslation)
     {
-        System.out.println("didnt find bipartite");
         int V = G.V();
         assert V >= 1;
         // This will be our coloring array.
@@ -351,8 +354,9 @@ public class GraphColoring
         int maxColor = 0;
         // For each vertex v, we let color[v] be the first color which
         // is not already taken by the neighbors of v.
-        for (int v=0; v<V; ++v)
+        for (int i=0; i<V; ++i)
         {
+            int v = shuffleTranslation[i];
             boolean[] taken = new boolean[maxColor+1];
             for (int u: G.adj(v))
                 taken[color[u]] = true;
@@ -366,6 +370,8 @@ public class GraphColoring
                 maxColor = c;
         }
 
+        if (this.maxColor > maxColor)
+            this.maxColor = maxColor;
         // All done, return the array.
         return color;
     }
