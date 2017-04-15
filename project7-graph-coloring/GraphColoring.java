@@ -56,6 +56,12 @@ public class GraphColoring
     //graph exactly once
     private boolean alreadyDegreeOrderColored = false;
 
+    // if there are no ties its a waste of time to keep running 
+    // the degree oredered algorithm because its the same each time so we 
+    // track if there are ties and only run it multiple times if there are 
+    private boolean degreeTiesExist = false;
+    private int shuffledTiesAttemptCount = 0;
+
     // Accessor methods:
     public Graph graph() { return G; }
     public int color(int v) { return color[v]; }
@@ -343,6 +349,21 @@ public class GraphColoring
             }
         }
 
+        while (System.currentTimeMillis() - start < secs && shuffledTiesAttemptCount < 10
+            && degreeTiesExist)
+        {
+            int[] res = greedyDegreeOrderedShuffledTies(G);
+            shuffledTiesAttemptCount++;
+            if (maxColor < oldMaxColor)
+            {
+                System.out.println("Shuffled ties found better! at attempt " + shuffledTiesAttemptCount);
+                this.color = res;
+                return true;
+            }
+        }
+
+        System.out.println("shuffled tries attempt count: " + shuffledTiesAttemptCount);
+
 
         while (System.currentTimeMillis() - start < secs)
         {
@@ -480,6 +501,7 @@ public class GraphColoring
             }
             else
             {
+                degreeTiesExist = true;
                 ArrayList<Integer> sameDegree = new ArrayList<Integer>();
                 sameDegree.add(arr[i].vertex);
                 while ( i > 0 && arr[i].degree == arr[i-1].degree)
