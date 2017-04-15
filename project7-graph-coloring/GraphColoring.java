@@ -370,6 +370,7 @@ public class GraphColoring
         }
 
 
+        // tries greedy in order descending order of teh sum of a vertex's neighbors degrees
         if (System.currentTimeMillis() - start < secs && neighborRankedAttemptCount == 0)
         {
             long neighborRankedStart = System.currentTimeMillis();
@@ -384,7 +385,7 @@ public class GraphColoring
 
             int[] res = greedyNeighborOrdered(G);
             neighborRankedAttemptCount++;
-
+            System.out.println("neighborRankColoring took " + (System.currentTimeMillis() - neighborRankedStart) );
             if (maxColor < oldMaxColor)
             {
                 System.out.println("neighbor ordered found better!");
@@ -593,6 +594,35 @@ public class GraphColoring
 
     private int[] greedyNeighborOrdered(Graph G)
     {
+        int V = G.V();
+        VertexNeighborRanked[] arr = verticesNeighborRanked;
+
+        // This will be our coloring array.
+        int[] color = new int[V];
+        // In loop, we keep track of the maximum color used so far.
+        int maxColor = 0;
+
+        for (int i = G.V()-1; i >=0; i--)
+        {
+            int v = arr[i].vertex;
+            
+            boolean[] taken = new boolean[maxColor+1];
+            for (int u: G.adj(v))
+                taken[color[u]] = true;
+            // Find the first color c not taken by neighbors of v.
+            int c = 1;
+            while (c <= maxColor && taken[c])
+                ++c;
+            color[v] = c;
+            // Maybe we started using a new color at v.
+            if (c > maxColor)
+                maxColor = c;
+        }
+
+        if (this.maxColor > maxColor)
+            this.maxColor = maxColor;
+        // All done, return the array.
+        return color;
 
     }
 
