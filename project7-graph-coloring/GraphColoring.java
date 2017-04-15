@@ -397,6 +397,11 @@ public class GraphColoring
         return color;
     }
 
+
+    // visits vertices from highest degree to lowest degree
+    // TODO: randomize order of visiting vertices between ties,
+    // so that this can be run multiple times to potentially find a 
+    // better result
     private int[] greedyColoringDegreeOrdered(Graph G)
     {
         int V = G.V();
