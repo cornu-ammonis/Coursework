@@ -370,7 +370,28 @@ public class GraphColoring
         }
 
 
+        if (System.currentTimeMillis() - start < secs && neighborRankedAttemptCount == 0)
+        {
+            long neighborRankedStart = System.currentTimeMillis()
+            oldMaxColor = maxColor;
 
+            //initialize verticesNeighborRanked
+            verticesNeighborRanked = new VertexNeighborRanked[V];
+            for(int i = 0; i < V; i++)
+                verticesNeighborRanked[i] = ne VertexNeighborRanked(i, G);
+
+            Arrays.sort(verticesNeighborRanked);
+
+            int[] res = greedyNeighborOrdered(G);
+            neighborRankedAttemptCount++;
+
+            if (maxColor < oldMaxColor)
+            {
+                System.out.println("neighbor ordered found better!");
+                this.color = res;
+                return true;
+            }
+        }
 
         // repeatedly tries greedyDegreeOrdered with shuffled ties 
         // unless thare are no ties or we run out of time. it tries 10 times, which i chose 
