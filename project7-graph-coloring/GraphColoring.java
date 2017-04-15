@@ -56,7 +56,7 @@ public class GraphColoring
     //graph exactly once
     private boolean alreadyDegreeOrderColored = false;
     private VertexDegree[] vertexDegrees;
-    private VertexDegree[] vertexDegreesNeighborRanked;
+    private VertexNeighborRanked[] verticesNeighborRanked;
 
     // if there are no ties its a waste of time to keep running 
     // the degree oredered algorithm because its the same each time so we 
