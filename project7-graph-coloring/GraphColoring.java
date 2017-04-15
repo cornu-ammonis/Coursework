@@ -343,7 +343,17 @@ public class GraphColoring
         // we will run this multiple times with shuffled order for tied degrees)
         if (!alreadyDegreeOrderColored)
         {
+            // start timer
             long degreeOrderStart = System.currentTimeMillis();
+            
+            // populate our vertexDegrees array
+            vertexDegrees = new VertexDegree[V];
+            for (int i = 0; i < V; i++)
+                vertexDegrees[i] = new VertexDegree(i, G.degree(i));
+
+            // sort according to degree
+            Arrays.sort(vertexDegrees);
+
             int[] res = greedyDegreeOrderedShuffledTies(G);
             System.out.println("GreedyColoring took " + (System.currentTimeMillis() - degreeOrderStart) );
             alreadyDegreeOrderColored = true;
