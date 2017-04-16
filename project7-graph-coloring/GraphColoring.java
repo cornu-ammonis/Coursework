@@ -768,7 +768,7 @@ public class GraphColoring
     // into a loop with tryImprove, printing each improved coloring
     // found, until tryImprove gives up (by returning false), or until
     // we run out of time.
-    public static void main(String[] args)
+    /* public static void main(String[] args)
     {
         // Usage message, if not at least one argument.
         if (args.length == 0) {
@@ -816,8 +816,51 @@ public class GraphColoring
                 warn("tryImprove returned true, but not really improved");
             lastK = K;
         }*/
-
+/*
         coloring.testVariousApproaches(secs*1000);
+    */
+
+    // this version of main takes two arguments, the number of graphs to try, and the amount 
+    // of time to try them. optional third and fourth arguments correspond to the size
+    // of the erdos-renyi graph and the probability of each edge
+    public static void main(String[] args)
+    {
+        /*if (args.length == 0) {
+            System.err.println
+                ("Usage: java GraphColoring [NUMBERGRAPHS] [TIMELIMIT]");
+            System.exit(1);
+        }*/
+
+
+        int numberGraphs = 5; //default
+        if (args.length > 0)
+            numberGraphs = Integer.parseInt(args[0]);
+
+        double secs = 20; //default
+        if (args.length > 1)
+            secs = Double.parseDouble(args[1]);
+
+        int n = 100; // default
+        if (args.length > 2)
+            n = Integer.parseInt(args[2]);
+
+        double p = .5; //default 
+        if (args.length > 3)
+            p = Double.parseDouble(args[3]);
+
+        for (int i = 0; i < numberGraphs; i++)
+        {
+            Graph G = GraphGenerator.simple(n, p);
+            GraphColoring coloring = new GraphColoring(G);
+            StdOut.println(coloring);
+            if (coloring.bugs()>0)
+                warn("initial coloring has bugs!");
+
+            coloring.testVariousApproaches(secs*1000);
+        }
+
+
+
     }
 
     public static class VertexDegree implements Comparable<VertexDegree> 
