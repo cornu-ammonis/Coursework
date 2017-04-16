@@ -497,7 +497,15 @@ public class GraphColoring
     private int[] greedyColoringDegreeOrdered(Graph G)
     {
         int V = G.V();
-        VertexDegree[] arr = vertexDegrees;
+        VertexDegree[] arr;
+        if(vertexDegrees == null)
+        {
+            arr = new VertexDegree[V];
+            for (int i = 0; i < V; i++)
+                arr[i] = new VertexDegree(i, G.degree(i));
+        }
+        else
+             arr = vertexDegrees;
 
         // This will be our coloring array.
         int[] color = new int[V];
@@ -592,6 +600,7 @@ public class GraphColoring
         return color;
     }
 
+
     private int[] greedyNeighborOrdered(Graph G)
     {
         int V = G.V();
@@ -625,6 +634,49 @@ public class GraphColoring
         return color;
 
     }
+
+
+
+
+    public void testVariousApproaches(int ms)
+    {
+        int V = G.V();
+
+        maxColor = Integer.MAX_VALUE;
+
+        long shuffledStart = System.currentTimeMillis();
+        int[] shuffleTranslationArray = new int[G.V()];
+
+        for (int i = 0; i < V; i++)
+            shuffleTranslationArray[i] = i;
+
+        shuffleArray(shuffleTranslationArray);
+        int[] res = greedyColoringShuffled(G);
+        int shuffledGreedyBest = maxColor;
+        System.out.println("init shuffled greedy - " + shuffledGreedyBest);
+        int shuffledTriesCount = 1;
+        // can use a fourth of our time on 
+        while((System.currentTimeMillis() - shuffledStart) < ms/4)
+        {
+            shuffledTriesCount++;
+            shuffleArray(shuffleTranslationArray);
+            res = greedyColoringShuffled(G, shuffleTranslationArray);
+            if (shuffledGreedyBest > maxColor)
+            {
+                shuffledGreedyBest = maxColor;
+                System.out.println("shuffled improved to " + shuffledGreedyBest 
+                    + "at try # " + shuffledTriesCount);
+
+            }
+        }
+
+
+        maxColor = Integer.MAX_VALUE;
+        long degreeOrderedShuffledStart = system.currentTimeMillis();
+
+
+    }
+
 
     // Print a warning message to System.err (not System.out).
     static void warn(String msg) { System.err.println("WARNING: "+msg); }
