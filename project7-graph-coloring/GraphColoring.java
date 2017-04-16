@@ -678,9 +678,17 @@ public class GraphColoring
 
     public void testVariousApproaches(double ms)
     {
+        long globalStart = System.currentTimeMillis();
         System.out.println(" ");
         int V = G.V();
         int maxColorTmp = maxColor;
+
+        maxColor = Integer.MAX_VALUE;
+        int[] res = welshPowell(G);
+        System.out.println("welsh got " + maxColor + " and took " + (System.currentTimeMillis() - globalStart));
+
+
+
         maxColor = Integer.MAX_VALUE;
 
         long shuffledStart = System.currentTimeMillis();
@@ -690,7 +698,7 @@ public class GraphColoring
             shuffleTranslationArray[i] = i;
 
         shuffleArray(shuffleTranslationArray);
-        int[] res = greedyColoringShuffled(G, shuffleTranslationArray);
+        res = greedyColoringShuffled(G, shuffleTranslationArray);
         int shuffledGreedyBest = maxColor;
         System.out.println("init shuffled greedy - " + shuffledGreedyBest);
         int shuffledTriesCount = 1;
@@ -730,7 +738,12 @@ public class GraphColoring
         System.out.println("tried degree ordered shuffled " + degreeOrderedTriesCount);
 
 
-
+        if ((System.currentTimeMillis() - globalStart) > .8 * ms)
+        {
+            System.out.println("not enough time for neighbor, exiting ");
+            System.out.println(" ");
+            return;
+        }
         maxColor = Integer.MAX_VALUE;
         int neighborRankedBest = maxColor;
         long neighborStart = System.currentTimeMillis();
