@@ -320,11 +320,11 @@ public class GraphColoring
         int V = G.V();
         int oldMaxColor = maxColor;
 
-        if(!alreadyTested)
+        /*if(!alreadyTested)
         {
             testVariousApproaches(secs/4);
             alreadyTested = true;
-        }
+        }*/
         
         // we want to do greedy algorithm on vertices ordered according to their
         // degree at least once 
@@ -336,21 +336,13 @@ public class GraphColoring
             // start timer
             long degreeOrderStart = System.currentTimeMillis();
             
-            // populate our vertexDegrees array
-            vertexDegrees = new VertexDegree[V];
-            for (int i = 0; i < V; i++)
-                vertexDegrees[i] = new VertexDegree(i, G.degree(i));
-
-            // sort according to degree
-            Arrays.sort(vertexDegrees);
-
-            int[] res = greedyDegreeOrderedShuffledTies(G);
+            int[] res = welshPowell(G);
             System.out.println("GreedyColoring took " + (System.currentTimeMillis() - degreeOrderStart) );
             alreadyDegreeOrderColored = true;
 
             if (maxColor < oldMaxColor)
             {
-                System.out.println("Degree ordered found better!!!");
+                System.out.println("welsh found better!!! " + maxColor);
                 this.color = res;
                 return true;
             }
@@ -526,7 +518,7 @@ public class GraphColoring
         VertexDegree[] arr;
         if(vertexDegrees == null)
         {
-            createDegreeOrderedArray();
+            createDegreeOrderedArray(G);
         }
         arr = vertexDegrees;
 
@@ -627,10 +619,61 @@ public class GraphColoring
             this.maxColor = maxColor;
         // All done, return the array.
         return color;
-
     }
 
 
+    // inspired by http://mrsleblancsmath.pbworks.com/w/file/fetch/46119304/vertex%20coloring%20algorithm.pdf
+    public int[] welshPowell(Graph G)
+    {
+        if (vertexDegrees == null)
+            createDegreeOrderedArray(G);
+
+        int V = G.V();
+
+        //so that we can skip vertices after coloring them
+        boolean[] alreadyColored = new boolean[V];
+        int[] color = new int[V]; //tmp array of colorings
+        int coloredCount = 0; //so we know when we're done
+        int currentColor = 1; //each loop will use the next color
+        while (coloredCount < V)
+        {
+            //if a vertex is adjascent to a vertex we colored on this loop, we 
+            //cant color it on this loop
+            boolean[] coloredThisLoop = new boolean[V];
+
+
+            //visit vertices in descending order of degree
+            for (int i = V-1; i >= 0; i--)
+            {
+                int v = vertexDegrees[i].vertex;
+                if (alreadyColored[v]) continue;
+                boolean canColor = true;
+
+                // see if we colored any of its neighbors on this loop
+                for (int n : G.adj(v))
+                    if (coloredThisLoop[n])
+                    {
+                        canColor = false;
+                        break;
+                    }
+
+                //if none of its neighbors have been colored this loop
+                if (canColor)
+                {
+                    color[v] = currentColor;
+                    alreadyColored[v] = true;
+                    coloredThisLoop[v] = true;
+                    coloredCount++;
+                }
+            }
+            currentColor++; // use next color for next loop
+        }
+
+        if ((currentColor - 1) < maxColor)
+            maxColor = currentColor - 1;
+
+        return color;
+    }
 
 
     public void testVariousApproaches(double ms)
