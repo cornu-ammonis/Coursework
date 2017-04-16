@@ -701,7 +701,7 @@ public class GraphColoring
             {
                 shuffledGreedyBest = maxColor;
                 System.out.println("shuffled improved to " + shuffledGreedyBest 
-                    + "at try # " + shuffledTriesCount);
+                    + " at try # " + shuffledTriesCount);
 
             }
         }
@@ -851,12 +851,14 @@ public class GraphColoring
         for (int i = 0; i < numberGraphs; i++)
         {
             Graph G = GraphGenerator.simple(n, p);
+            System.out.println("calling constructor...");
             GraphColoring coloring = new GraphColoring(G);
-            StdOut.println(coloring);
+            //StdOut.println(coloring);
             if (coloring.bugs()>0)
                 warn("initial coloring has bugs!");
 
-            coloring.testVariousApproaches(secs*1000);
+            System.out.println("starting test:");
+            coloring.testVariousApproaches(secs*1000); 
         }
 
 
