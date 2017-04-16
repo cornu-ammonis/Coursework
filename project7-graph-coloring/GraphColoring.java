@@ -51,6 +51,7 @@ public class GraphColoring
     private int maxColor;   // maximum color used (K)
 
     private boolean isTwoColorable;
+    private boolean alreadyTested = false;
 
     //used so that tryImprove does greedy coloring on degree ordered 
     //graph exactly once
@@ -179,35 +180,6 @@ public class GraphColoring
         }
     }
 
-    /*private boolean twoColor(Graph G)
-    {
-        int V = G.V();
-        int[] color = new int[V];
-        boolean[] marked = new boolean[V];
-        Stack<Integer> stack = new Stack<Integer>();
-        color[0] = 1;
-        stack.push(0);
-
-        while(!stack.isEmpty())
-        {
-            int v = stack.pop();
-            marked[v] = true;
-            for (int w : G.adj(v))
-            {
-                if (!marked[w])
-                {
-                    if (color[v] == 1) color[w] = 2;
-                    else color[w] = 1;
-                    stack.push(w);
-                }
-                else if (color[w] == color[v]) return false;
-            }
-
-        }
-        this.color = color;
-        return true; 
-    }*/
-
     // The greedy coloring heuristic.  You may replace this with something
     // better, if you want.
     private static int[] greedyColoring(Graph G)
@@ -301,6 +273,16 @@ public class GraphColoring
         }    
     }
 
+    public void createDegreeOrderedArray(Graph G)
+    {
+        this.vertexDegrees = new VertexDegree[G.V()];
+
+        for (int v = 0; v < G.V(); v++)
+            this.vertexDegrees[v] = new VertexDegree(v, G.degree(v));
+
+        Arrays.sort(this.vertexDegrees);
+    }
+
     // Method tryImprove(secs) is where we may implement some more
     // time-consuming graph coloring heuristic, which tries to improve
     // the current coloring.  The boolean return value indicates
@@ -338,7 +320,12 @@ public class GraphColoring
         int V = G.V();
         int oldMaxColor = maxColor;
 
-
+        if(!alreadyTested)
+        {
+            testVariousApproaches(secs/4);
+            alreadyTested = true;
+        }
+        
         // we want to do greedy algorithm on vertices ordered according to their
         // degree at least once 
         // we also go ahead and populate the array of VertexDegree so taht 
@@ -500,13 +487,9 @@ public class GraphColoring
         VertexDegree[] arr;
         if(vertexDegrees == null)
         {
-            arr = new VertexDegree[V];
-            for (int i = 0; i < V; i++)
-                arr[i] = new VertexDegree(i, G.degree(i));
-            this.vertexDegrees = arr;
+            createDegreeOrderedArray(G);
         }
-        else
-             arr = vertexDegrees;
+        arr = vertexDegrees;
 
         // This will be our coloring array.
         int[] color = new int[V];
@@ -543,13 +526,9 @@ public class GraphColoring
         VertexDegree[] arr;
         if(vertexDegrees == null)
         {
-            arr = new VertexDegree[V];
-            for (int i = 0; i < V; i++)
-                arr[i] = new VertexDegree(i, G.degree(i));
-            this.vertexDegrees = arr;
+            createDegreeOrderedArray();
         }
-        else
-             arr = vertexDegrees;
+        arr = vertexDegrees;
 
         // This will be our coloring array.
         int[] color = new int[V];
@@ -614,6 +593,12 @@ public class GraphColoring
     private int[] greedyNeighborOrdered(Graph G)
     {
         int V = G.V();
+        if(verticesNeighborRanked == null)
+        {
+            verticesNeighborRanked = new VertexNeighborRanked[V];
+            for(int i = 0; i < V; i++)
+                verticesNeighborRanked[i] = new VertexNeighborRanked(i, G);
+        }
         VertexNeighborRanked[] arr = verticesNeighborRanked;
 
         // This will be our coloring array.
@@ -648,10 +633,11 @@ public class GraphColoring
 
 
 
-    public void testVariousApproaches(int ms)
+    public void testVariousApproaches(double ms)
     {
+        System.out.println(" ");
         int V = G.V();
-
+        int maxColorTmp = maxColor;
         maxColor = Integer.MAX_VALUE;
 
         long shuffledStart = System.currentTimeMillis();
@@ -680,10 +666,43 @@ public class GraphColoring
             }
         }
 
+        System.out.println("Tried vanilla shuffle " + shuffledTriesCount);
+
 
         maxColor = Integer.MAX_VALUE;
+        int degreeOrderedShuffledBest = maxColor;
         long degreeOrderedShuffledStart = System.currentTimeMillis();
+        int degreeOrderedTriesCount = 0;
+        while((System.currentTimeMillis() - degreeOrderedShuffledStart) < ms/4)
+        {
+            degreeOrderedTriesCount++;
+            res = greedyDegreeOrderedShuffledTies(G);
+            if (maxColor < degreeOrderedShuffledBest)
+            {
+                degreeOrderedShuffledBest = maxColor;
+                System.out.println("deg ordered shuffled improved to " + maxColor + " at try " + degreeOrderedTriesCount);
 
+            }
+        }
+        System.out.println("tried degree ordered shuffled " + degreeOrderedTriesCount);
+
+
+
+        maxColor = Integer.MAX_VALUE;
+        int neighborRankedBest = maxColor;
+        long neighborStart = System.currentTimeMillis();
+
+        res = greedyNeighborOrdered(G);
+        System.out.println("neighbor order improved to " + maxColor + " took " +
+            (System.currentTimeMillis() - neighborStart));
+
+
+        int best = Math.min(neighborRankedBest, Math.min(degreeOrderedShuffledBest, shuffledGreedyBest));
+        String bestOne;
+        System.out.println("BEST WAS " + best);
+        maxColor = maxColorTmp;
+
+        System.out.println(" ");
 
     }
 
@@ -733,7 +752,7 @@ public class GraphColoring
         // improving the coloring, we print it again.  We stop when we
         // run out of time, or when tryImprove returns false.
         int lastK = coloring.maxColor();
-        while (true)
+        /*while (true)
         {
             // How much time have we used already? (in seconds)
             double used = (System.currentTimeMillis()-start)/1000.0;
@@ -751,7 +770,9 @@ public class GraphColoring
             if (K >= lastK)
                 warn("tryImprove returned true, but not really improved");
             lastK = K;
-        }
+        }*/
+
+        coloring.testVariousApproaches(secs*1000);
     }
 
     public static class VertexDegree implements Comparable<VertexDegree> 
