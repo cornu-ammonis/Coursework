@@ -89,8 +89,8 @@ public class GraphColoring
         // twoColor suffices
         if (!twoColor(G))
         {
-            this.color = greedyColoring(G);
-            maxColor = maxColor();
+            maxColor = Integer.MAX_VALUE;
+            this.color = welshPowell(G);
         }
         else
             System.out.println("found bipartite!");
@@ -184,7 +184,6 @@ public class GraphColoring
     // better, if you want.
     private static int[] greedyColoring(Graph G)
     {
-        System.out.println("didnt find bipartite");
         int V = G.V();
         assert V >= 1;
         // This will be our coloring array.
@@ -320,11 +319,11 @@ public class GraphColoring
         int V = G.V();
         int oldMaxColor = maxColor;
 
-        /*if(!alreadyTested)
+        if(!alreadyTested)
         {
             testVariousApproaches(secs/4);
             alreadyTested = true;
-        }*/
+        }
         
         // we want to do greedy algorithm on vertices ordered according to their
         // degree at least once 
@@ -337,12 +336,10 @@ public class GraphColoring
             long degreeOrderStart = System.currentTimeMillis();
             
             int[] res = welshPowell(G);
-            System.out.println("GreedyColoring took " + (System.currentTimeMillis() - degreeOrderStart) );
             alreadyDegreeOrderColored = true;
 
             if (maxColor < oldMaxColor)
             {
-                System.out.println("welsh found better!!! " + maxColor);
                 this.color = res;
                 return true;
             }
@@ -364,10 +361,8 @@ public class GraphColoring
 
             int[] res = greedyNeighborOrdered(G);
             neighborRankedAttemptCount++;
-            System.out.println("neighborRankColoring took " + (System.currentTimeMillis() - neighborRankedStart) );
             if (maxColor < oldMaxColor)
             {
-                System.out.println("neighbor ordered found better!");
                 this.color = res;
                 return true;
             }
@@ -383,13 +378,10 @@ public class GraphColoring
             shuffledTiesAttemptCount++;
             if (maxColor < oldMaxColor)
             {
-                System.out.println("Shuffled ties found better! at attempt " + shuffledTiesAttemptCount);
                 this.color = res;
                 return true;
             }
         }
-
-        System.out.println("shuffled tries attempt count: " + shuffledTiesAttemptCount);
 
 
         int[] shuffleTranslationArray = new int[G.V()];
@@ -414,13 +406,10 @@ public class GraphColoring
             vanillaShuffledAttemptCount++;
             if (maxColor < oldMaxColor)
             {
-                System.out.println("shuffled vanilla found better at attempt: " + vanillaShuffledAttemptCount);
                 this.color = betterColor;
                 return true;
             }
         }
-
-        System.out.println("exiting after: " + vanillaShuffledAttemptCount + " vanilla shuffled attempts");
         return false;
     }
 
