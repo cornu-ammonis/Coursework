@@ -66,6 +66,7 @@ public class GraphColoring
     private int shuffledTiesAttemptCount = 0;
     private int vanillaShuffledAttemptCount = 0;
     private int neighborRankedAttemptCount = 0;
+    private int numberOfDegreeTies = 0;
 
     // Accessor methods:
     public Graph graph() { return G; }
@@ -91,9 +92,18 @@ public class GraphColoring
         {
             maxColor = Integer.MAX_VALUE;
             this.color = welshPowell(G);
+
+            for(int i = 1; i < G.V(); i++)
+            {
+                if (vertexDegrees[i-1].degree == vertexDegrees[i].degree)
+                    numberOfDegreeTies++;
+                if (numberOfDegreeTies > 100)
+                    break;
+            }
         }
         else
             System.out.println("found bipartite!");
+
         // TODO: if G is bipartite, then you should find a 2-coloring
         // here in the constructor.
     }
@@ -612,6 +622,104 @@ public class GraphColoring
 
 
     // inspired by http://mrsleblancsmath.pbworks.com/w/file/fetch/46119304/vertex%20coloring%20algorithm.pdf
+    public int[] welshPowellShuffled(Graph G)
+    {
+        if (vertexDegrees == null)
+            createDegreeOrderedArray(G);
+
+        int V = G.V();
+
+        //so that we can skip vertices after coloring them
+        boolean[] alreadyColored = new boolean[V];
+        int[] color = new int[V]; //tmp array of colorings
+        int coloredCount = 0; //so we know when we're done
+        int currentColor = 1; //each loop will use the next color
+        while (coloredCount < V)
+        {
+            //if a vertex is adjascent to a vertex we colored on this loop, we 
+            //cant color it on this loop
+            boolean[] coloredThisLoop = new boolean[V];
+
+
+            //visit vertices in descending order of degree
+            for (int i = V-1; i >= 0; i--)
+            {
+                int v = vertexDegrees[i].vertex;
+                if (alreadyColored[v]) continue;
+
+                if (i == 0 || vertexDegrees[i-1].degree != vertexDegrees[i].degree)
+                {
+                    boolean canColor = true;
+
+                    // see if we colored any of its neighbors on this loop
+                    for (int n : G.adj(v))
+                        if (coloredThisLoop[n])
+                        {
+                            canColor = false;
+                            break;
+                        }
+
+                    //if none of its neighbors have been colored this loop
+                    if (canColor)
+                    {
+                        color[v] = currentColor;
+                        alreadyColored[v] = true;
+                        coloredThisLoop[v] = true;
+                        coloredCount++;
+                    }
+                }
+                else 
+                {
+                    ArrayList<Integer> sameDegree = new ArrayList<Integer>();
+                    sameDegree.add(vertexDegrees[i].vertex);
+
+                    while(i > 0 && vertexDegrees[i].degree == vertexDegrees[i-1].degree)
+                    {
+                        i--;
+                        sameDegree.add(vertexDegrees[i].vertex);
+                    }
+
+                    Collections.shuffle(sameDegree);
+
+                    for ( int ver : sameDegree)
+                    {
+                        if (alreadyColored[ver]) continue;
+
+                        boolean canColor = true;
+
+                        //check neighbors
+                        for (int n: G.adj(ver))
+                        {
+                            if(coloredThisLoop[n])
+                            {
+                                canColor = false;
+                                break;
+                            }
+                        }
+
+                        if (canColor)
+                        {
+                            color[ver] = currentColor;
+                            alreadyColored[ver] = true;
+                            coloredThisLoop[ver] = true;
+                            coloredCount++;
+                        }
+
+                    }
+                }
+                
+            }
+            currentColor++; // use next color for next loop
+        }
+
+        if ((currentColor - 1) < maxColor)
+            maxColor = currentColor - 1;
+
+        return color;
+    }
+
+
+    // inspired by http://mrsleblancsmath.pbworks.com/w/file/fetch/46119304/vertex%20coloring%20algorithm.pdf
     public int[] welshPowell(Graph G)
     {
         if (vertexDegrees == null)
@@ -664,7 +772,6 @@ public class GraphColoring
         return color;
     }
 
-
     public void testVariousApproaches(double ms)
     {
         long globalStart = System.currentTimeMillis();
@@ -673,10 +780,21 @@ public class GraphColoring
         int maxColorTmp = maxColor;
 
         maxColor = Integer.MAX_VALUE;
-        int[] res = welshPowell(G);
+        int[] res = welshPowellShuffled(G);
         System.out.println("welsh got " + maxColor + " and took " + (System.currentTimeMillis() - globalStart));
+        int wpBest = maxColor;
+        int wpTriesCount = 1;
+        while ((System.currentTimeMillis() - globalStart) < ms/4)
+        {
+            wpTriesCount++;
+            res = welshPowellShuffled(G);
 
-
+            if (maxColor < wpBest)
+            {
+                System.out.println("shuffled welsh got " + maxColor + " on try " + wpTriesCount);
+                wpBest = maxColor;
+            }
+        }
 
         maxColor = Integer.MAX_VALUE;
 
@@ -825,11 +943,7 @@ public class GraphColoring
     // of the erdos-renyi graph and the probability of each edge
     public static void main(String[] args)
     {
-        /*if (args.length == 0) {
-            System.err.println
-                ("Usage: java GraphColoring [NUMBERGRAPHS] [TIMELIMIT]");
-            System.exit(1);
-        }*/
+        
 
 
         int numberGraphs = 5; //default
@@ -860,9 +974,6 @@ public class GraphColoring
             System.out.println("starting test:");
             coloring.testVariousApproaches(secs*1000); 
         }
-
-
-
     }
 
     public static class VertexDegree implements Comparable<VertexDegree> 
