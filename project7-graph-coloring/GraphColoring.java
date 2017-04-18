@@ -650,6 +650,59 @@ public class GraphColoring
         return color;
     }
 
+    // inspired by http://mrsleblancsmath.pbworks.com/w/file/fetch/46119304/vertex%20coloring%20algorithm.pdf
+    public int[] welshPowell(Graph G)
+    {
+        if (vertexDegrees == null)
+            createDegreeOrderedArray(G);
+
+        int V = G.V();
+
+        //so that we can skip vertices after coloring them
+        boolean[] alreadyColored = new boolean[V];
+        int[] color = new int[V]; //tmp array of colorings
+        int coloredCount = 0; //so we know when we're done
+        int currentColor = 1; //each loop will use the next color
+        while (coloredCount < V)
+        {
+            //if a vertex is adjascent to a vertex we colored on this loop, we 
+            //cant color it on this loop
+            boolean[] coloredThisLoop = new boolean[V];
+
+
+            //visit vertices in descending order of degree
+            for (int i = V-1; i >= 0; i--)
+            {
+                int v = vertexDegrees[i].vertex;
+                if (alreadyColored[v]) continue;
+                boolean canColor = true;
+
+                // see if we colored any of its neighbors on this loop
+                for (int n : G.adj(v))
+                    if (coloredThisLoop[n])
+                    {
+                        canColor = false;
+                        break;
+                    }
+
+                //if none of its neighbors have been colored this loop
+                if (canColor)
+                {
+                    color[v] = currentColor;
+                    alreadyColored[v] = true;
+                    coloredThisLoop[v] = true;
+                    coloredCount++;
+                }
+            }
+            currentColor++; // use next color for next loop
+        }
+
+        if ((currentColor - 1) < maxColor)
+            maxColor = currentColor - 1;
+
+        return color;
+    }
+
 
     // inspired by http://mrsleblancsmath.pbworks.com/w/file/fetch/46119304/vertex%20coloring%20algorithm.pdf
     public int[] welshPowellShuffled(Graph G)
@@ -738,60 +791,6 @@ public class GraphColoring
                     }
                 }
                 
-            }
-            currentColor++; // use next color for next loop
-        }
-
-        if ((currentColor - 1) < maxColor)
-            maxColor = currentColor - 1;
-
-        return color;
-    }
-
-
-    // inspired by http://mrsleblancsmath.pbworks.com/w/file/fetch/46119304/vertex%20coloring%20algorithm.pdf
-    public int[] welshPowell(Graph G)
-    {
-        if (vertexDegrees == null)
-            createDegreeOrderedArray(G);
-
-        int V = G.V();
-
-        //so that we can skip vertices after coloring them
-        boolean[] alreadyColored = new boolean[V];
-        int[] color = new int[V]; //tmp array of colorings
-        int coloredCount = 0; //so we know when we're done
-        int currentColor = 1; //each loop will use the next color
-        while (coloredCount < V)
-        {
-            //if a vertex is adjascent to a vertex we colored on this loop, we 
-            //cant color it on this loop
-            boolean[] coloredThisLoop = new boolean[V];
-
-
-            //visit vertices in descending order of degree
-            for (int i = V-1; i >= 0; i--)
-            {
-                int v = vertexDegrees[i].vertex;
-                if (alreadyColored[v]) continue;
-                boolean canColor = true;
-
-                // see if we colored any of its neighbors on this loop
-                for (int n : G.adj(v))
-                    if (coloredThisLoop[n])
-                    {
-                        canColor = false;
-                        break;
-                    }
-
-                //if none of its neighbors have been colored this loop
-                if (canColor)
-                {
-                    color[v] = currentColor;
-                    alreadyColored[v] = true;
-                    coloredThisLoop[v] = true;
-                    coloredCount++;
-                }
             }
             currentColor++; // use next color for next loop
         }
