@@ -284,10 +284,15 @@ public class GraphColoring
         }    
     }
 
+    // initializes the field vertexDegrees by creating an array
+    // of VertexDegree objects (which has a vertex and a degree property)
+    // and then sorting the array by degree
     public void createDegreeOrderedArray(Graph G)
     {
         this.vertexDegrees = new VertexDegree[G.V()];
 
+        // for each vertex, create a VertexDegree where vertex is v and 
+        // degree is G.degree(v)
         for (int v = 0; v < G.V(); v++)
             this.vertexDegrees[v] = new VertexDegree(v, G.degree(v));
 
