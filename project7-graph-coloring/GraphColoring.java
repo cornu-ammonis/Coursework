@@ -518,6 +518,13 @@ public class GraphColoring
 
     }
 
+
+    // visits vertices and greedy colors in order from highest degree
+    // to lowest degree. if there are ties-vertices with the same degree-
+    // (significant number of ties are present in virtually every graph)
+    // then those tied vertices are visited in random order. this permits
+    // us to repeatedly run this method much like randomGreedy, except
+    // often with better results 
     private int[] greedyDegreeOrderedShuffledTies(Graph G)
     {
         int V = G.V();
@@ -533,12 +540,18 @@ public class GraphColoring
         // In loop, we keep track of the maximum color used so far.
         int maxColor = 0;
 
+
+        // loops through vertices in descending order of degree
+        // NOTE: logic in the loop may update i if there are ties
         for (int i = G.V()-1; i >=0; i--)
         {
+            // if we are at the end of array OR there is not a degree tie,
+            // proceed normally
             if (i == 0 || arr[i].degree != arr[i-1].degree)
             {
                 int v = arr[i].vertex;
                 
+                //tracks which colors are taken by this vertex's neighbors
                 boolean[] taken = new boolean[maxColor+1];
                 for (int u: G.adj(v))
                     taken[color[u]] = true;
@@ -551,18 +564,28 @@ public class GraphColoring
                 if (c > maxColor)
                     maxColor = c;
             }
-            else
+            else // there is a degree tie; shuffle
             {
-                degreeTiesExist = true;
+                degreeTiesExist = true; //tracks for testing output
+
+                //arraylist of vertices with the same degre (at this level; not all of them)
                 ArrayList<Integer> sameDegree = new ArrayList<Integer>();
                 sameDegree.add(arr[i].vertex);
+
+                // takes the vertices and deincrements i until we reach a vertex with a 
+                // different degree
                 while ( i > 0 && arr[i].degree == arr[i-1].degree)
                 {
                     i--;
                     sameDegree.add(arr[i].vertex);
                 }
+
+                // shuffle ! this permits multiple trials of this algorithm
                 Collections.shuffle(sameDegree);
 
+
+                // now apply the normal greedyColoring logic to the 
+                // randomly ordered list of vertices with the same degree 
                 for (int v : sameDegree)
                 {
                     boolean[] taken = new boolean[maxColor+1];
@@ -576,10 +599,10 @@ public class GraphColoring
                     // Maybe we started using a new color at v.
                     if (c > maxColor)
                         maxColor = c;
-                }
-            }
+                } // end loop through same degrees
+            } // end else (tie found) condition
             
-        }
+        } // end loop through all vertices
 
         if (this.maxColor > maxColor)
             this.maxColor = maxColor;
