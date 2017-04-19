@@ -323,21 +323,25 @@ public class GraphColoring
         int res[];
         int oldMaxColor = this.maxColor;
         boolean foundBetterColoring = false;
-        double fractionOfTimeForDegreeOrdered;
-        if (numberOfDegreeTies > 100)
-            fractionOfTimeForDegreeOrdered = .5;
-        else if (numberOfDegreeTies == 0)
-            fractionOfTimeForDegreeOrdered  = 0.0;
-        else if (numberOfDegreeTies < 10)
-            fractionOfTimeForDegreeOrdered = .01;
-        else
-            fractionOfTimeForDegreeOrdered = .25;
+        double timeForDegreeOrdered;
+        
+        // assigns fraction of time to spend on running degreeOrderedShuffled
+        // based on the number of degree ties we found 
+        if (numberOfDegreeTies > 100) timeForDegreeOrdered = .5;
+        else if (numberOfDegreeTies == 0) timeForDegreeOrdered  = 0.0;
+        else if (numberOfDegreeTies < 10) timeForDegreeOrdered = .01;
+        else timeForDegreeOrdered = .25;
 
+        // put all loops in their own loop, because there is a chance 
+        // all inner loops could terminate with extra time so we restart
         while (System.currentTimeMillis() - start < secs)
         {
-           double loopSecs = secs - (System.currentTimeMillis() - start);
-           long loopStart = System.currentTimeMillis();
-            while (System.currentTimeMillis() - loopStart < (fractionOfTimeForDegreeOrdered*loopSecs))
+            // so that loop timing logic will work on subsequent outer loops
+            double loopSecs = secs - (System.currentTimeMillis() - start);
+            long loopStart = System.currentTimeMillis();
+            
+            // runs degreeOrderedShuffled for a fraction of total time
+            while (System.currentTimeMillis() - loopStart < (timeForDegreeOrdered*loopSecs))
             {
                 res = greedyDegreeOrderedShuffledTies(G);
                 if (maxColor < oldMaxColor)
@@ -347,6 +351,7 @@ public class GraphColoring
                 }
             }
 
+            // runs regular random greedy for (most of) the rest of the time
             while (System.currentTimeMillis() - loopStart < (.8 * loopSecs))
             {
                 res = greedyColoringShuffled(G, null);
@@ -358,6 +363,11 @@ public class GraphColoring
             }
 
             System.out.println("best pre wps is " + maxColor);
+
+            // runs WP shuffled for some time
+            // TODO: this doesnt tend to find anything better than degreeOrderedShuffled,
+            // and its slower,  so we should before getting here do someting else 
+            // like neighbor ordered
             while (System.currentTimeMillis() - start < (.99*loopSecs))
             {
                 res = welshPowellShuffled(G);
@@ -640,12 +650,12 @@ public class GraphColoring
             {
                 degreeTiesExist = true; //tracks for testing output
 
-                //arraylist of vertices with the same degre (at this level; not all of them)
+                //vertices with the same degre (at this level)
                 ArrayList<Integer> sameDegree = new ArrayList<Integer>();
                 sameDegree.add(arr[i].vertex);
 
-                // takes the vertices and deincrements i until we reach a vertex with a 
-                // different degree
+                // takes the vertices and deincrements i until we 
+                // reach a vertex with a different degree
                 while ( i > 0 && arr[i].degree == arr[i-1].degree)
                 {
                     i--;
