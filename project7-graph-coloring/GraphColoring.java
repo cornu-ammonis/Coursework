@@ -95,7 +95,13 @@ public class GraphColoring
         // twoColor suffices
         if (!twoColor(G))
         {
+            // sets to max value because welshPowel will update
+            // maxColor if it finds a lower coloring
             maxColor = Integer.MAX_VALUE;
+            
+            // essentially greedy coloring in order of degree, but slightly
+            // more complex and less time efficient 
+            // (but usuall better on first try)
             this.color = welshPowell(G);
 
             for(int i = 1; i < G.V(); i++)
@@ -106,8 +112,7 @@ public class GraphColoring
                     break;
             }
         }
-        else // two coloring worked
-            System.out.println("found bipartite!");
+        // otherwise two coloring worked, it's bipartite and we're done
     }
 
 
@@ -317,119 +322,73 @@ public class GraphColoring
 
     public boolean tryImprove(double secs)
     {
-        // TODO: implement some graph coloring heuristic here.
-        // Minimal good enough: do repeated trials of greedy-coloring,
-        // each time with a random vertex order.  If you find a better
-        // coloring (better than your previous best), return true.  Or
-        // else if you run out of time, return false.
 
-        // Note you can use System.currentTimeMillis() to estimate how
-        // much time you have used.  For an example of its use, see
-        // the code in main.
-
-        // As given, this does nothing at all, it just stops early.
-
-        // convert to ms because why bother with seconds
         long start = System.currentTimeMillis();
+        // convert secs to ms to avoid constantly converting wrt currentTimeMillis()
         secs = secs*1000;
-        boolean foundBetterColoring = false;
-        int V = G.V();
-        int oldMaxColor = maxColor;
-
-        if(!alreadyTested)
-        {
-            testVariousApproaches(secs/4);
-            alreadyTested = true;
-        }
+        int res[];
+        int oldMaxColor = this.maxColor;
+        double timeForDegreeOrdered;
         
-        // we want to do greedy algorithm on vertices ordered according to their
-        // degree at least once 
-        // we also go ahead and populate the array of VertexDegree so taht 
-        // we dont have to recreate it on subsequent runs (if their are ties
-        // we will run this multiple times with shuffled order for tied degrees)
-        if (!alreadyDegreeOrderColored)
-        {
-            // start timer
-            long degreeOrderStart = System.currentTimeMillis();
-            
-            int[] res = welshPowell(G);
-            alreadyDegreeOrderColored = true;
+        // assigns fraction of time to spend on running degreeOrderedShuffled
+        // based on the number of degree ties we found 
+        if (numberOfDegreeTies > 100) timeForDegreeOrdered = .5;
+        else if (numberOfDegreeTies == 0) timeForDegreeOrdered  = 0.0;
+        else if (numberOfDegreeTies < 10) timeForDegreeOrdered = .01;
+        else timeForDegreeOrdered = .25;
 
-            if (maxColor < oldMaxColor)
-            {
-                this.color = res;
-                return true;
-            }
-        }
-
-
-        // tries greedy in order descending order of teh sum of a vertex's neighbors degrees
-        if (System.currentTimeMillis() - start < secs && neighborRankedAttemptCount == 0)
-        {
-            long neighborRankedStart = System.currentTimeMillis();
-            oldMaxColor = maxColor;
-
-            //initialize verticesNeighborRanked
-            verticesNeighborRanked = new VertexNeighborRanked[V];
-            for(int i = 0; i < V; i++)
-                verticesNeighborRanked[i] = new VertexNeighborRanked(i, G);
-
-            Arrays.sort(verticesNeighborRanked);
-
-            int[] res = greedyNeighborOrdered(G);
-            neighborRankedAttemptCount++;
-            if (maxColor < oldMaxColor)
-            {
-                this.color = res;
-                return true;
-            }
-        }
-
-        // repeatedly tries greedyDegreeOrdered with shuffled ties 
-        // unless thare are no ties or we run out of time. it tries 10 times, which i chose 
-        // completely arbitrarily (TODO: this number could potentially be raised or lowered)
-        while (System.currentTimeMillis() - start < secs && shuffledTiesAttemptCount < 10
-            && degreeTiesExist)
-        {
-            int[] res = greedyDegreeOrderedShuffledTies(G);
-            shuffledTiesAttemptCount++;
-            if (maxColor < oldMaxColor)
-            {
-                this.color = res;
-                return true;
-            }
-        }
-
-
-        int[] shuffleTranslationArray = new int[G.V()];
-
-        for (int i = 0; i < V; i++)
-            shuffleTranslationArray[i] = i;
-        // keeps trying vanilla greedy with shuffled vertex order until 
-        // runs out of time
+        // put all loops in their own loop, because there is a chance 
+        // all inner loops could terminate with extra time so we restart
         while (System.currentTimeMillis() - start < secs)
         {
-            // this array allows us to associate sequential indexes 0 through V-1
-            // with one and only one random vertex 
-            // this is accomplished by assigning values i {0 through V - 1}
-            // to index position i (arr[i] = i) , and then shuffling the array randomly.
-            // the only modiication then required to the greedy implementation 
-            // is to loop i from 0 to V -1, and say v = shuffleTranslationArray[i]
-            // this will in effect visit each vertex once in a random order. 
-
-            shuffleArray(shuffleTranslationArray);
-
-            int[] betterColor = greedyColoringShuffled(G, shuffleTranslationArray);
-            vanillaShuffledAttemptCount++;
-            if (maxColor < oldMaxColor)
+            // so that loop timing logic will work on subsequent outer loops
+            double loopSecs = secs - (System.currentTimeMillis() - start);
+            long loopStart = System.currentTimeMillis();
+            
+            // runs degreeOrderedShuffled for a fraction of total time
+            while (System.currentTimeMillis() - loopStart < (timeForDegreeOrdered*loopSecs))
             {
-                this.color = betterColor;
-                return true;
+                res = greedyDegreeOrderedShuffledTies(G);
+                if (maxColor < oldMaxColor)
+                {
+                    this.color = res;
+                    return true;
+                }
+            }
+
+            // runs regular random greedy for (most of) the rest of the time
+            while (System.currentTimeMillis() - loopStart < (.8 * loopSecs))
+            {
+                res = greedyColoringShuffled(G, null);
+                if (maxColor < oldMaxColor)
+                {
+                    this.color = res;
+                    return true;
+                }
+            }
+
+            System.out.println("best pre wps is " + maxColor);
+
+            // runs WP shuffled for some time
+            // TODO: this doesnt tend to find anything better than degreeOrderedShuffled,
+            // and its slower,  so we should before getting here do someting else 
+            // like neighbor ordered
+            while (System.currentTimeMillis() - start < (.99*loopSecs))
+            {
+                res = welshPowellShuffled(G);
+
+                if(maxColor < oldMaxColor)
+                {
+                    this.color = res;
+                    return true;
+                }
             }
         }
-        return false;
-    }
 
+        System.out.println("final best is " + maxColor);
+        return false; // give up :C 
+
+    }
 
     // implements greedy coloring with a random order using a translation array - 
     // see extensive notes in tryImprove
@@ -441,11 +400,21 @@ public class GraphColoring
 
     // @param shuffleTranslation - an array of size V where values are in range 
     //     0 - V-1. shuffleTranslation[i] = some vertex v, where the relationship
-    //     between i and v has been randomized. 
+    //     between i and v has been randomized.  optional - if null, generated in method
     private int[] greedyColoringShuffled(Graph G, int[] shuffleTranslation)
     {
         int V = G.V();
         assert V >= 1;
+
+        if (shuffleTranslation == null)
+        {
+            shuffleTranslation = new int[V];
+            for (int i = 0; i < V; i++)
+                shuffleTranslation[i] = i;
+
+            shuffleArray(shuffleTranslation);
+        }
+
         // This will be our coloring array.
         int[] color = new int[V];
         // In loop, we keep track of the maximum color used so far.
@@ -568,12 +537,12 @@ public class GraphColoring
             {
                 degreeTiesExist = true; //tracks for testing output
 
-                //arraylist of vertices with the same degre (at this level; not all of them)
+                //vertices with the same degre (at this level)
                 ArrayList<Integer> sameDegree = new ArrayList<Integer>();
                 sameDegree.add(arr[i].vertex);
 
-                // takes the vertices and deincrements i until we reach a vertex with a 
-                // different degree
+                // takes the vertices and deincrements i until we 
+                // reach a vertex with a different degree
                 while ( i > 0 && arr[i].degree == arr[i-1].degree)
                 {
                     i--;
@@ -730,7 +699,8 @@ public class GraphColoring
                 int v = vertexDegrees[i].vertex;
                 if (alreadyColored[v]) continue;
 
-                if (i == 0 || vertexDegrees[i-1].degree != vertexDegrees[i].degree)
+                if (i == 0 || 
+                    vertexDegrees[i-1].degree != vertexDegrees[i].degree)
                 {
                     boolean canColor = true;
 
@@ -756,7 +726,8 @@ public class GraphColoring
                     ArrayList<Integer> sameDegree = new ArrayList<Integer>();
                     sameDegree.add(vertexDegrees[i].vertex);
 
-                    while(i > 0 && vertexDegrees[i].degree == vertexDegrees[i-1].degree)
+                    while(i > 0 && 
+                        vertexDegrees[i].degree == vertexDegrees[i-1].degree)
                     {
                         i--;
                         sameDegree.add(vertexDegrees[i].vertex);
@@ -824,7 +795,7 @@ public class GraphColoring
                 wpBest = maxColor;
             }
         }
-
+        System.out.println("tried wp shuffled " + wpTriesCount);
         maxColor = Integer.MAX_VALUE;
 
         long shuffledStart = System.currentTimeMillis();
@@ -970,7 +941,7 @@ public class GraphColoring
     // this version of main takes two arguments, the number of graphs to try, and the amount 
     // of time to try them. optional third and fourth arguments correspond to the size
     // of the erdos-renyi graph and the probability of each edge
-    public static void main(String[] args)
+    /*public static void main(String[] args)
     {
         
 
@@ -1003,7 +974,7 @@ public class GraphColoring
             System.out.println("starting test:");
             coloring.testVariousApproaches(secs*1000); 
         }
-    }
+    }*/
 
     public static class VertexDegree implements Comparable<VertexDegree> 
     {
