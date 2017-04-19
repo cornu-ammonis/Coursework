@@ -315,6 +315,43 @@ public class GraphColoring
     // there is a risk that our output will be ignored: our program
     // may be killed externally!
 
+    public boolean tryImprove(double secs)
+    {
+
+        long start = System.currentTimeMillis();
+        // convert secs to ms to avoid constantly converting wrt currentTimeMillis()
+        secs = secs*1000;
+        int res[];
+        int oldMaxColor = this.maxColor;
+        boolean foundBetterColoring = false;
+        double fractionOfTimeForDegreeOrdered;
+        if (numberOfDegreeTies > 100)
+            fractionOfTimeForDegreeOrdered = .5;
+        else if (numberOfDegreeTies == 0)
+            fractionOfTimeForDegreeOrdered  = 0.0;
+        else if (numberOfDegreeTies < 10)
+            fractionOfTimeForDegreeOrdered = .01;
+        else
+            fractionOfTimeForDegreeOrdered = .25;
+
+        //reset start appropriately
+        secs -= System.currentTimeMillis() - start;
+        start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < secs)
+        {
+            while (System.currentTimeMillis() - start < (fractionOfTimeForDegreeOrdered*secs))
+            {
+                res = greedyDegreeOrderedShuffledTies(G);
+                if (maxColor < oldMaxColor)
+                {
+                    this.color = res;
+                    return true;
+                }
+            }
+        }
+
+    }
+
     /* TODO: DELETE
     old try improve kept for reference temporarily
     public boolean tryImprove(double secs)
@@ -456,7 +493,6 @@ public class GraphColoring
                 shuffleTranslation[i] = i;
 
             shuffleArray(shuffleTranslation);
-            shuffle
         }
 
         // This will be our coloring array.
@@ -837,7 +873,7 @@ public class GraphColoring
                 wpBest = maxColor;
             }
         }
-
+        System.out.println("tried wp shuffled " + wpTriesCount);
         maxColor = Integer.MAX_VALUE;
 
         long shuffledStart = System.currentTimeMillis();
