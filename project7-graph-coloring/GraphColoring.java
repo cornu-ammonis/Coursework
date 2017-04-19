@@ -334,12 +334,11 @@ public class GraphColoring
         else
             fractionOfTimeForDegreeOrdered = .25;
 
-        //reset start appropriately
-        secs -= System.currentTimeMillis() - start;
-        start = System.currentTimeMillis();
         while (System.currentTimeMillis() - start < secs)
         {
-            while (System.currentTimeMillis() - start < (fractionOfTimeForDegreeOrdered*secs))
+           double loopSecs = secs - (System.currentTimeMillis() - start);
+           long loopStart = System.currentTimeMillis();
+            while (System.currentTimeMillis() - loopStart < (fractionOfTimeForDegreeOrdered*loopSecs))
             {
                 res = greedyDegreeOrderedShuffledTies(G);
                 if (maxColor < oldMaxColor)
@@ -348,7 +347,32 @@ public class GraphColoring
                     return true;
                 }
             }
+
+            while (System.currentTimeMillis() - loopStart < (.8 * loopSecs))
+            {
+                res = greedyColoringShuffled(G, null);
+                if (maxColor < oldMaxColor)
+                {
+                    this.color = res;
+                    return true;
+                }
+            }
+
+            System.out.println("best pre wps is " + maxColor);
+            while (System.currentTimeMillis() - start < (.99*loopSecs))
+            {
+                res = welshPowellShuffled(G);
+
+                if(maxColor < oldMaxColor)
+                {
+                    this.color = res;
+                    return true;
+                }
+            }
         }
+
+        System.out.println("final best is " + maxColor);
+        return false;
 
     }
 
