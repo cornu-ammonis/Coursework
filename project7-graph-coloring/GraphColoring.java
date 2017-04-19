@@ -95,7 +95,13 @@ public class GraphColoring
         // twoColor suffices
         if (!twoColor(G))
         {
+            // sets to max value because welshPowel will update
+            // maxColor if it finds a lower coloring
             maxColor = Integer.MAX_VALUE;
+            
+            // essentially greedy coloring in order of degree, but slightly
+            // more complex and less time efficient 
+            // (but usuall better on first try)
             this.color = welshPowell(G);
 
             for(int i = 1; i < G.V(); i++)
@@ -380,7 +386,7 @@ public class GraphColoring
         }
 
         System.out.println("final best is " + maxColor);
-        return false;
+        return false; // give up :C 
 
     }
 
