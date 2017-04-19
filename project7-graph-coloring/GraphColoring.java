@@ -322,7 +322,6 @@ public class GraphColoring
         secs = secs*1000;
         int res[];
         int oldMaxColor = this.maxColor;
-        boolean foundBetterColoring = false;
         double timeForDegreeOrdered;
         
         // assigns fraction of time to spend on running degreeOrderedShuffled
@@ -812,7 +811,8 @@ public class GraphColoring
                 int v = vertexDegrees[i].vertex;
                 if (alreadyColored[v]) continue;
 
-                if (i == 0 || vertexDegrees[i-1].degree != vertexDegrees[i].degree)
+                if (i == 0 || 
+                    vertexDegrees[i-1].degree != vertexDegrees[i].degree)
                 {
                     boolean canColor = true;
 
@@ -838,7 +838,8 @@ public class GraphColoring
                     ArrayList<Integer> sameDegree = new ArrayList<Integer>();
                     sameDegree.add(vertexDegrees[i].vertex);
 
-                    while(i > 0 && vertexDegrees[i].degree == vertexDegrees[i-1].degree)
+                    while(i > 0 && 
+                        vertexDegrees[i].degree == vertexDegrees[i-1].degree)
                     {
                         i--;
                         sameDegree.add(vertexDegrees[i].vertex);
