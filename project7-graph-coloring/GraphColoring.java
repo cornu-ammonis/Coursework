@@ -315,6 +315,8 @@ public class GraphColoring
     // there is a risk that our output will be ignored: our program
     // may be killed externally!
 
+    /* TODO: DELETE
+    old try improve kept for reference temporarily
     public boolean tryImprove(double secs)
     {
         // TODO: implement some graph coloring heuristic here.
@@ -429,7 +431,7 @@ public class GraphColoring
         }
         return false;
     }
-
+*/
 
     // implements greedy coloring with a random order using a translation array - 
     // see extensive notes in tryImprove
@@ -441,11 +443,22 @@ public class GraphColoring
 
     // @param shuffleTranslation - an array of size V where values are in range 
     //     0 - V-1. shuffleTranslation[i] = some vertex v, where the relationship
-    //     between i and v has been randomized. 
+    //     between i and v has been randomized.  optional - if null, generated in method
     private int[] greedyColoringShuffled(Graph G, int[] shuffleTranslation)
     {
         int V = G.V();
         assert V >= 1;
+
+        if (shuffleTranslation == null)
+        {
+            shuffleTranslation = new int[V];
+            for (int i = 0; i < V; i++)
+                shuffleTranslation[i] = i;
+
+            shuffleArray(shuffleTranslation);
+            shuffle
+        }
+
         // This will be our coloring array.
         int[] color = new int[V];
         // In loop, we keep track of the maximum color used so far.
