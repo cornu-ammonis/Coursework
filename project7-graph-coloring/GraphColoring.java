@@ -106,8 +106,7 @@ public class GraphColoring
                     break;
             }
         }
-        else // two coloring worked
-            System.out.println("found bipartite!");
+        // otherwise two coloring worked, it's bipartite and we're done
     }
 
 
@@ -1043,7 +1042,7 @@ public class GraphColoring
     // this version of main takes two arguments, the number of graphs to try, and the amount 
     // of time to try them. optional third and fourth arguments correspond to the size
     // of the erdos-renyi graph and the probability of each edge
-    public static void main(String[] args)
+    /*public static void main(String[] args)
     {
         
 
@@ -1076,7 +1075,7 @@ public class GraphColoring
             System.out.println("starting test:");
             coloring.testVariousApproaches(secs*1000); 
         }
-    }
+    }*/
 
     public static class VertexDegree implements Comparable<VertexDegree> 
     {
