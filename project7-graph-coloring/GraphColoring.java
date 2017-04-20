@@ -15,6 +15,15 @@ __ANDREW C JONES 4/13/17 __
 // If you use documents or websites (beyond our textbook) for ideas,
 // you should list those here.  Your code should be your own.
 
+//                      *** SOURCES USED ***
+// 
+// http://stackoverflow.com/questions/1519736/random-shuffling-of-an-array/21454317#21454317
+// http://mrsleblancsmath.pbworks.com/w/file/fetch/46119304/vertex%20coloring%20algorithm.pdf
+// https://en.wikipedia.org/wiki/Graph_coloring
+// https://en.wikipedia.org/wiki/Greedy_coloring
+
+
+
 // The only methods you must edit are the constructor and tryImprove,
 // but you are welcome to redesign other parts of the class too, if
 // you like.  When we test your code on Gimle, we will use a top-level
