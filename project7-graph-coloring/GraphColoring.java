@@ -367,7 +367,7 @@ public class GraphColoring
                 }
             }
 
-            System.out.println("best pre wps is " + maxColor);
+            //System.out.println("best pre wps is " + maxColor);
 
             // runs WP shuffled for some time
             // TODO: this doesnt tend to find anything better than degreeOrderedShuffled,
@@ -385,11 +385,114 @@ public class GraphColoring
             }
         }
 
-        System.out.println("final best is " + maxColor);
+        System.out.println("final best for tryImprove A is " + maxColor + " and " + timeForDegreeOrdered + " for DO");
         return false; // give up :C 
 
     }
 
+
+    // try improve, except we devote more time to greedyDegreeShuffled and none to WP shuffled
+    public boolean tryImproveB(double secs)
+    {
+
+        long start = System.currentTimeMillis();
+        // convert secs to ms to avoid constantly converting wrt currentTimeMillis()
+        secs = secs*1000;
+        int res[];
+        int oldMaxColor = this.maxColor;
+        double timeForDegreeOrdered;
+        
+        // assigns fraction of time to spend on running degreeOrderedShuffled
+        // based on the number of degree ties we found 
+        if (numberOfDegreeTies > 100) timeForDegreeOrdered = .8;
+        else if (numberOfDegreeTies == 0) timeForDegreeOrdered  = 0.0;
+        else if (numberOfDegreeTies < 10) timeForDegreeOrdered = .01;
+        else timeForDegreeOrdered = .25;
+
+        // put all loops in their own loop, because there is a chance 
+        // all inner loops could terminate with extra time so we restart
+        while (System.currentTimeMillis() - start < secs)
+        {
+            // so that loop timing logic will work on subsequent outer loops
+            double loopSecs = secs - (System.currentTimeMillis() - start);
+            long loopStart = System.currentTimeMillis();
+            
+            // runs degreeOrderedShuffled for a fraction of total time
+            while (System.currentTimeMillis() - loopStart < (timeForDegreeOrdered*loopSecs))
+            {
+                res = greedyDegreeOrderedShuffledTies(G);
+                if (maxColor < oldMaxColor)
+                {
+                    this.color = res;
+                    return true;
+                }
+            }
+
+            // runs regular random greedy for (most of) the rest of the time
+            while (System.currentTimeMillis() - loopStart < (.99 * loopSecs))
+            {
+                res = greedyColoringShuffled(G, null);
+                if (maxColor < oldMaxColor)
+                {
+                    this.color = res;
+                    return true;
+                }
+            }
+        }
+
+        System.out.println("final best for tryImprove B is " + maxColor + " and " + timeForDegreeOrdered + " for DO");
+        return false; // give up :C 
+
+    }
+
+    //tryImprove except we only run greedy Degree Ordered shuffled
+    public boolean tryImproveC(double secs)
+    {
+
+        long start = System.currentTimeMillis();
+        // convert secs to ms to avoid constantly converting wrt currentTimeMillis()
+        secs = secs*1000;
+        int res[];
+        int oldMaxColor = this.maxColor;
+
+   
+        res = greedyDegreeOrderedShuffledTies(G);
+        if (maxColor < oldMaxColor)
+        {
+            this.color = res;
+            return true;
+        }
+            
+
+        System.out.println("final best for tryImprove C is " + maxColor );
+        return false; // give up :C 
+
+    }
+
+
+    //tryImprove except we only run greedy shuffled
+    public boolean tryImproveD(double secs)
+    {
+
+        long start = System.currentTimeMillis();
+        // convert secs to ms to avoid constantly converting wrt currentTimeMillis()
+        secs = secs*1000;
+        int res[];
+        int oldMaxColor = this.maxColor;
+
+   
+        res = greedyColoringShuffled(G, null);
+        if (maxColor < oldMaxColor)
+        {
+            this.color = res;
+            return true;
+        }
+            
+
+        System.out.println("final best for tryImprove D is " + maxColor );
+        return false; // give up :C 
+
+    }
     // implements greedy coloring with a random order using a translation array - 
     // see extensive notes in tryImprove
     //
