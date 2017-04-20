@@ -487,6 +487,20 @@ public class GraphColoring
         }
         return false; // give up :C 
     }
+
+    public boolean tryImproveE(double secs)
+    {
+        long start = System.currentTimeMillis();
+        secs *= 1000;
+        int res[]
+        oldMaxColor = this.maxColor;
+
+        while (System.currentTimeMillis() - start < secs)
+        {
+
+        }
+    }
+
     // implements greedy coloring with a random order using a translation array - 
     // see extensive notes in tryImprove
     //
@@ -966,19 +980,23 @@ public class GraphColoring
 
     }
 
+
+    // TO DO - investigate to what extent it will be faster to not return 
+    // immediately upon finding a better solution, but ratehr to keep trying for some amount of time 
+    // TO DO - investigate to what extent starting at Integer.MAX_VALUE rather than init wp 
+    // changes things.
     public void testTryImproves(Graph G, double secsForEach)
     {
         this.maxColor = Integer.MAX_VALUE;
         //secsForEach *= 1000; //convert to ms for code simplicity
 
         long start = System.currentTimeMillis();
-
+        System.out.println(" ");
         while(System.currentTimeMillis() - start < secsForEach)
         {
             boolean res = tryImprove((secsForEach - (System.currentTimeMillis() - start))/1000);
         }
         System.out.println("final best for tryImprove A is " + maxColor);
-        System.out.println(" ");
 
         this.maxColor = Integer.MAX_VALUE;
         start = System.currentTimeMillis();
@@ -988,9 +1006,7 @@ public class GraphColoring
             boolean res = tryImproveB((secsForEach - (System.currentTimeMillis() - start))/1000);
         }
         System.out.println("final best for tryImprove B is " + maxColor);
-        System.out.println(" ");
-
-
+       
 
         this.maxColor = Integer.MAX_VALUE;
         start = System.currentTimeMillis();
@@ -1000,7 +1016,6 @@ public class GraphColoring
             boolean res = tryImproveC((secsForEach - (System.currentTimeMillis() - start))/1000);
         }
         System.out.println("final best for tryImprove C is " + maxColor);
-        System.out.println(" ");
 
         this.maxColor = Integer.MAX_VALUE;
         start = System.currentTimeMillis();
