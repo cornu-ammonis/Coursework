@@ -492,13 +492,38 @@ public class GraphColoring
     {
         long start = System.currentTimeMillis();
         secs *= 1000;
-        int res[]
-        oldMaxColor = this.maxColor;
-
-        while (System.currentTimeMillis() - start < secs)
+        int res[];
+        int[] betterRes;
+        int oldMaxColor = this.maxColor;
+        int oldestMaxColor = this.maxColor;
+        res = greedyNeighborOrdered(G);
+        betterRes = res;
+        while (System.currentTimeMillis() - start < (.97 * secs))
         {
-
+            res = greedyDegreeOrderedShuffledTies(G);
+            if (betterRes == null || this.maxColor < oldMaxColor)
+            {
+                oldMaxColor = this.maxColor;
+                betterRes = res;
+            }
         }
+
+        while (System.currentTimeMillis() - start < (.994 * secs))
+        {
+            res = greedyColoringShuffled(G, null);
+
+            if (this.maxColor < oldMaxColor)
+            {
+                oldMaxColor = this.maxColor;
+                betterRes = res;
+            }
+        }
+        
+        if (this.maxColor < oldestMaxColor)
+        {
+            return true;
+        }
+        return false;
     }
 
     // implements greedy coloring with a random order using a translation array - 
@@ -983,6 +1008,7 @@ public class GraphColoring
 
     // TO DO - investigate to what extent it will be faster to not return 
     // immediately upon finding a better solution, but ratehr to keep trying for some amount of time 
+    // NOTE this will effect the true proportion of time which the method will have 
     // TO DO - investigate to what extent starting at Integer.MAX_VALUE rather than init wp 
     // changes things.
     public void testTryImproves(Graph G, double secsForEach)
@@ -1025,6 +1051,13 @@ public class GraphColoring
             boolean res = tryImproveD((secsForEach - (System.currentTimeMillis() - start))/1000);
         }
         System.out.println("final best for tryImprove D is " + maxColor);
+
+        this.maxColor = Integer.MAX_VALUE;
+        start = System.currentTimeMillis();
+  
+        boolean res = tryImproveE((secsForEach - (System.currentTimeMillis() - start))/1000);
+        
+        System.out.println("final best for tryImprove E is " + maxColor +  ", took " + (System.currentTimeMillis() - start));
         System.out.println(" ");
     }
 
@@ -1136,6 +1169,9 @@ public class GraphColoring
     }*/
 
 
+
+    // TO DO - tally a sum between consecutive calls of testTryImprove
+    // to quantiy which method has absolutely fewer colors and by what margin.
     public static void main(String[] args)
     {
         int numberGraphs = 5; //default
