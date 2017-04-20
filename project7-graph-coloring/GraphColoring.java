@@ -384,8 +384,6 @@ public class GraphColoring
                 }
             }
         }
-
-        System.out.println("final best for tryImprove A is " + maxColor + " and " + timeForDegreeOrdered + " for DO");
         return false; // give up :C 
 
     }
@@ -440,7 +438,7 @@ public class GraphColoring
             }
         }
 
-        System.out.println("final best for tryImprove B is " + maxColor + " and " + timeForDegreeOrdered + " for DO");
+        
         return false; // give up :C 
 
     }
@@ -455,18 +453,16 @@ public class GraphColoring
         int res[];
         int oldMaxColor = this.maxColor;
 
-   
-        res = greedyDegreeOrderedShuffledTies(G);
-        if (maxColor < oldMaxColor)
+        while (System.currentTimeMillis() - start < secs)
         {
-            this.color = res;
-            return true;
+            res = greedyDegreeOrderedShuffledTies(G);
+            if (maxColor < oldMaxColor)
+            {
+                this.color = res;
+                return true;
+            }
         }
-            
-
-        System.out.println("final best for tryImprove C is " + maxColor );
-        return false; // give up :C 
-
+        return false; // give up :C
     }
 
 
@@ -480,18 +476,16 @@ public class GraphColoring
         int res[];
         int oldMaxColor = this.maxColor;
 
-   
-        res = greedyColoringShuffled(G, null);
-        if (maxColor < oldMaxColor)
+        while (System.currentTimeMillis() - start < secs)
         {
-            this.color = res;
-            return true;
+            res = greedyColoringShuffled(G, null);
+            if (maxColor < oldMaxColor)
+            {
+                this.color = res;
+                return true;
+            }
         }
-            
-
-        System.out.println("final best for tryImprove D is " + maxColor );
         return false; // give up :C 
-
     }
     // implements greedy coloring with a random order using a translation array - 
     // see extensive notes in tryImprove
@@ -972,6 +966,53 @@ public class GraphColoring
 
     }
 
+    public void testTryImproves(Graph G, double secsForEach)
+    {
+        this.maxColor = Integer.MAX_VALUE;
+        //secsForEach *= 1000; //convert to ms for code simplicity
+
+        long start = System.currentTimeMillis();
+
+        while(System.currentTimeMillis() - start < secsForEach)
+        {
+            boolean res = tryImprove((secsForEach - (System.currentTimeMillis() - start))/1000);
+        }
+        System.out.println("final best for tryImprove A is " + maxColor);
+        System.out.println(" ");
+
+        this.maxColor = Integer.MAX_VALUE;
+        start = System.currentTimeMillis();
+
+        while(System.currentTimeMillis() - start < secsForEach)
+        {
+            boolean res = tryImproveB((secsForEach - (System.currentTimeMillis() - start))/1000);
+        }
+        System.out.println("final best for tryImprove B is " + maxColor);
+        System.out.println(" ");
+
+
+
+        this.maxColor = Integer.MAX_VALUE;
+        start = System.currentTimeMillis();
+
+        while(System.currentTimeMillis() - start < secsForEach)
+        {
+            boolean res = tryImproveC((secsForEach - (System.currentTimeMillis() - start))/1000);
+        }
+        System.out.println("final best for tryImprove C is " + maxColor);
+        System.out.println(" ");
+
+        this.maxColor = Integer.MAX_VALUE;
+        start = System.currentTimeMillis();
+
+        while(System.currentTimeMillis() - start < secsForEach)
+        {
+            boolean res = tryImproveD((secsForEach - (System.currentTimeMillis() - start))/1000);
+        }
+        System.out.println("final best for tryImprove D is " + maxColor);
+        System.out.println(" ");
+    }
+
 
     // Print a warning message to System.err (not System.out).
     static void warn(String msg) { System.err.println("WARNING: "+msg); }
@@ -1078,6 +1119,37 @@ public class GraphColoring
             coloring.testVariousApproaches(secs*1000); 
         }
     }*/
+
+
+    public static void main(String[] args)
+    {
+        int numberGraphs = 5; //default
+        if (args.length > 0)
+            numberGraphs = Integer.parseInt(args[0]);
+
+        double secs = 20000; //default
+        if (args.length > 1)
+            secs = Double.parseDouble(args[1]);
+
+        int n = 100; // default
+        if (args.length > 2)
+            n = Integer.parseInt(args[2]);
+
+        double p = .5; //default 
+        if (args.length > 3)
+            p = Double.parseDouble(args[3]);
+
+        for (int i = 0; i < numberGraphs; i++)
+        {
+            Graph G = GraphGenerator.simple(n, p);
+            GraphColoring coloring = new GraphColoring(G);
+
+            if (coloring.bugs() > 0)
+                warn("initial coloring has bugs!");
+
+            coloring.testTryImproves(G, secs);
+        }
+    }
 
     public static class VertexDegree implements Comparable<VertexDegree> 
     {
