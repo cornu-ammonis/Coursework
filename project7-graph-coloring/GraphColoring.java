@@ -22,6 +22,31 @@ __ANDREW C JONES 4/13/17 __
 // https://en.wikipedia.org/wiki/Graph_coloring
 // https://en.wikipedia.org/wiki/Greedy_coloring
 
+//                ** A NOTE ON THE METHODS BELOW **
+// 
+// The file begins with a constructor and helper functions, followed by
+// tryImprove, which tries a variety of approaches for a specified amount
+// of time. Those approaches are found immediately below tryImprove. 
+// There are 6 or so of them, most of them differeing from one another 
+// only slightly, and most are modifications of the greedyColoring algorithm
+// included in this file. 
+//
+// The most relevant (and effective) methods are: greedyColoringShuffled,
+// greedyDegreeOrderedShuffledTies, and welshPowell. The constructor uses 
+// welshPowell, which is a more nuanced way of coloring vertices in order
+// of their degree. There is an implementation of welshPowell which shuffles
+// the order of vertices of the same degree, but while it may be a 
+// "smarter" algorithm than greedyDegreeOrderedShuffledTies, it is in 
+// slower enough that the the latter performes better in tryImprove
+// because the opportunity to run more shufflings in this case generally
+// produces a better coloring than shuffled WP. 
+//
+// greedyDegreeOrderedShuffled ties almost always performed better than 
+// all other approaches in my testing, but greedColoringShuffled may be 
+// included in the final iteration of tryImprove to account for those
+// exceptional graphs for which descending degree is a poor coloring order.
+
+
 
 
 // The only methods you must edit are the constructor and tryImprove,
@@ -534,6 +559,10 @@ public class GraphColoring
         }
         return false;
     }
+
+
+
+
 
     // implements greedy coloring with a random order using a translation array - 
     // see extensive notes in tryImprove
