@@ -438,7 +438,7 @@ public class GraphColoring
 
 
     // try improve, except we devote more time to greedyDegreeShuffled and none to WP shuffled
-    public boolean tryImprove(double secs)
+    public boolean tryImproveB(double secs)
     {
 
         long start = System.currentTimeMillis();
@@ -575,7 +575,10 @@ public class GraphColoring
     }
 
 
-    public boolean tryImproveF(double secs)
+    // TO DO - 
+    // if the graph is small enough that we could randomly try most of 
+    // the orders, then vanilla shuffled is clearly superior.
+    public boolean tryImprove(double secs)
     {
         long start = System.currentTimeMillis();
         secs *= 1000;
@@ -587,9 +590,9 @@ public class GraphColoring
         betterRes = res;
 
         double timeForDegree;
-        if (numberOfDegreeTies > 100) timeForDegree = .6;
+        if (numberOfDegreeTies > 100) timeForDegree = .2;
         if (numberOfDegreeTies == 0) timeForDegree = 0.0;
-        else timeForDegree = .3;
+        else timeForDegree = .1;
 
         while (System.currentTimeMillis() - start < (timeForDegree * secs))
         {
@@ -598,6 +601,7 @@ public class GraphColoring
             {
                 oldMaxColor = maxColor;
                 betterRes = res;
+                return true;
             }
         }
 
@@ -606,6 +610,7 @@ public class GraphColoring
             res = betterRes;
             return true;
         }
+        maxColor = oldestMaxColor;
 
         while (System.currentTimeMillis() - start < secs)
         {
@@ -616,6 +621,8 @@ public class GraphColoring
                 return true;
             }
         }
+
+        maxColor = oldestMaxColor;
 
         return false;
     }
@@ -1126,7 +1133,7 @@ public class GraphColoring
 
         while(System.currentTimeMillis() - start < secsForEach)
         {
-            boolean res = tryImprove((secsForEach - (System.currentTimeMillis() - start))/1000);
+            boolean res = tryImproveB((secsForEach - (System.currentTimeMillis() - start))/1000);
         }
         System.out.println("final best for tryImprove B is " + maxColor);
        
@@ -1153,8 +1160,18 @@ public class GraphColoring
         start = System.currentTimeMillis();
   
         boolean res = tryImproveE((secsForEach - (System.currentTimeMillis() - start))/1000);
-        
         System.out.println("final best for tryImprove E is " + maxColor +  ", took " + (System.currentTimeMillis() - start));
+
+
+        this.maxColor = Integer.MAX_VALUE;
+        start = System.currentTimeMillis();
+
+        while(System.currentTimeMillis() - start < secsForEach)
+        {
+             res = tryImprove((secsForEach - (System.currentTimeMillis() - start))/1000);
+        }
+        System.out.println("final best for tryImprove F is " + maxColor);
+        
         System.out.println(" ");
     }
 
@@ -1269,13 +1286,13 @@ public class GraphColoring
 
     // TO DO - tally a sum between consecutive calls of testTryImprove
     // to quantiy which method has absolutely fewer colors and by what margin.
-    public static void main(String[] args)
+    /*public static void main(String[] args)
     {
         int numberGraphs = 5; //default
         if (args.length > 0)
             numberGraphs = Integer.parseInt(args[0]);
 
-        double secs = 20000; //default
+        double secs = 5000; //default
         if (args.length > 1)
             secs = Double.parseDouble(args[1]);
 
@@ -1303,10 +1320,10 @@ public class GraphColoring
 
         GraphColoring coloring = new GraphColoring(G);
 
-        System.out.println("constructor took: " + (System.currentTimeMillis() - start)); */
+        System.out.println("constructor took: " + (System.currentTimeMillis() - start)); 
 
+    }*/
 
-    }
 
     public static class VertexDegree implements Comparable<VertexDegree> 
     {
