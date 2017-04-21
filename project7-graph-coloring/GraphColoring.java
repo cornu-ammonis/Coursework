@@ -15,6 +15,13 @@ __ANDREW C JONES 4/13/17 __
 // If you use documents or websites (beyond our textbook) for ideas,
 // you should list those here.  Your code should be your own.
 
+
+//                      ***** TO DO *****
+// modify one of the try imrpove methods such that if it gets to the end 
+// having found a better solution using degree, itll return 
+// and if it hasnt, it'll spend some amount of time running greedyShuffled
+// (just in case the degree ordered is bad and isnt getting better)
+  
 //                      *** SOURCES USED ***
 // 
 // http://stackoverflow.com/questions/1519736/random-shuffling-of-an-array/21454317#21454317
