@@ -599,6 +599,7 @@ public class GraphColoring
             {
                 oldMaxColor = maxColor;
                 this.color = res;
+                return true;
             }
         }
 
@@ -1284,7 +1285,7 @@ public class GraphColoring
 
     // TO DO - tally a sum between consecutive calls of testTryImprove
     // to quantiy which method has absolutely fewer colors and by what margin.
-    /*public static void main(String[] args)
+    public static void main(String[] args)
     {
         int numberGraphs = 5; //default
         if (args.length > 0)
@@ -1302,6 +1303,24 @@ public class GraphColoring
         if (args.length > 3)
             p = Double.parseDouble(args[3]);
 
+        if (p == .0999)
+        {
+            p = 1.0/numberGraphs;
+            double pi;
+            for (int i = 1; i < numberGraphs + 1; i++)
+            {
+                pi = p * i; 
+                Graph G = GraphGenerator.simple(n, pi);
+                GraphColoring coloring = new GraphColoring(G);
+
+                if (coloring.bugs() > 0)
+                    warn("initial coloring has bugs!");
+
+                coloring.testTryImproves(G, secs);
+            
+            }
+        }
+        else 
         for (int i = 0; i < numberGraphs; i++)
         {
             Graph G = GraphGenerator.simple(n, p);
@@ -1313,14 +1332,15 @@ public class GraphColoring
             coloring.testTryImproves(G, secs);
         }
 
+
         /*long start = System.currentTimeMillis();
         Graph G = new Graph(new In(args[0]));
 
         GraphColoring coloring = new GraphColoring(G);
 
-        System.out.println("constructor took: " + (System.currentTimeMillis() - start)); 
+        System.out.println("constructor took: " + (System.currentTimeMillis() - start)); */
 
-    }*/
+    }
 
 
     public static class VertexDegree implements Comparable<VertexDegree> 
