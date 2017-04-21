@@ -135,7 +135,7 @@ public class GraphColoring
             
             // essentially greedy coloring in order of degree, but slightly
             // more complex and less time efficient 
-            // (but usuall better on first try)
+            // (but usually better on first try)
             this.color = welshPowell(G);
 
             for(int i = 1; i < G.V(); i++)
@@ -184,7 +184,7 @@ public class GraphColoring
 
 
         // if it is bipartite, translate the boolean colorbool array into the
-        // color array for output. - if colorbool is false, that vertex color 1,
+        // color array for output. - if colorbool is false, vertex color is 1,
         // if its true make it color 2. 
         if (isTwoColorable)
         {
@@ -192,10 +192,9 @@ public class GraphColoring
 
             // assign color to each vertex
             for (int i = 0; i < G.V(); i++)
-            {
                 if (colorbool[i]) color[i] = 1;
                 else color[i] = 2;
-            }
+
 
             this.maxColor = 2;
             // return true so that constructor knows we succeeded and greedyColoring
@@ -1238,6 +1237,15 @@ public class GraphColoring
 
             coloring.testTryImproves(G, secs);
         }
+
+       /* long start = System.currentTimeMillis();
+        Graph G = new Graph(new In(args[0]));
+
+        GraphColoring coloring = new GraphColoring(G);
+
+        System.out.println("constructor took: " + (System.currentTimeMillis() - start)); */
+
+
     }
 
     public static class VertexDegree implements Comparable<VertexDegree> 
