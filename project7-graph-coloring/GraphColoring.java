@@ -218,7 +218,7 @@ public class GraphColoring
         for (int w : G.adj(s))
         {   
             //if it isnt marked, give it the opposite color as s, and recur on it
-            if (!marked[w])
+            if (!marked[w] && isTwoColorable)
             {
                 colorbool[w] = !colorbool[s];
                 bipartDfs(G, w, marked, colorbool); 
@@ -226,7 +226,11 @@ public class GraphColoring
 
             // otherwise it is marked; if the graph is bipartite, it must not 
             // have the same color as s 
-            else if (colorbool[w] == colorbool[s]) isTwoColorable = false;
+            else if (colorbool[w] == colorbool[s])
+            {
+                isTwoColorable = false;
+                break;
+            } 
         }
     }
 
