@@ -136,6 +136,7 @@ public class GraphColoring
         // twoColor suffices
         if (!twoColor(G))
         {
+            long start = System.currentTimeMillis();
             // sets to max value because welshPowel will update
             // maxColor if it finds a lower coloring
             maxColor = Integer.MAX_VALUE;
@@ -152,6 +153,8 @@ public class GraphColoring
                 if (numberOfDegreeTies > 100)
                     break;
             }
+
+            System.out.println("constructor took " + (System.currentTimeMillis() - start));
         }
         // otherwise two coloring worked, it's bipartite and we're done
     }
@@ -169,6 +172,7 @@ public class GraphColoring
     // @returns false if the graph is not bipartite.
     private boolean twoColor(Graph G)
     {
+
         // marked[i] == true if we have visited vertex i
         boolean[] marked = new boolean[G.V()];
 
@@ -364,7 +368,7 @@ public class GraphColoring
     // there is a risk that our output will be ignored: our program
     // may be killed externally!
 
-    public boolean tryImprove(double secs)
+    public boolean tryImproveA(double secs)
     {
 
         long start = System.currentTimeMillis();
@@ -434,7 +438,7 @@ public class GraphColoring
 
 
     // try improve, except we devote more time to greedyDegreeShuffled and none to WP shuffled
-    public boolean tryImproveB(double secs)
+    public boolean tryImprove(double secs)
     {
 
         long start = System.currentTimeMillis();
@@ -542,7 +546,7 @@ public class GraphColoring
         int oldestMaxColor = this.maxColor;
         res = greedyNeighborOrdered(G);
         betterRes = res;
-        while (System.currentTimeMillis() - start < (.97 * secs))
+        while (System.currentTimeMillis() - start < (.1 * secs))
         {
             res = greedyDegreeOrderedShuffledTies(G);
             if (betterRes == null || this.maxColor < oldMaxColor)
@@ -570,6 +574,8 @@ public class GraphColoring
         return false;
     }
 
+
+    
 
 
 
@@ -1068,7 +1074,7 @@ public class GraphColoring
         System.out.println(" ");
         while(System.currentTimeMillis() - start < secsForEach)
         {
-            boolean res = tryImprove((secsForEach - (System.currentTimeMillis() - start))/1000);
+            boolean res = tryImproveA((secsForEach - (System.currentTimeMillis() - start))/1000);
         }
         System.out.println("final best for tryImprove A is " + maxColor);
 
@@ -1077,7 +1083,7 @@ public class GraphColoring
 
         while(System.currentTimeMillis() - start < secsForEach)
         {
-            boolean res = tryImproveB((secsForEach - (System.currentTimeMillis() - start))/1000);
+            boolean res = tryImprove((secsForEach - (System.currentTimeMillis() - start))/1000);
         }
         System.out.println("final best for tryImprove B is " + maxColor);
        
@@ -1249,7 +1255,7 @@ public class GraphColoring
             coloring.testTryImproves(G, secs);
         }
 
-       /* long start = System.currentTimeMillis();
+        /*long start = System.currentTimeMillis();
         Graph G = new Graph(new In(args[0]));
 
         GraphColoring coloring = new GraphColoring(G);
