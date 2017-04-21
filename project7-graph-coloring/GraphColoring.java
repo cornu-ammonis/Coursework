@@ -583,11 +583,9 @@ public class GraphColoring
         long start = System.currentTimeMillis();
         secs *= 1000;
         int res[];
-        int betterRes[];
         int oldestMaxColor = this.maxColor;
         res = greedyColoringShuffled(G, null);
         int oldMaxColor = this.maxColor;
-        betterRes = res;
 
         double timeForDegree;
         if (numberOfDegreeTies > 100) timeForDegree = .2;
@@ -600,14 +598,13 @@ public class GraphColoring
             if (maxColor < oldMaxColor)
             {
                 oldMaxColor = maxColor;
-                betterRes = res;
-                return true;
+                this.color = res;
             }
         }
 
         if (oldestMaxColor > maxColor)
         {
-            res = betterRes;
+            this.color = res;
             return true;
         }
         maxColor = oldestMaxColor;
@@ -618,6 +615,7 @@ public class GraphColoring
 
             if (maxColor  < oldestMaxColor)
             {
+                this.color = res;
                 return true;
             }
         }
