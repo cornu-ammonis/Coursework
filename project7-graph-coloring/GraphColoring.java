@@ -1291,7 +1291,7 @@ public class GraphColoring
 
     // TO DO - tally a sum between consecutive calls of testTryImprove
     // to quantiy which method has absolutely fewer colors and by what margin.
-    /*public static void main(String[] args)
+    public static void main(String[] args)
     {
         int numberGraphs = 5; //default
         if (args.length > 0)
@@ -1311,7 +1311,7 @@ public class GraphColoring
 
         if (p == .0999)
         {
-            p = 1.0/numberGraphs;
+            p = 1.0/(numberGraphs+1);
             double pi;
             for (int i = 1; i < numberGraphs + 1; i++)
             {
@@ -1344,8 +1344,8 @@ public class GraphColoring
 
         GraphColoring coloring = new GraphColoring(G);
 
-        System.out.println("constructor took: " + (System.currentTimeMillis() - start)); 
-    }*/
+        System.out.println("constructor took: " + (System.currentTimeMillis() - start)); */
+    }
 
 
 
