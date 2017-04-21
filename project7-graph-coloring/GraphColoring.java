@@ -575,7 +575,50 @@ public class GraphColoring
     }
 
 
-    
+    public boolean tryImproveF(double secs)
+    {
+        long start = System.currentTimeMillis();
+        secs *= 1000;
+        int res[];
+        int betterRes[];
+        int oldestMaxColor = this.maxColor;
+        res = greedyColoringShuffled(G, null);
+        int oldMaxColor = this.maxColor;
+        betterRes = res;
+
+        double timeForDegree;
+        if (numberOfDegreeTies > 100) timeForDegree = .6;
+        if (numberOfDegreeTies == 0) timeForDegree = 0.0;
+        else timeForDegree = .3;
+
+        while (System.currentTimeMillis() - start < (timeForDegree * secs))
+        {
+            res = greedyDegreeOrderedShuffledTies(G);
+            if (maxColor < oldMaxColor)
+            {
+                oldMaxColor = maxColor;
+                betterRes = res;
+            }
+        }
+
+        if (oldestMaxColor > maxColor)
+        {
+            res = betterRes;
+            return true;
+        }
+
+        while (System.currentTimeMillis() - start < secs)
+        {
+            res = greedyColoringShuffled(G, null);
+
+            if (maxColor  < oldestMaxColor)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
 
 
