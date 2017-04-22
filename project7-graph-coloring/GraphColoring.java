@@ -120,6 +120,10 @@ public class GraphColoring
     private int neighborRankedAttemptCount = 0;
     private int numberOfDegreeTies = 0;
 
+    // used by try improve to decide what fraction of time to devote
+    // to degree ordered shuffled vs vanilla shuffled
+    private double timeForDegreeOrdered;
+
     // Accessor methods:
     public Graph graph() { return G; }
     public int color(int v) { return color[v]; }
@@ -149,14 +153,28 @@ public class GraphColoring
             // more complex and less time efficient 
             // (but usually better on first try)
             this.color = greedyDegreeOrderedShuffledTies(G);
-
+            int V = G.V();
             for(int i = 1; i < G.V(); i++)
             {
                 if (vertexDegrees[i-1].degree == vertexDegrees[i].degree)
                     numberOfDegreeTies++;
-                if (numberOfDegreeTies > G.V()/3)
+                if (numberOfDegreeTies > V/3)
+                {
+                    System.out.println("more tahn a third");
                     break;
+                }
             }
+
+            // assigns fraction of time to spend on running degreeOrderedShuffled
+            // based on the number of degree ties we found and the size of the graph
+            if (V < 100 && numberOfDegreeTies > 15) timeForDegreeOrdered = .3;
+            else if (V < 100 && numberOfDegreeTies == 0) timeForDegreeOrdered = 0;
+            else if (V < 100) timeForDegreeOrdered = .1;
+            else if (numberOfDegreeTies > V/3 && V > 1000) timeForDegreeOrdered = .825;
+            else if (numberOfDegreeTies > V/3) timeForDegreeOrdered = .75;
+            else if (numberOfDegreeTies == 0) timeForDegreeOrdered  = 0.0;
+            else if (numberOfDegreeTies < 10) timeForDegreeOrdered = .05;
+            else timeForDegreeOrdered = .25;
 
             System.out.println("constructor took " + (System.currentTimeMillis() - start));
         }
@@ -450,15 +468,9 @@ public class GraphColoring
         secs = secs*1000;
         int res[];
         int oldMaxColor = this.maxColor;
-        double timeForDegreeOrdered;
+        int V = G.V();
         
-        // assigns fraction of time to spend on running degreeOrderedShuffled
-        // based on the number of degree ties we found 
-        if (G.V() < 100) timeForDegreeOrdered = .3;
-        if (numberOfDegreeTies > G.V()/3) timeForDegreeOrdered = .75;
-        else if (numberOfDegreeTies == 0) timeForDegreeOrdered  = 0.0;
-        else if (numberOfDegreeTies < 10) timeForDegreeOrdered = .05;
-        else timeForDegreeOrdered = .25;
+
 
         // put all loops in their own loop, because there is a chance 
         // all inner loops could terminate with extra time so we restart
