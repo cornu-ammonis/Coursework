@@ -4,16 +4,11 @@ THIS CODE IS MY OWN WORK, IT WAS WRITTEN WITHOUT CONSULTING
 A TUTOR OR CODE WRITTEN BY OTHER STUDENTS.  
 __ANDREW C JONES 4/13/17 __
 */
-// Students should edit this file for homework.
 
 // NOTE: to compile and run this, put graph.jar on your CLASSPATH
 // (or unpack it in the same directory as this file).  You are welcome
 // to use the classes in graph.jar, and anything from java.util.
 // You should not use multiple threads.
-
-// As usual: add honor statement up here, and fix the TODO's below.
-// If you use documents or websites (beyond our textbook) for ideas,
-// you should list those here.  Your code should be your own.
 
 
 //                      ***** TO DO *****
@@ -58,12 +53,6 @@ __ANDREW C JONES 4/13/17 __
 // exceptional graphs for which descending degree is a poor coloring order.
 
 
-
-
-// The only methods you must edit are the constructor and tryImprove,
-// but you are welcome to redesign other parts of the class too, if
-// you like.  When we test your code on Gimle, we will use a top-level
-// loop that resembles main (but maybe with more testing and output).
 
 
 // A GraphColoring object represents a vertex coloring for a Graph: it
