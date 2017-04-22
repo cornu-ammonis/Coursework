@@ -441,39 +441,29 @@ public class GraphColoring
         int res[];
         int oldMaxColor = this.maxColor;
         int V = G.V();
-        
-
-
-        // put all loops in their own loop, because there is a chance 
-        // all inner loops could terminate with extra time so we restart
-        while (System.currentTimeMillis() - start < secs)
-        {
-            // so that loop timing logic will work on subsequent outer loops
-            double loopSecs = secs - (System.currentTimeMillis() - start);
-            long loopStart = System.currentTimeMillis();
             
-            // runs degreeOrderedShuffled for a fraction of total time
-            while (System.currentTimeMillis() - loopStart < (timeForDegreeOrdered*loopSecs))
+        // runs degreeOrderedShuffled for a fraction of total time
+        while (System.currentTimeMillis() - loopStart < (timeForDegreeOrdered*loopSecs))
+        {
+            res = greedyDegreeOrderedShuffledTies(G);
+            if (maxColor < oldMaxColor)
             {
-                res = greedyDegreeOrderedShuffledTies(G);
-                if (maxColor < oldMaxColor)
-                {
-                    this.color = res;
-                    return true;
-                }
-            }
-
-            // runs regular random greedy for (most of) the rest of the time
-            while (System.currentTimeMillis() - loopStart < (.99 * loopSecs))
-            {
-                res = greedyColoringShuffled(G, null);
-                if (maxColor < oldMaxColor)
-                {
-                    this.color = res;
-                    return true;
-                }
+                this.color = res;
+                return true;
             }
         }
+
+        // runs regular random greedy for (most of) the rest of the time
+        while (System.currentTimeMillis() - loopStart < (.99 * loopSecs))
+        {
+            res = greedyColoringShuffled(G, null);
+            if (maxColor < oldMaxColor)
+            {
+                this.color = res;
+                return true;
+            }
+        }
+        
 
         
         return false; // give up :C 
