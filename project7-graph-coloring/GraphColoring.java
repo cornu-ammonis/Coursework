@@ -85,29 +85,12 @@ public class GraphColoring
     private int maxColor;   // maximum color used (K)
 
     private boolean isTwoColorable; // used by two coloring algorithm 
-    private boolean alreadyTested = false; //used to do testing once
-
-    //used so that tryImprove does greedy coloring on degree ordered 
-    //graph exactly once
-    private boolean alreadyDegreeOrderColored = false;
     
     // array of vertices sorted by degree in ascending order
     private VertexDegree[] vertexDegrees; 
     
     // sorted by sum of neighbor degrees in ascending order
     private VertexNeighborRanked[] verticesNeighborRanked; 
-
-    // if there are no ties its a waste of time to keep running 
-    // the degree oredered algorithm because its the same each time so we 
-    // track if there are ties and only run it multiple times if there are 
-    private boolean degreeTiesExist = false;
-
-    // counts of various algorithms used for testing purposes and to run
-    // the approaches a certain number of times
-    private int shuffledTiesAttemptCount = 0;
-    private int vanillaShuffledAttemptCount = 0;
-    private int neighborRankedAttemptCount = 0;
-    private int numberOfDegreeTies = 0;
 
     // used by try improve to decide what fraction of time to devote
     // to degree ordered shuffled vs vanilla shuffled
