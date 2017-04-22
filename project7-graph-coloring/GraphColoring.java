@@ -10,16 +10,6 @@ __ANDREW C JONES 4/13/17 __
 // to use the classes in graph.jar, and anything from java.util.
 // You should not use multiple threads.
 
-
-//                      ***** TO DO *****
-// modify the constructor to keep counting degree ties until you reach
-// a certain fraction of total V, and use that to determine 
-// if tryImpove C should spend less time on degreeOrderedShuffed
-//
-// modify one of the try imrpove methods such that if it gets to the end 
-// having found a better solution using degree, itll return 
-// and if it hasnt, it'll spend some amount of time running greedyShuffled
-// (just in case the degree ordered is bad and isnt getting better)
   
 //                      *** SOURCES USED ***
 // 
@@ -82,7 +72,7 @@ public class GraphColoring
     // Custom class representing a vertex and its degree implementing
     // comparable for easy sortin -- used for degreeOrdered
     // algorithm
-     public static class VertexDegree implements Comparable<VertexDegree> 
+    public static class VertexDegree implements Comparable<VertexDegree> 
     {
         public int degree;
         public int vertex;
@@ -117,6 +107,8 @@ public class GraphColoring
                 this.neighborDegreeSum += G.degree(n);
         }
 
+        // greater than 0 if this vertex's neighborDegreeSum is larger
+        // than the others, less if smaller, 0 if equal
         public int compareTo(VertexNeighborRanked other)
         {
             return this.neighborDegreeSum - other.neighborDegreeSum;
@@ -171,12 +163,17 @@ public class GraphColoring
             // (but usually better on first try)
             this.color = greedyDegreeOrderedShuffledTies(G);
             int V = G.V();
+
+            // count the number of degree ties (used for later optimization)
             for(int i = 1; i < G.V(); i++)
             {
                 if (vertexDegrees[i-1].degree == vertexDegrees[i].degree)
                     numberOfDegreeTies++;
+
+                // we consider this the ceiling; if its above this number we 
+                // will devote a lot of time to degree ordered shuffled ties
                 if (numberOfDegreeTies > V/3)
-                    break;
+                    break; 
                 
             }
 
@@ -191,6 +188,7 @@ public class GraphColoring
             else if (numberOfDegreeTies < 10) timeForDegreeOrdered = .05;
             else timeForDegreeOrdered = .25;
         }
+
         // otherwise two coloring worked, it's bipartite and we're done
     }
 
@@ -404,7 +402,10 @@ public class GraphColoring
     // may be killed externally!
 
 
-    // try improve, except we devote more time to greedyDegreeShuffled and none to WP shuffled
+    // devotes an amount of time determined in constructor to 
+    // greedyDegreeorderedShuffledTies, and the rest to 
+    // greedyColoringShuffled (to account for those rare graphs)
+    // where descending degree is a terrible coloring order
     public boolean tryImprove(double secs)
     {
 
@@ -445,6 +446,8 @@ public class GraphColoring
     //              **************************************
     //                  MY COLORING ALGORITHMS BEGIN HERE
     //              **************************************
+
+
 
     // implements greedy coloring with a random order using a translation array - 
     // see extensive notes in tryImprove
