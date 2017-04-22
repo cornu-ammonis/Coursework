@@ -4,19 +4,18 @@ THIS CODE IS MY OWN WORK, IT WAS WRITTEN WITHOUT CONSULTING
 A TUTOR OR CODE WRITTEN BY OTHER STUDENTS.  
 __ANDREW C JONES 4/13/17 __
 */
-// Students should edit this file for homework.
 
 // NOTE: to compile and run this, put graph.jar on your CLASSPATH
 // (or unpack it in the same directory as this file).  You are welcome
 // to use the classes in graph.jar, and anything from java.util.
 // You should not use multiple threads.
 
-// As usual: add honor statement up here, and fix the TODO's below.
-// If you use documents or websites (beyond our textbook) for ideas,
-// you should list those here.  Your code should be your own.
-
 
 //                      ***** TO DO *****
+// modify the constructor to keep counting degree ties until you reach
+// a certain fraction of total V, and use that to determine 
+// if tryImpove C should spend less time on degreeOrderedShuffed
+//
 // modify one of the try imrpove methods such that if it gets to the end 
 // having found a better solution using degree, itll return 
 // and if it hasnt, it'll spend some amount of time running greedyShuffled
@@ -56,12 +55,6 @@ __ANDREW C JONES 4/13/17 __
 
 
 
-// The only methods you must edit are the constructor and tryImprove,
-// but you are welcome to redesign other parts of the class too, if
-// you like.  When we test your code on Gimle, we will use a top-level
-// loop that resembles main (but maybe with more testing and output).
-
-
 // A GraphColoring object represents a vertex coloring for a Graph: it
 // specifies a positive integer color for each vertex v, so that
 // adjacent vertices get distinct colors.  We say it is a "K coloring"
@@ -92,11 +85,6 @@ public class GraphColoring
     private int maxColor;   // maximum color used (K)
 
     private boolean isTwoColorable; // used by two coloring algorithm 
-    private boolean alreadyTested = false; //used to do testing once
-
-    //used so that tryImprove does greedy coloring on degree ordered 
-    //graph exactly once
-    private boolean alreadyDegreeOrderColored = false;
     
     // array of vertices sorted by degree in ascending order
     private VertexDegree[] vertexDegrees; 
@@ -104,17 +92,9 @@ public class GraphColoring
     // sorted by sum of neighbor degrees in ascending order
     private VertexNeighborRanked[] verticesNeighborRanked; 
 
-    // if there are no ties its a waste of time to keep running 
-    // the degree oredered algorithm because its the same each time so we 
-    // track if there are ties and only run it multiple times if there are 
-    private boolean degreeTiesExist = false;
-
-    // counts of various algorithms used for testing purposes and to run
-    // the approaches a certain number of times
-    private int shuffledTiesAttemptCount = 0;
-    private int vanillaShuffledAttemptCount = 0;
-    private int neighborRankedAttemptCount = 0;
-    private int numberOfDegreeTies = 0;
+    // used by try improve to decide what fraction of time to devote
+    // to degree ordered shuffled vs vanilla shuffled
+    private double timeForDegreeOrdered;
 
     // Accessor methods:
     public Graph graph() { return G; }
@@ -136,6 +116,7 @@ public class GraphColoring
         // twoColor suffices
         if (!twoColor(G))
         {
+            long start = System.currentTimeMillis();
             // sets to max value because welshPowel will update
             // maxColor if it finds a lower coloring
             maxColor = Integer.MAX_VALUE;
@@ -143,15 +124,31 @@ public class GraphColoring
             // essentially greedy coloring in order of degree, but slightly
             // more complex and less time efficient 
             // (but usually better on first try)
-            this.color = welshPowell(G);
-
+            this.color = greedyDegreeOrderedShuffledTies(G);
+            int V = G.V();
             for(int i = 1; i < G.V(); i++)
             {
                 if (vertexDegrees[i-1].degree == vertexDegrees[i].degree)
                     numberOfDegreeTies++;
-                if (numberOfDegreeTies > 100)
+                if (numberOfDegreeTies > V/3)
+                {
+                    System.out.println("more tahn a third");
                     break;
+                }
             }
+
+            // assigns fraction of time to spend on running degreeOrderedShuffled
+            // based on the number of degree ties we found and the size of the graph
+            if (V < 100 && numberOfDegreeTies > 15) timeForDegreeOrdered = .3;
+            else if (V < 100 && numberOfDegreeTies == 0) timeForDegreeOrdered = 0;
+            else if (V < 100) timeForDegreeOrdered = .1;
+            else if (numberOfDegreeTies > V/3 && V > 1000) timeForDegreeOrdered = .825;
+            else if (numberOfDegreeTies > V/3) timeForDegreeOrdered = .75;
+            else if (numberOfDegreeTies == 0) timeForDegreeOrdered  = 0.0;
+            else if (numberOfDegreeTies < 10) timeForDegreeOrdered = .05;
+            else timeForDegreeOrdered = .25;
+
+            System.out.println("constructor took " + (System.currentTimeMillis() - start));
         }
         // otherwise two coloring worked, it's bipartite and we're done
     }
@@ -169,6 +166,7 @@ public class GraphColoring
     // @returns false if the graph is not bipartite.
     private boolean twoColor(Graph G)
     {
+
         // marked[i] == true if we have visited vertex i
         boolean[] marked = new boolean[G.V()];
 
@@ -364,7 +362,7 @@ public class GraphColoring
     // there is a risk that our output will be ignored: our program
     // may be killed externally!
 
-    public boolean tryImprove(double secs)
+    public boolean tryImproveA(double secs)
     {
 
         long start = System.currentTimeMillis();
@@ -442,53 +440,35 @@ public class GraphColoring
         secs = secs*1000;
         int res[];
         int oldMaxColor = this.maxColor;
-        double timeForDegreeOrdered;
-        
-        // assigns fraction of time to spend on running degreeOrderedShuffled
-        // based on the number of degree ties we found 
-        if (numberOfDegreeTies > 100) timeForDegreeOrdered = .8;
-        else if (numberOfDegreeTies == 0) timeForDegreeOrdered  = 0.0;
-        else if (numberOfDegreeTies < 10) timeForDegreeOrdered = .01;
-        else timeForDegreeOrdered = .25;
-
-        // put all loops in their own loop, because there is a chance 
-        // all inner loops could terminate with extra time so we restart
-        while (System.currentTimeMillis() - start < secs)
-        {
-            // so that loop timing logic will work on subsequent outer loops
-            double loopSecs = secs - (System.currentTimeMillis() - start);
-            long loopStart = System.currentTimeMillis();
+        int V = G.V();
             
-            // runs degreeOrderedShuffled for a fraction of total time
-            while (System.currentTimeMillis() - loopStart < (timeForDegreeOrdered*loopSecs))
+        // runs degreeOrderedShuffled for a fraction of total time
+        while (System.currentTimeMillis() - loopStart < (timeForDegreeOrdered*loopSecs))
+        {
+            res = greedyDegreeOrderedShuffledTies(G);
+            if (maxColor < oldMaxColor)
             {
-                res = greedyDegreeOrderedShuffledTies(G);
-                if (maxColor < oldMaxColor)
-                {
-                    this.color = res;
-                    return true;
-                }
-            }
-
-            // runs regular random greedy for (most of) the rest of the time
-            while (System.currentTimeMillis() - loopStart < (.99 * loopSecs))
-            {
-                res = greedyColoringShuffled(G, null);
-                if (maxColor < oldMaxColor)
-                {
-                    this.color = res;
-                    return true;
-                }
+                this.color = res;
+                return true;
             }
         }
 
+        // runs regular random greedy for (most of) the rest of the time
+        while (System.currentTimeMillis() - loopStart < (.99 * loopSecs))
+        {
+            res = greedyColoringShuffled(G, null);
+            if (maxColor < oldMaxColor)
+            {
+                this.color = res;
+                return true;
+            }
+        }
         
         return false; // give up :C 
-
     }
 
     //tryImprove except we only run greedy Degree Ordered shuffled
-    public boolean tryImproveC(double secs)
+    public boolean tryImprove(double secs)
     {
 
         long start = System.currentTimeMillis();
@@ -497,6 +477,12 @@ public class GraphColoring
         int res[];
         int oldMaxColor = this.maxColor;
 
+        res = greedyColoringShuffled(G, null);
+        if (this.maxColor < oldMaxColor)
+        {
+            oldMaxColor = this.maxColor;
+            this.color = res;
+        }
         while (System.currentTimeMillis() - start < secs)
         {
             res = greedyDegreeOrderedShuffledTies(G);
@@ -542,7 +528,7 @@ public class GraphColoring
         int oldestMaxColor = this.maxColor;
         res = greedyNeighborOrdered(G);
         betterRes = res;
-        while (System.currentTimeMillis() - start < (.97 * secs))
+        while (System.currentTimeMillis() - start < (.1 * secs))
         {
             res = greedyDegreeOrderedShuffledTies(G);
             if (betterRes == null || this.maxColor < oldMaxColor)
@@ -570,6 +556,57 @@ public class GraphColoring
         return false;
     }
 
+
+    // TO DO - 
+    // if the graph is small enough that we could randomly try most of 
+    // the orders, then vanilla shuffled is clearly superior.
+    public boolean tryImproveF(double secs)
+    {
+        long start = System.currentTimeMillis();
+        secs *= 1000;
+        int res[];
+        int oldestMaxColor = this.maxColor;
+        res = greedyColoringShuffled(G, null);
+        int oldMaxColor = this.maxColor;
+
+        double timeForDegree;
+        if (numberOfDegreeTies > 100) timeForDegree = .2;
+        if (numberOfDegreeTies == 0) timeForDegree = 0.0;
+        else timeForDegree = .1;
+
+        while (System.currentTimeMillis() - start < (timeForDegree * secs))
+        {
+            res = greedyDegreeOrderedShuffledTies(G);
+            if (maxColor < oldMaxColor)
+            {
+                oldMaxColor = maxColor;
+                this.color = res;
+                return true;
+            }
+        }
+
+        if (oldestMaxColor > maxColor)
+        {
+            this.color = res;
+            return true;
+        }
+        maxColor = oldestMaxColor;
+
+        while (System.currentTimeMillis() - start < secs)
+        {
+            res = greedyColoringShuffled(G, null);
+
+            if (maxColor  < oldestMaxColor)
+            {
+                this.color = res;
+                return true;
+            }
+        }
+
+        maxColor = oldestMaxColor;
+
+        return false;
+    }
 
 
 
@@ -1068,7 +1105,7 @@ public class GraphColoring
         System.out.println(" ");
         while(System.currentTimeMillis() - start < secsForEach)
         {
-            boolean res = tryImprove((secsForEach - (System.currentTimeMillis() - start))/1000);
+            boolean res = tryImproveA((secsForEach - (System.currentTimeMillis() - start))/1000);
         }
         System.out.println("final best for tryImprove A is " + maxColor);
 
@@ -1087,7 +1124,7 @@ public class GraphColoring
 
         while(System.currentTimeMillis() - start < secsForEach)
         {
-            boolean res = tryImproveC((secsForEach - (System.currentTimeMillis() - start))/1000);
+            boolean res = tryImprove((secsForEach - (System.currentTimeMillis() - start))/1000);
         }
         System.out.println("final best for tryImprove C is " + maxColor);
 
@@ -1104,8 +1141,18 @@ public class GraphColoring
         start = System.currentTimeMillis();
   
         boolean res = tryImproveE((secsForEach - (System.currentTimeMillis() - start))/1000);
-        
         System.out.println("final best for tryImprove E is " + maxColor +  ", took " + (System.currentTimeMillis() - start));
+
+
+        this.maxColor = Integer.MAX_VALUE;
+        start = System.currentTimeMillis();
+
+        while(System.currentTimeMillis() - start < secsForEach)
+        {
+             res = tryImproveF((secsForEach - (System.currentTimeMillis() - start))/1000);
+        }
+        System.out.println("final best for tryImprove F is " + maxColor);
+        
         System.out.println(" ");
     }
 
@@ -1226,7 +1273,7 @@ public class GraphColoring
         if (args.length > 0)
             numberGraphs = Integer.parseInt(args[0]);
 
-        double secs = 20000; //default
+        double secs = 5000; //default
         if (args.length > 1)
             secs = Double.parseDouble(args[1]);
 
@@ -1238,6 +1285,24 @@ public class GraphColoring
         if (args.length > 3)
             p = Double.parseDouble(args[3]);
 
+        if (p == .0999)
+        {
+            p = 1.0/(numberGraphs+1);
+            double pi;
+            for (int i = 1; i < numberGraphs + 1; i++)
+            {
+                pi = p * i; 
+                Graph G = GraphGenerator.simple(n, pi);
+                GraphColoring coloring = new GraphColoring(G);
+
+                if (coloring.bugs() > 0)
+                    warn("initial coloring has bugs!");
+
+                coloring.testTryImproves(G, secs);
+            
+            }
+        }
+        else 
         for (int i = 0; i < numberGraphs; i++)
         {
             Graph G = GraphGenerator.simple(n, p);
@@ -1249,15 +1314,16 @@ public class GraphColoring
             coloring.testTryImproves(G, secs);
         }
 
-       /* long start = System.currentTimeMillis();
+
+        /*long start = System.currentTimeMillis();
         Graph G = new Graph(new In(args[0]));
 
         GraphColoring coloring = new GraphColoring(G);
 
         System.out.println("constructor took: " + (System.currentTimeMillis() - start)); */
-
-
     }
+
+
 
     public static class VertexDegree implements Comparable<VertexDegree> 
     {
