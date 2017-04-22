@@ -176,10 +176,8 @@ public class GraphColoring
                 if (vertexDegrees[i-1].degree == vertexDegrees[i].degree)
                     numberOfDegreeTies++;
                 if (numberOfDegreeTies > V/3)
-                {
-                    System.out.println("more tahn a third");
                     break;
-                }
+                
             }
 
             // assigns fraction of time to spend on running degreeOrderedShuffled
@@ -192,8 +190,6 @@ public class GraphColoring
             else if (numberOfDegreeTies == 0) timeForDegreeOrdered  = 0.0;
             else if (numberOfDegreeTies < 10) timeForDegreeOrdered = .05;
             else timeForDegreeOrdered = .25;
-
-            System.out.println("constructor took " + (System.currentTimeMillis() - start));
         }
         // otherwise two coloring worked, it's bipartite and we're done
     }
