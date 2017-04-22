@@ -464,10 +464,7 @@ public class GraphColoring
             }
         }
         
-
-        
         return false; // give up :C 
-
     }
 
     //tryImprove except we only run greedy Degree Ordered shuffled
