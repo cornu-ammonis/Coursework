@@ -139,6 +139,7 @@ public class GraphColoring
     // used by try improve to decide what fraction of time to devote
     // to degree ordered shuffled vs vanilla shuffled
     private double timeForDegreeOrdered;
+    private int numberOfDegreeTies = 0;
 
     // Accessor methods:
     public Graph graph() { return G; }
@@ -419,7 +420,7 @@ public class GraphColoring
         int V = G.V();
             
         // runs degreeOrderedShuffled for a fraction of total time
-        while (System.currentTimeMillis() - loopStart < (timeForDegreeOrdered*loopSecs))
+        while (System.currentTimeMillis() - start < (timeForDegreeOrdered*secs))
         {
             res = greedyDegreeOrderedShuffledTies(G);
             if (maxColor < oldMaxColor)
@@ -430,7 +431,7 @@ public class GraphColoring
         }
 
         // runs regular random greedy for (most of) the rest of the time
-        while (System.currentTimeMillis() - loopStart < (.99 * loopSecs))
+        while (System.currentTimeMillis() - start < (.99 * secs))
         {
             res = greedyColoringShuffled(G, null);
             if (maxColor < oldMaxColor)
@@ -594,7 +595,6 @@ public class GraphColoring
             }
             else // there is a degree tie; shuffle
             {
-                degreeTiesExist = true; //tracks for testing output
 
                 //vertices with the same degre (at this level)
                 ArrayList<Integer> sameDegree = new ArrayList<Integer>();
@@ -847,95 +847,6 @@ public class GraphColoring
     // into a loop with tryImprove, printing each improved coloring
     // found, until tryImprove gives up (by returning false), or until
     // we run out of time.
-    /* public static void main(String[] args)
-    {
-        // Usage message, if not at least one argument.
-        if (args.length == 0) {
-            System.err.println
-                ("Usage: java GraphColoring graph.txt [TIMELIMIT]");
-            System.exit(1);
-        }
-        // Read the Graph from the file named by args[0].
-        Graph G = new Graph(new In(args[0]));
-        // Get our time limit (in seconds).
-        double secs = 3.0;      // default
-        if (args.length > 1)
-            secs = Double.parseDouble(args[1]);
-
-        // We are ready to start coloring, start timer.
-        long start = System.currentTimeMillis();
-
-        // Compute fast initial coloring in its constructor.
-        GraphColoring coloring = new GraphColoring(G);
-        // Print it.
-        StdOut.println(coloring);
-        if (coloring.bugs()>0)
-            warn("initial coloring has bugs!");
-
-        // Now loop: each time that method tryImprove succeeds in
-        // improving the coloring, we print it again.  We stop when we
-        // run out of time, or when tryImprove returns false.
-        int lastK = coloring.maxColor();
-        /*while (true)
-        {
-            // How much time have we used already? (in seconds)
-            double used = (System.currentTimeMillis()-start)/1000.0;
-            if (used >= secs)   // out of time?
-                break;
-            // Ok, try to improve the coloring.
-            if (!coloring.tryImprove(secs-used))
-                break;          // tryImprove gave up, stop early
-            // tryImprove succeeded!  Print the result.
-            StdOut.println(coloring);
-            if (coloring.bugs() > 0)
-                warn("tryImprove coloring has bugs");
-            // Check that it really was an improvement.
-            int K = coloring.maxColor();
-            if (K >= lastK)
-                warn("tryImprove returned true, but not really improved");
-            lastK = K;
-        }*/
-/*
-        coloring.testVariousApproaches(secs*1000);
-    */
-
-    // this version of main takes two arguments, the number of graphs to try, and the amount 
-    // of time to try them. optional third and fourth arguments correspond to the size
-    // of the erdos-renyi graph and the probability of each edge
-    /*public static void main(String[] args)
-    {
-        
-
-
-        int numberGraphs = 5; //default
-        if (args.length > 0)
-            numberGraphs = Integer.parseInt(args[0]);
-
-        double secs = 20; //default
-        if (args.length > 1)
-            secs = Double.parseDouble(args[1]);
-
-        int n = 100; // default
-        if (args.length > 2)
-            n = Integer.parseInt(args[2]);
-
-        double p = .5; //default 
-        if (args.length > 3)
-            p = Double.parseDouble(args[3]);
-
-        for (int i = 0; i < numberGraphs; i++)
-        {
-            Graph G = GraphGenerator.simple(n, p);
-            System.out.println("calling constructor...");
-            GraphColoring coloring = new GraphColoring(G);
-            //StdOut.println(coloring);
-            if (coloring.bugs()>0)
-                warn("initial coloring has bugs!");
-
-            System.out.println("starting test:");
-            coloring.testVariousApproaches(secs*1000); 
-        }
-    }*/
 
 
 } //end of GraphColoring class

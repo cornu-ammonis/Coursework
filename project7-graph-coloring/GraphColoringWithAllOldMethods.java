@@ -55,7 +55,7 @@ __ANDREW C JONES 4/13/17 __
 
 
 
-// A GraphColoring object represents a vertex coloring for a Graph: it
+// A GraphColoringWithAllOldMethods object represents a vertex coloring for a Graph: it
 // specifies a positive integer color for each vertex v, so that
 // adjacent vertices get distinct colors.  We say it is a "K coloring"
 // if the maximum color used is K.  We prefer colorings with K as
@@ -77,7 +77,7 @@ __ANDREW C JONES 4/13/17 __
 // available.  Whatever we do, we always produce a valid coloring,
 // and we prefer colorings that use fewer colors.
 
-public class GraphColoring
+public class GraphColoringWithAllOldMethods
 {
     // Internal data for our coloring object.
     private Graph G;           // the Graph (from the constructor)
@@ -95,6 +95,7 @@ public class GraphColoring
     // used by try improve to decide what fraction of time to devote
     // to degree ordered shuffled vs vanilla shuffled
     private double timeForDegreeOrdered;
+    private int numberOfDegreeTies = 0;
 
     // Accessor methods:
     public Graph graph() { return G; }
@@ -108,7 +109,7 @@ public class GraphColoring
     }
 
     // Constructor: given a graph G, build some fast initial coloring.
-    public GraphColoring(Graph G)
+    public GraphColoringWithAllOldMethods(Graph G)
     {
         this.G = G;
         
@@ -443,7 +444,7 @@ public class GraphColoring
         int V = G.V();
             
         // runs degreeOrderedShuffled for a fraction of total time
-        while (System.currentTimeMillis() - loopStart < (timeForDegreeOrdered*loopSecs))
+        while (System.currentTimeMillis() - start < (timeForDegreeOrdered*secs))
         {
             res = greedyDegreeOrderedShuffledTies(G);
             if (maxColor < oldMaxColor)
@@ -454,7 +455,7 @@ public class GraphColoring
         }
 
         // runs regular random greedy for (most of) the rest of the time
-        while (System.currentTimeMillis() - loopStart < (.99 * loopSecs))
+        while (System.currentTimeMillis() - start < (.99 * secs))
         {
             res = greedyColoringShuffled(G, null);
             if (maxColor < oldMaxColor)
@@ -756,7 +757,6 @@ public class GraphColoring
             }
             else // there is a degree tie; shuffle
             {
-                degreeTiesExist = true; //tracks for testing output
 
                 //vertices with the same degre (at this level)
                 ArrayList<Integer> sameDegree = new ArrayList<Integer>();
@@ -1162,13 +1162,13 @@ public class GraphColoring
 
     // Method main() defines our command-line usage:
     //
-    //     java GraphColoring graph.txt [TIMELIMIT]
+    //     java GraphColoringWithAllOldMethods graph.txt [TIMELIMIT]
     //
     // The Graph filename argument must be given.
     // If omitted, the time limit defaults to 3.0 seconds.
     //
     // This program reads a Graph (in Sedgewick format) from a file,
-    // constructs a GraphColoring for that Graph, and then prints that
+    // constructs a GraphColoringWithAllOldMethods for that Graph, and then prints that
     // initial coloring (using our toString method).  Then it goes
     // into a loop with tryImprove, printing each improved coloring
     // found, until tryImprove gives up (by returning false), or until
@@ -1178,7 +1178,7 @@ public class GraphColoring
         // Usage message, if not at least one argument.
         if (args.length == 0) {
             System.err.println
-                ("Usage: java GraphColoring graph.txt [TIMELIMIT]");
+                ("Usage: java GraphColoringWithAllOldMethods graph.txt [TIMELIMIT]");
             System.exit(1);
         }
         // Read the Graph from the file named by args[0].
@@ -1192,7 +1192,7 @@ public class GraphColoring
         long start = System.currentTimeMillis();
 
         // Compute fast initial coloring in its constructor.
-        GraphColoring coloring = new GraphColoring(G);
+        GraphColoringWithAllOldMethods coloring = new GraphColoringWithAllOldMethods(G);
         // Print it.
         StdOut.println(coloring);
         if (coloring.bugs()>0)
@@ -1253,7 +1253,7 @@ public class GraphColoring
         {
             Graph G = GraphGenerator.simple(n, p);
             System.out.println("calling constructor...");
-            GraphColoring coloring = new GraphColoring(G);
+            GraphColoringWithAllOldMethods coloring = new GraphColoringWithAllOldMethods(G);
             //StdOut.println(coloring);
             if (coloring.bugs()>0)
                 warn("initial coloring has bugs!");
@@ -1293,7 +1293,7 @@ public class GraphColoring
             {
                 pi = p * i; 
                 Graph G = GraphGenerator.simple(n, pi);
-                GraphColoring coloring = new GraphColoring(G);
+                GraphColoringWithAllOldMethods coloring = new GraphColoringWithAllOldMethods(G);
 
                 if (coloring.bugs() > 0)
                     warn("initial coloring has bugs!");
@@ -1306,7 +1306,7 @@ public class GraphColoring
         for (int i = 0; i < numberGraphs; i++)
         {
             Graph G = GraphGenerator.simple(n, p);
-            GraphColoring coloring = new GraphColoring(G);
+            GraphColoringWithAllOldMethods coloring = new GraphColoringWithAllOldMethods(G);
 
             if (coloring.bugs() > 0)
                 warn("initial coloring has bugs!");
@@ -1318,7 +1318,7 @@ public class GraphColoring
         /*long start = System.currentTimeMillis();
         Graph G = new Graph(new In(args[0]));
 
-        GraphColoring coloring = new GraphColoring(G);
+        GraphColoringWithAllOldMethods coloring = new GraphColoringWithAllOldMethods(G);
 
         System.out.println("constructor took: " + (System.currentTimeMillis() - start)); */
     }
