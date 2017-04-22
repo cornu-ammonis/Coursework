@@ -17,6 +17,10 @@ __ANDREW C JONES 4/13/17 __
 
 
 //                      ***** TO DO *****
+// modify the constructor to keep counting degree ties until you reach
+// a certain fraction of total V, and use that to determine 
+// if tryImpove C should spend less time on degreeOrderedShuffed
+//
 // modify one of the try imrpove methods such that if it gets to the end 
 // having found a better solution using degree, itll return 
 // and if it hasnt, it'll spend some amount of time running greedyShuffled
@@ -150,7 +154,7 @@ public class GraphColoring
             {
                 if (vertexDegrees[i-1].degree == vertexDegrees[i].degree)
                     numberOfDegreeTies++;
-                if (numberOfDegreeTies > 100)
+                if (numberOfDegreeTies > G.V()/3)
                     break;
             }
 
@@ -450,9 +454,10 @@ public class GraphColoring
         
         // assigns fraction of time to spend on running degreeOrderedShuffled
         // based on the number of degree ties we found 
-        if (numberOfDegreeTies > 100) timeForDegreeOrdered = .8;
+        if (G.V() < 100) timeForDegreeOrdered = .3;
+        if (numberOfDegreeTies > G.V()/3) timeForDegreeOrdered = .75;
         else if (numberOfDegreeTies == 0) timeForDegreeOrdered  = 0.0;
-        else if (numberOfDegreeTies < 10) timeForDegreeOrdered = .01;
+        else if (numberOfDegreeTies < 10) timeForDegreeOrdered = .05;
         else timeForDegreeOrdered = .25;
 
         // put all loops in their own loop, because there is a chance 
