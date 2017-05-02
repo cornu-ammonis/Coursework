@@ -68,7 +68,7 @@ public class LinkedDeque<Item> implements Deque<Item>
         last = new Node();
         last.item = item;
         last.next = null;
-        if (isEmpty())
+        if (isEmpty())                 // queue was empty, first = last 
             first = last;
         else
             oldlast.next = last;
@@ -87,7 +87,7 @@ public class LinkedDeque<Item> implements Deque<Item>
         first = new Node();
         first.item = item;
         first.next = oldfirst;
-        if (last == null)
+        if (last == null)              // queue was empty, last = first
             last = first;
         else
             oldfirst.previous = first; // added previous link for oldfirst
