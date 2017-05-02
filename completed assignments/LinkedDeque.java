@@ -268,12 +268,11 @@ public class LinkedDeque<Item> implements Deque<Item>
         
 
         while(i!= null && i.next != null){
-            Node temp;
+            Node temp;            // temp used to swap prev and next
             temp = i.next;
             i.next = i.previous;
             i.previous = temp;
-            i = i.next;
-
+            i = i.next;           // go to "next" (previous in original order)
         }
         //makes sure what was previously "first" is set to "last"
         last = oldfirst;
