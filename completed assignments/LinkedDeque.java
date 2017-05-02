@@ -206,12 +206,18 @@ public class LinkedDeque<Item> implements Deque<Item>
             
         }
 
+        // returns next item for iterator
         public Item next()
-        {
+        {   
+            // next should never be called once iterator reaches end
             if (!hasNext()) throw new NoSuchElementException();
-	    lastcurrent = current;
+	        
+            // we are returning current and also updating current, 
+            // track what we returned in lastcurrent in case client
+            // needs to remove it subsequently
+            lastcurrent = current;
             Item item = current.item;
-            current = current.next;
+            current = current.next;   // current steps forward
             return item;
         }
     }
