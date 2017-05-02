@@ -114,16 +114,16 @@ public class LinkedDeque<Item> implements Deque<Item>
         // DONE: method implemented 
         if (isEmpty()) throw new NoSuchElementException();
         Item item = last.item;
-        if (last.previous == null) {  //if last.previous is null, we are removing the only item in the list 
-            first = null;             //therefore set first and last to null
+        if (last.previous == null) {  // if last.previous is null, we are removing the only item
+            first = null;             // in the list therefore set first and last to null
             last = null;
         }
         else {
             last = last.previous;
-            last.next = null;      //eliminates only two references to the item we remove
+            last.next = null;        // eliminates only two references to the item we remove
         }
 
-        N--;                        // deincrements count
+        N--;                         // deincrements count
         return item;
 
     }
@@ -156,17 +156,20 @@ public class LinkedDeque<Item> implements Deque<Item>
             return current != null;
         }
         
-        //removes the element most recently returned by the next() method. if there is no such element,
-        //e.g. if the list is empty or there was more than one remove() call between next() calls,
-        //the method throws an IllegalStateException. 
+        // removes the element most recently returned by the next() method. 
+        // if there is no such element, e.g. if the list is empty or there 
+        // was more than one remove() call between next() calls, the method 
+        // throws an IllegalStateException. 
 
-        //removes element by setting its previous element's next point to its own next pointer, and its next elements 
-        //previous pointer to its own previous pointer (if they exist, updating first and last pointers as required)
-        //in effect removing all references to the item (so it is deleted by garbage collection)
+        // removes element by setting its previous element's next point to 
+        // its own next pointer, and its next element's previous pointer to 
+        // its own previous pointer (if they exist, updating first and last
+        // pointers as required)in effect removing all references to the item 
+        // (so it is deleted by garbage collection)
         public void remove()
         {
-
-            if (lastcurrent == null) throw new IllegalStateException(); // done: if called a second time will throw IllegalStateException
+            // done: if called a second time will throw IllegalStateException
+            if (lastcurrent == null) throw new IllegalStateException(); 
             else
                 N -= 1;
             // [DONE] (EC): implement this method.
@@ -234,7 +237,8 @@ public class LinkedDeque<Item> implements Deque<Item>
             return;
 
 
-        //switches next and previous pointers, beginning with the last element and continuing in the loop if there are more 
+        // switches next and previous pointers, beginning with the 
+        // last element and continuing in the loop if there are more 
         Node oldfirst = first;
         Node i = last;
         first = last;
