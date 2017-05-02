@@ -180,22 +180,32 @@ public class LinkedDeque<Item> implements Deque<Item>
             // is called a second time (without another next()), it
             // should throw an IllegalStateException. [DONE]
 
+            // true if we are removing first element, so must 
+            // update first pointer
             if(lastcurrent.previous == null) 
                 first = lastcurrent.next;
-            else
+            else 
                 lastcurrent.previous.next = lastcurrent.next;
             
+            // true if we are removing the last element
             if(lastcurrent.next == null)
-                if (lastcurrent.previous == null)
+                if (lastcurrent.previous == null) // if removing only element
                     last = null;
                 else
                     last = lastcurrent.previous;
+            
+            // otherwise we arent removing last element so update next 
+            // element's previous pointer
             else
                 lastcurrent.next.previous = lastcurrent.previous;
 
+            // finally remove temp pointer reference to avoid loitering
+            // and correctly throw IllegalStateException if called again
+            // before next()
             lastcurrent = null;
             
         }
+
         public Item next()
         {
             if (!hasNext()) throw new NoSuchElementException();
