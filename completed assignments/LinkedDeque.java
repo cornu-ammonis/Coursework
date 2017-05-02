@@ -225,10 +225,12 @@ public class LinkedDeque<Item> implements Deque<Item>
     //same as iterator but goes in reverse order 
     private class RevIter extends Iter
     {
+        // we inherit a current property from iter 
+        // this sets it to last. 
         public RevIter() { this.current = last; }
         public Item next() {
             if (!hasNext()) throw new NoSuchElementException();
-	    lastcurrent = current;
+	        lastcurrent = current;
             Item item = current.item;
             current = current.previous;
             return item;
@@ -249,6 +251,8 @@ public class LinkedDeque<Item> implements Deque<Item>
         // You should reuse the existing Node objects, rather than
         // creating new ones.  You should modify their next/previous
         // links, not their item links.
+
+        // if deque is empty or has length 1 we have nothing to do
         if (first == null || last == null || first.equals(last))
             return;
 
@@ -256,11 +260,11 @@ public class LinkedDeque<Item> implements Deque<Item>
         // switches next and previous pointers, beginning with the 
         // last element and continuing in the loop if there are more 
         Node oldfirst = first;
-        Node i = last;
-        first = last;
-        i.next = i.previous;
-        i.previous = null; //always null because this is the last element becoming the first element, means temp is not required
-        i = i.next;
+        Node i = last;        
+        first = last;          // switch first and last 
+        i.next = i.previous;  // switch next and previous pointers
+        i.previous = null;   // always null because this is the last element becoming the first element
+        i = i.next;         // go to next 
         
 
         while(i!= null && i.next != null){
