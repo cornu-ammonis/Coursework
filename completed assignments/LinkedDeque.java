@@ -267,7 +267,7 @@ public class LinkedDeque<Item> implements Deque<Item>
         i = i.next;         // go to next 
         
 
-        while(i!= null && i.next != null){
+        while(i!= null){
             Node temp;            // temp used to swap prev and next
             temp = i.next;
             i.next = i.previous;
@@ -289,7 +289,14 @@ public class LinkedDeque<Item> implements Deque<Item>
         
         testq.addLast("there");
         testq.addLast("sup?");
-        Iterator<String> testiter = testq.iterator();
+        //testq.addFirst("hi");
+        
+        //testq.addLast("there");
+        //testq.addLast("sup?");
+        System.out.println(testq.toString());
+        testq.reverse();
+        System.out.println(testq.toString());
+        /* Iterator<String> testiter = testq.iterator();
          System.out.println(testiter.next());
 
         System.out.println(testq.toString());
