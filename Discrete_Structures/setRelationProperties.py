@@ -24,7 +24,11 @@ My code doesn't do any error-checking on the input so we should assume all input
 # searching through rel each time, meaning that each of the functions (reflexive, symmetric, transitive) may
 # scale linearly instead of quadratically  -- O(n) instead of O(n*n) !!
 global relationsSet
-relationsSet = set()
+
+# name of variable later in file breaks binding of the name 'set' with the built in python function set(), which 
+# is the way to initialize an empty set in python 2.7 -- so we rebind it to s for later use 
+s = set 
+relationsSet = s()
 
 def buildRelationsSet(rel):
 	global relationsSet
@@ -57,8 +61,23 @@ def symmetric(set, rel):
 
 
 def transitive(set, rel):
-	return None
-  #Fill in code here
+	hashmap = {}
+
+	# give each member an empty set 
+	for member in set:
+		hashmap[member] = s()
+
+	# populate each members set with members its related to
+	for r in rel:
+		hashmap[r[0]].add(r[1])
+
+
+	for r in rel:
+		if not hashmap[r[1]].issubset(hashmap[r[0]]):
+			return False
+
+	return True
+
 
  
 #CHANGE NOTHING BELOW THIS LINE
