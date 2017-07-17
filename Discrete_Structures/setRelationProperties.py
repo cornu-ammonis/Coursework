@@ -22,6 +22,10 @@ My code doesn't do any error-checking on the input so we should assume all input
 # to contain a tuple representing each relation {x, y} as (x, y)
 global relationsSet
 
+def buildRelationsSet(set, rel):
+	for r in rel:
+		relationsSet.add( (r[0], r[1]) )
+
 def reflexive(set, rel):
  #Fill in code here
 
