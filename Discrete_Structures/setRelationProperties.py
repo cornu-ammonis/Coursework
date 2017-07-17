@@ -54,6 +54,8 @@ def symmetric(set, rel):
 		buildRelationsSet(rel)
 
 	for r in rel:
+
+		# for each [x, y] check that (y, x) is in relationsSet
 		if (r[1], r[0]) not in relationsSet:
 			return False
 
@@ -73,6 +75,9 @@ def transitive(set, rel):
 
 
 	for r in rel:
+
+		# for each [x, y] check that the set of elements to which y relates
+		# is a subset of the elements to which x relates
 		if not hashmap[r[1]].issubset(hashmap[r[0]]):
 			return False
 
