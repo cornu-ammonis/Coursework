@@ -26,10 +26,14 @@ My code doesn't do any error-checking on the input so we should assume all input
 global relationsSet
 
 def buildRelationsSet(set, rel):
+	global relationsSet
+	
 	for r in rel:
 		relationsSet.add( (r[0], r[1]) )
 
 def reflexive(set, rel):
+	global relationsSet
+
 	for member in set:
 		if (member, member) not in relationsSet:
 			return False
