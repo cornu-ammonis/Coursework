@@ -19,7 +19,10 @@ My code doesn't do any error-checking on the input so we should assume all input
  you repeat a relation, the code will not catch these errors.
 """
 
-# to contain a tuple representing each relation {x, y} as (x, y)
+# will contain a tuple representing each relation {x, y} as (x, y)
+# this permits checking for the existence of a relation in constant time rather than 
+# searching through rel each time, meaning that each of the functions (reflexive, symmetric, transitive) may
+# scale linearly instead of quadratically  -- O(n) instead of O(n*n) !!
 global relationsSet
 
 def buildRelationsSet(set, rel):
@@ -27,12 +30,19 @@ def buildRelationsSet(set, rel):
 		relationsSet.add( (r[0], r[1]) )
 
 def reflexive(set, rel):
- #Fill in code here
+	for member in set:
+		if (member, member) not in relationsSet:
+			return False
+
+	return True
+
 
 def symmetric(set, rel):
+	return None
   #Fill in code here
 
 def transitive(set, rel):
+	return None
   #Fill in code here
 
  
