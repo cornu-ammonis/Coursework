@@ -24,15 +24,18 @@ My code doesn't do any error-checking on the input so we should assume all input
 # searching through rel each time, meaning that each of the functions (reflexive, symmetric, transitive) may
 # scale linearly instead of quadratically  -- O(n) instead of O(n*n) !!
 global relationsSet
+relationsSet = set()
 
-def buildRelationsSet(set, rel):
+def buildRelationsSet(rel):
 	global relationsSet
-	
+
 	for r in rel:
 		relationsSet.add( (r[0], r[1]) )
 
 def reflexive(set, rel):
 	global relationsSet
+	if len(relationsSet) is 0:
+		buildRelationsSet(rel)
 
 	for member in set:
 		if (member, member) not in relationsSet:
@@ -42,6 +45,11 @@ def reflexive(set, rel):
 
 
 def symmetric(set, rel):
+	global relationsSet
+	if len(relationsSet) is 0:
+		buildRelationsSet(rel)
+
+
 	return None
   #Fill in code here
 
