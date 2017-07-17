@@ -49,9 +49,12 @@ def symmetric(set, rel):
 	if len(relationsSet) is 0:
 		buildRelationsSet(rel)
 
+	for r in rel:
+		if (r[1], r[0]) not in relationsSet:
+			return False
 
-	return None
-  #Fill in code here
+	return True
+
 
 def transitive(set, rel):
 	return None
