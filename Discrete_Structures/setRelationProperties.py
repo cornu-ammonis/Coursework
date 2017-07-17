@@ -21,14 +21,14 @@ My code doesn't do any error-checking on the input so we should assume all input
 
 # will contain a tuple representing each relation {x, y} as (x, y)
 # this permits checking for the existence of a relation in constant time rather than 
-# searching through rel each time, meaning that each of the functions (reflexive, symmetric, transitive) may
+# searching through rel each time, meaning that the reflexive and symmetric functions may
 # scale linearly instead of quadratically  -- O(n) instead of O(n*n) !!
 global relationsSet
 
 # name of variable later in file breaks binding of the name 'set' with the built in python function set(), which 
-# is the way to initialize an empty set in python 2.7 -- so we rebind it to s for later use 
-s = set 
-relationsSet = s()
+# is the only clean way to initialize an empty set in python 2.7 -- so we rebind it to s for later use 
+emptySet = set 
+relationsSet = emptySet()
 
 def buildRelationsSet(rel):
 	global relationsSet
@@ -67,7 +67,7 @@ def transitive(set, rel):
 
 	# give each member an empty set 
 	for member in set:
-		hashmap[member] = s()
+		hashmap[member] = emptySet()
 
 	# populate each members set with members its related to
 	for r in rel:
