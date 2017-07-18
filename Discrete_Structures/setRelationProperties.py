@@ -19,14 +19,19 @@ My code doesn't do any error-checking on the input so we should assume all input
  you repeat a relation, the code will not catch these errors.
 """
 
-# will contain a tuple representing each relation {x, y} as (x, y)
+# this set will contain a tuple representing each relation {x, y} as (x, y)
 # this permits checking for the existence of a relation in constant time rather than 
 # searching through rel each time, meaning that the reflexive and symmetric functions may
-# scale linearly instead of quadratically  -- O(n) instead of O(n*n) !!
+# scale linearly instead of quadratically  -- O(n) instead of O(n*n) !! 
+# note that this particular datatyping is necessary because tuples are hashable (and 
+# therefore they may serve as dictionary keys) but lists are not hashable because they are mutable.
 global relationsSet
 
-# name of variable later in file breaks binding of the name 'set' with the built in python function set(), which 
-# is the only clean way to initialize an empty set in python 2.7 -- so we rebind it to s for later use 
+# we rebind the name 'set' to emptySet because the name of a variable later in file breaks binding 
+# of the name 'set' with the standard python function  set(), which is the cleanest way to initialize 
+# an empty set. note that this is because the literal notation for a set -- e.g. {1, 2, 3} -- is 
+# indistinguishable from a dictionary literal when empty (the interpreter will assume '{}' is a dictionary).
+# it is therefore generally better practice to reserve the variable name 'set' for its default value. 
 emptySet = set 
 relationsSet = emptySet()
 
@@ -69,7 +74,7 @@ def transitive(set, rel):
 	for member in set:
 		hashmap[member] = emptySet()
 
-	# populate each members set with members its related to
+	# populate each member's set with the members to which it is related
 	for r in rel:
 		hashmap[r[0]].add(r[1])
 
