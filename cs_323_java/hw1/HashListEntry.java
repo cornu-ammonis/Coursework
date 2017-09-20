@@ -12,6 +12,11 @@ public class HashListEntry<K, V>  implements Entry<K, V> {
    // ***************************************************
    public HashListEntry(K k, V v) {
 
+      this.key = k;
+      this.value = v;
+      this.prev = null;
+      this.next = null;
+
    }
 
    // ***************************************************
@@ -19,12 +24,16 @@ public class HashListEntry<K, V>  implements Entry<K, V> {
    // ***************************************************
    public K getKey() {
 
+      return this.key;
+
    }
 
    // ***************************************************
    // getKey(): return the value in the entry
    // ***************************************************
    public V getValue() {
+
+      return this.value;
 
    }
 
