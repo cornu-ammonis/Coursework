@@ -77,6 +77,27 @@ public class HashListMap<K, V> implements Map<K, V> {
   // ****************************************************************
   public void insert(int bucketID, HashListEntry<K, V> e) {
 
+    if (bucket[bucketID] == null) {
+      bucket[bucketID] = e;
+    }
+    
+    // already an entry; insert at end of linked list 
+    else {
+
+      HashListEntry<K, V> crawler = bucket[bucketID];
+
+      // find end of linked list 
+      while (crawler.next != null) {
+        crawler = crawler.next;
+      }
+
+      // insert
+      crawler.next = e;
+      e.prev = crawler;
+
+    }
+
+    NItems++;
   }
 
 
@@ -87,6 +108,42 @@ public class HashListMap<K, V> implements Map<K, V> {
   // *****************************************************************
   public void delete(int bucketID, HashListEntry<K, V> p) {
 
+    if (bucket[bucketID] == null) {
+      throw new UnsupportedOperationException("attempted to delete an entry which does not exist.");
+    }
+
+    HashListEntry<K, V> crawler = bucket[bucketID];
+
+    while (crawler.next != null && crawler.key != p.key) {
+      crawler = crawler.next;
+    }
+
+    if (crawler.key != p.key) {
+      throw new UnsupportedOperationException("attempted to delete an entry which does not exist.");
+    }
+
+    NItems--;
+
+    // was first element in list 
+    if (crawler.prev == null) {
+      bucket[bucketID] = crawler.next;
+      
+      if (crawler.next != null) {
+        crawler.next.prev = null;
+      }
+
+      return;
+    }
+
+
+    crawler.prev.next = crawler.next;
+
+    // else it was last element in the list
+    if (crawler.next != null) {
+      crawler.next.prev = crawler.prev;
+    }
+
+    return;
   }
 
 
@@ -101,7 +158,26 @@ public class HashListMap<K, V> implements Map<K, V> {
   // Write this method
   // ********************************************************************* 
   public HashListEntry<K,V> findEntry(K key) {
-    return null;
+
+    int bucketID = hashValue(key);
+
+    if (bucket[bucketID] == null) {
+      return null;
+    }
+
+    HashListEntry<K, V> crawler = bucket[bucketID];
+
+    while (crawler != null && crawler.key != key) {
+      crawler = crawler.next;
+    }
+
+    if (crawler == null || crawler.key != key) {
+      return null;
+    }
+    else {
+      return crawler;
+    }
+
   }
 
 
