@@ -1,3 +1,12 @@
+
+/*
+THIS CODE WAS MY OWN WORK, IT WAS WRITTEN WITHOUT CONSULTING
+CODE WRITTEN BY OTHER STUDENTS OR SOURCES OUTSIDE OF THOSE
+PROVIDED BY THE INSTRUCTOR.  _Andrew_Christopher_Jones_
+*/
+
+
+
 @SuppressWarnings("unchecked")
 public class HashListMap<K, V> implements Map<K, V> {
   public HashListEntry<K,V>[] bucket;   // The hash table (buckets)
