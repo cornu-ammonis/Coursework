@@ -1,3 +1,12 @@
+
+/*
+THIS CODE WAS MY OWN WORK, IT WAS WRITTEN WITHOUT CONSULTING
+CODE WRITTEN BY OTHER STUDENTS OR SOURCES OUTSIDE OF THOSE
+PROVIDED BY THE INSTRUCTOR.  _Andrew_Christopher_Jones_
+*/
+
+
+
 @SuppressWarnings("unchecked")
 public class HashListMap<K, V> implements Map<K, V> {
   public HashListEntry<K,V>[] bucket;   // The hash table (buckets)
@@ -77,6 +86,27 @@ public class HashListMap<K, V> implements Map<K, V> {
   // ****************************************************************
   public void insert(int bucketID, HashListEntry<K, V> e) {
 
+    if (bucket[bucketID] == null) 
+      bucket[bucketID] = e;
+    
+    
+    // already an entry; insert at end of linked list 
+    else {
+
+      HashListEntry<K, V> crawler = bucket[bucketID];
+
+      // find end of linked list 
+      while (crawler.next != null) 
+        crawler = crawler.next;
+      
+
+      // insert
+      crawler.next = e;
+      e.prev = crawler;
+
+    }
+
+    NItems++;
   }
 
 
@@ -87,6 +117,45 @@ public class HashListMap<K, V> implements Map<K, V> {
   // *****************************************************************
   public void delete(int bucketID, HashListEntry<K, V> p) {
 
+    if (bucket[bucketID] == null) 
+      throw new UnsupportedOperationException("attempted to delete an entry which does not exist.");
+    
+
+    HashListEntry<K, V> crawler = bucket[bucketID];
+
+    while (crawler.next != null && !crawler.key.equals(p.key)) 
+      crawler = crawler.next;
+    
+
+    // check that the entry on which we stopped is actually p 
+    // I think that .equals() rather than == is correct here becasue K could be a reference type
+    if ( !crawler.key.equals(p.key) ) 
+      throw new UnsupportedOperationException("attempted to delete an entry which does not exist.");
+    
+
+    // deincrement count 
+    NItems--;
+
+    // was first element in list 
+    if (crawler.prev == null) {
+      bucket[bucketID] = crawler.next;
+      
+      if (crawler.next != null) 
+        crawler.next.prev = null;
+      
+
+      return;
+    }
+
+
+    crawler.prev.next = crawler.next;
+
+    // else it was last element in the list
+    if (crawler.next != null) 
+      crawler.next.prev = crawler.prev;
+    
+
+    return;
   }
 
 
@@ -101,7 +170,29 @@ public class HashListMap<K, V> implements Map<K, V> {
   // Write this method
   // ********************************************************************* 
   public HashListEntry<K,V> findEntry(K key) {
-    return null;
+
+    int bucketID = hashValue(key);
+
+    // no list case 
+    if (bucket[bucketID] == null) 
+      return null;
+    
+
+
+    // some list case 
+    HashListEntry<K, V> crawler = bucket[bucketID];
+
+    // traverse until either found or end of list 
+    while ( crawler != null && !crawler.key.equals(key) )
+      crawler = crawler.next;
+    
+    // determine whether found or reached end of list 
+    if ( crawler == null || !crawler.key.equals(key) ) 
+      return null;
+    else 
+      return crawler;
+    
+
   }
 
 

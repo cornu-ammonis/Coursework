@@ -1,3 +1,12 @@
+
+/*
+THIS CODE WAS MY OWN WORK, IT WAS WRITTEN WITHOUT CONSULTING
+CODE WRITTEN BY OTHER STUDENTS OR SOURCES OUTSIDE OF THOSE
+PROVIDED BY THE INSTRUCTOR.  _Andrew_Christopher_Jones_
+*/
+
+
+
 public class HashListEntry<K, V>  implements Entry<K, V> {
    public  K key; 
    public  V value; 
@@ -12,6 +21,12 @@ public class HashListEntry<K, V>  implements Entry<K, V> {
    // ***************************************************
    public HashListEntry(K k, V v) {
 
+      this.key = k;
+      this.value = v;
+      
+      this.prev = null;
+      this.next = null;
+
    }
 
    // ***************************************************
@@ -19,12 +34,16 @@ public class HashListEntry<K, V>  implements Entry<K, V> {
    // ***************************************************
    public K getKey() {
 
+      return this.key;
+
    }
 
    // ***************************************************
    // getKey(): return the value in the entry
    // ***************************************************
    public V getValue() {
+
+      return this.value;
 
    }
 
