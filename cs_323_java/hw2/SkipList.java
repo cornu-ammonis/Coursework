@@ -290,7 +290,7 @@ public class SkipList {
   // returns entry with smallest key value that is >= k
   public SkipListEntry ceilingEntry(String k) {
 
-    // finds the largest key x <= k
+    // finds the largest entry with key x <= k
     SkipListEntry p = findEntry(k);
     
     // p.key == k
@@ -300,6 +300,21 @@ public class SkipList {
     // else go one to the right
     return p.right;
 
+  }
+
+  // returns the entry with the largest key value that is <=k -- this is the same as findEntry i think
+  public SkipListEntry floorEntry(String k) {
+    // finds the largest entry with key x <= k
+    SkipListEntry p = findEntry(k);
+    
+    // p.key == k or p.key < k
+    return p;
+
+  }
+
+  public SkipListEntry upperEntry(String k) {
+    // finds the largest entry with key x <= k
+    SkipListEntry p = findEntry(k);
   }
 
   public void printHorizontal() {
