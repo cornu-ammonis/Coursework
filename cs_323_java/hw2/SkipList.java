@@ -287,6 +287,21 @@ public class SkipList {
       return p.left;
   }
 
+  // returns entry with smallest key value that is >= k
+  public SkipListEntry ceilingEntry(String k) {
+
+    // finds the largest key x <= k
+    SkipListEntry p = findEntry(k);
+    
+    // p.key == k
+    if ( k.equals( p.getKey() ) )
+      return p;
+
+    // else go one to the right
+    return p.right;
+
+  }
+
   public void printHorizontal() {
     String s = "";
     int i;
