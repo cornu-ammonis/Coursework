@@ -315,6 +315,27 @@ public class SkipList {
   public SkipListEntry upperEntry(String k) {
     // finds the largest entry with key x <= k
     SkipListEntry p = findEntry(k);
+
+    // case where p is the last element in the list
+    if (p.right.getKey() == SkipListEntry.posInf)
+      return null;
+
+    return p.right;
+  }
+
+  public SkipListEntry lowerEntry(String k) {
+    // finds the largest entry with key x <= k
+    SkipListEntry p = findEntry(k);
+
+    // if p.key != k, p is largest entry < k
+    if ( !p.getKey().equals(k) )
+      return p;
+
+    // else we either go one to the left or we are at the first element and return null
+    if (p.left.getKey() == SkipListEntry.negInf)
+      return null;
+
+    return p.left;
   }
 
   public void printHorizontal() {
