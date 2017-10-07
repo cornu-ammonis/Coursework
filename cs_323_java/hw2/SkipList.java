@@ -242,7 +242,50 @@ public class SkipList {
 }
 
   /** Removes the key-value pair with a specified key. */
-  public Integer remove (String key) { return(null); }
+  public Integer remove (String key) { 
+
+    SkipListEntry p = findEntry(key);
+    if ( !p.getKey().equals(key) )
+      return(null); 
+
+    int value = p.getValue();
+
+    do {
+      p.left.right = p.right;
+      p.right.left = p.left;
+      p = p.up;
+    }
+    while ( p != null ); 
+
+      return value;
+  }
+
+  public SkipListEntry firstEntry() {
+    SkipListEntry p = head;
+
+    // get to lowest level
+    while (p.down != null)
+      p = p.down;
+
+    // case where list is empty is undefined -- i chose to return null
+    if (p.right == tail)
+      return null;
+    else
+      return p.right;
+  }
+
+  public SkipListEntry lastEntry() {
+    SkipListEntry p = tail;
+
+    while (p.down != null)
+      p = p.down;
+
+    // case where list is empty is undefined -- i choose to return null
+    if (p.left == head)
+      return null;
+    else
+      return p.left;
+  }
 
   public void printHorizontal() {
     String s = "";

@@ -25,9 +25,9 @@ public class TestSkipList {
             System.out.println("Testing the value-added methods:");
             System.out.println("=====================================");
             System.out.println();
-            System.out.println("firstEntry() = " + S.firstEntry() );
+            System.out.println("firstEntry() = " + S.firstEntry() ); 
             System.out.println("lastEntry() = " + S.lastEntry() );
-            System.out.println();
+            System.out.println(); /*
             System.out.println("ceilingEntry(XYZ) = " + S.ceilingEntry("XYZ") );
             System.out.println("floorEntry(XYZ) = " + S.floorEntry("XYZ") );
             System.out.println("upperEntry(XYZ) = " + S.upperEntry("XYZ") );
@@ -36,7 +36,7 @@ public class TestSkipList {
             System.out.println("ceilingEntry(WWW) = " + S.ceilingEntry("WWW") );
             System.out.println("floorEntry(WWW) = " + S.floorEntry("WWW") );
             System.out.println("upperEntry(WWW) = " + S.upperEntry("WWW") );
-            System.out.println("lowerEntry(WWW) = " + S.lowerEntry("WWW") );
+            System.out.println("lowerEntry(WWW) = " + S.lowerEntry("WWW") ); */
 
             System.out.println();
             System.out.println("=====================================");
