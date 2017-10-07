@@ -245,11 +245,14 @@ public class SkipList {
   public Integer remove (String key) { 
 
     SkipListEntry p = findEntry(key);
+    
+    // key not in list
     if ( !p.getKey().equals(key) )
-      return(null); 
+      return null; 
 
     int value = p.getValue();
 
+    // update connections to remove reference to the entry
     do {
       p.left.right = p.right;
       p.right.left = p.left;
@@ -257,11 +260,14 @@ public class SkipList {
     }
     while ( p != null ); 
 
-      return value;
+    // return its value 
+    return value;
   }
 
+  // returns first (finite) entry in list or null if the list is empty
   public SkipListEntry firstEntry() {
-    SkipListEntry p = head;
+    
+    SkipListEntry p = head; //start at head
 
     // get to lowest level
     while (p.down != null)
@@ -271,12 +277,14 @@ public class SkipList {
     if (p.right == tail)
       return null;
     else
-      return p.right;
+      return p.right; // entry to right of negative infinity is first in list
   }
 
   public SkipListEntry lastEntry() {
-    SkipListEntry p = tail;
+    
+    SkipListEntry p = tail; // start at tail
 
+    // get to lowest level
     while (p.down != null)
       p = p.down;
 
@@ -284,7 +292,7 @@ public class SkipList {
     if (p.left == head)
       return null;
     else
-      return p.left;
+      return p.left; // entry ot left of positive infinity is last in list
   }
 
   // returns entry with smallest key value that is >= k
@@ -303,16 +311,22 @@ public class SkipList {
   }
 
   // returns the entry with the largest key value that is <=k -- this is the same as findEntry i think
+  // only difference being that it will return null if 
   public SkipListEntry floorEntry(String k) {
+    
     // finds the largest entry with key x <= k
     SkipListEntry p = findEntry(k);
     
+    if (p.getKey() == SkipListEntry.negInf)
+      return null;
+
     // p.key == k or p.key < k
     return p;
 
   }
 
   public SkipListEntry upperEntry(String k) {
+    
     // finds the largest entry with key x <= k
     SkipListEntry p = findEntry(k);
 
@@ -320,7 +334,8 @@ public class SkipList {
     if (p.right.getKey() == SkipListEntry.posInf)
       return null;
 
-    return p.right;
+    // p.right is the correct entry in all other cases because of the behavior of findEntry
+    return p.right; 
   }
 
   public SkipListEntry lowerEntry(String k) {
@@ -335,6 +350,7 @@ public class SkipList {
     if (p.left.getKey() == SkipListEntry.negInf)
       return null;
 
+    // otherwise p.key == k so the largest entry with key < k is one position to the left
     return p.left;
   }
 
