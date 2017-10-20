@@ -49,18 +49,20 @@ PROVIDED BY THE INSTRUCTOR.  Andrew Christopher Jones
 
     while (current != null) {
 
-      // current is larger than the key so we must go left
+      // current is larger than the key so it's not a possible answer
+      // and we must go left
       if ( key.compareTo( current.key ) < 0 ) 
-        current = current.left; // go left
+        current = current.left; 
       
 
       // current is smaller than key so go right
+      // save current in ans because it is closest seen so far
       else if ( key.compareTo( current.key ) > 0 )  {
         ans = current;
         current = current.right;
       }
 
-      else // exact match
+      else // current is an exact match - return it
         return current;
 
     }
@@ -79,9 +81,8 @@ PROVIDED BY THE INSTRUCTOR.  Andrew Christopher Jones
       // current is larger than key so it is the best answer we've seen
       // so far and we must go left
       if ( key.compareTo( current.key ) < 0 ) {
-
         ans = current; // save current since its best answer seen so far
-        current = current.left; // go left
+        current = current.left; 
       }
 
       // current is smaller than the key so it is not a possible answer and
@@ -89,7 +90,7 @@ PROVIDED BY THE INSTRUCTOR.  Andrew Christopher Jones
       else if ( key.compareTo( current.key ) > 0 ) 
         current = current.right;
       
-      else // exact match; no other answer is possible at this point so retrn
+      else // exact match; no better answer is possible at this point so return
         return current;
 
     }
@@ -98,6 +99,7 @@ PROVIDED BY THE INSTRUCTOR.  Andrew Christopher Jones
   }
 
   // return the entry with the largest key value that is < k
+  // returns null if no entry meets above criteria
   public BSTEntry lowerEntry(String key){
     
     BSTEntry current = root;
@@ -123,6 +125,7 @@ PROVIDED BY THE INSTRUCTOR.  Andrew Christopher Jones
   }
 
   // return the entry with the smallest key value that is > k
+  // returns null if no entry meets above criteria
   public BSTEntry upperEntry(String key){
     
     BSTEntry current = root;
