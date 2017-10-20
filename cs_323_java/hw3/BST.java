@@ -66,7 +66,31 @@ PROVIDED BY THE INSTRUCTOR.  Andrew Christopher Jones
 
   // return the entry with the smallest key value that is ≥ k
   public BSTEntry ceilingEntry(String key){
-    return null;    
+
+    BSTEntry current = root;
+    BSTENtry ans = null;
+
+    while (current != null) {
+
+      // current is larger than key so it is the best answer we've seen
+      // so far and we must go left
+      if ( key.compareTo( current.key ) < 0 ) {
+
+        ans = current; // save current since its best answer seen so far
+        current = current.left; // go left
+      }
+
+      // current is smaller than the key so it is not a possible answer and
+      // we must go right
+      else if ( key.compareTo( current.key ) > 0 ) 
+        current = current.right;
+      
+      else // exact match; no other answer is possible at this point so retrn
+        return current;
+
+    }
+
+    return ans;    
   }
 
   public BSTEntry lowerEntry(String key){
