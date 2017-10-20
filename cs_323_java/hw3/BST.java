@@ -93,8 +93,29 @@ PROVIDED BY THE INSTRUCTOR.  Andrew Christopher Jones
     return ans;    
   }
 
+  // return the entry with the largest key value that is < k
   public BSTEntry lowerEntry(String key){
-    return null;
+    BSTEntry current = root;
+    BSTEntry ans = null;
+
+    while (current != null) {
+      
+      // current is larger than or equal to key so it is not a possible 
+      // answer and we must go left
+      if ( key.compareTo( current.key ) <= 0 ) 
+        current = current.left;
+
+      // current is smaller than the key so it is best candidate
+      // so far and we should go right
+      else  {
+        ans = current; // save current as it is potential answer
+        current = current.right;
+      }
+
+      
+    }
+
+    return ans;
   }
 
   public BSTEntry upperEntry(String key){
