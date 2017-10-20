@@ -19,17 +19,22 @@ PROVIDED BY THE INSTRUCTOR.  Andrew Christopher Jones
     root = null;
   }
 
+  // returns entry with smallest key
   public BSTEntry firstEntry(){
     BSTEntry current = root;
+
+    // traverse left as far as possible
     while (current.left != null)
       current = current.left;
 
     return current;
   }
 
+  // returns entry with largest key
   public BSTEntry lastEntry(){
     BSTEntry current = root;
 
+    // traverse right as far as possible
     while (current.right != null)
       current = current.right;
 
@@ -45,10 +50,9 @@ PROVIDED BY THE INSTRUCTOR.  Andrew Christopher Jones
     while (current != null) {
 
       // current is larger than the key so we must go left
-      if ( key.compareTo( current.key ) < 0 ) {
-        //ans = current; // remember previous 
+      if ( key.compareTo( current.key ) < 0 ) 
         current = current.left; // go left
-      }
+      
 
       // current is smaller than key so go right
       else if ( key.compareTo( current.key ) > 0 )  {
