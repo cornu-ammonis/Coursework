@@ -1,3 +1,11 @@
+/*
+THIS CODE WAS MY OWN WORK, IT WAS WRITTEN WITHOUT CONSULTING
+CODE WRITTEN BY OTHER STUDENTS OR SOURCES OUTSIDE OF THOSE
+PROVIDED BY THE INSTRUCTOR.  Andrew Christopher Jones
+*/
+
+
+
 /* ================================================================
    This is BST with "height" awareness
 
