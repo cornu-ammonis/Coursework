@@ -68,7 +68,7 @@ PROVIDED BY THE INSTRUCTOR.  Andrew Christopher Jones
   public BSTEntry ceilingEntry(String key){
 
     BSTEntry current = root;
-    BSTENtry ans = null;
+    BSTEntry ans = null;
 
     while (current != null) {
 
