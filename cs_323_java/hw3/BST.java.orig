@@ -53,7 +53,7 @@ PROVIDED BY THE INSTRUCTOR.  Andrew Christopher Jones
       // and we must go left
       if ( key.compareTo( current.key ) < 0 )
         current = current.left;
-
+      
 
       // current is smaller than key so go right
       // save current in ans because it is closest seen so far
@@ -66,7 +66,7 @@ PROVIDED BY THE INSTRUCTOR.  Andrew Christopher Jones
         return current;
 
     }
-
+    
     return ans;
   }
 
@@ -82,34 +82,34 @@ PROVIDED BY THE INSTRUCTOR.  Andrew Christopher Jones
       // so far and we must go left
       if ( key.compareTo( current.key ) < 0 ) {
         ans = current; // save current since its best answer seen so far
-        current = current.left;
+        current = current.left; 
       }
 
       // current is smaller than the key so it is not a possible answer and
       // we must go right
-      else if ( key.compareTo( current.key ) > 0 )
+      else if ( key.compareTo( current.key ) > 0 ) 
         current = current.right;
-
+      
       else // exact match; no better answer is possible at this point so return
         return current;
 
     }
 
-    return ans;
+    return ans;    
   }
 
   // return the entry with the largest key value that is < k
   // returns null if no entry meets above criteria
   public BSTEntry lowerEntry(String key){
-
+    
     BSTEntry current = root;
     BSTEntry ans = null;
 
     while (current != null) {
-
-      // current is larger than or equal to key so it is not a possible
+      
+      // current is larger than or equal to key so it is not a possible 
       // answer and we must go left
-      if ( key.compareTo( current.key ) <= 0 )
+      if ( key.compareTo( current.key ) <= 0 ) 
         current = current.left;
 
       // current is smaller than the key so it is best candidate
@@ -127,22 +127,22 @@ PROVIDED BY THE INSTRUCTOR.  Andrew Christopher Jones
   // return the entry with the smallest key value that is > k
   // returns null if no entry meets above criteria
   public BSTEntry upperEntry(String key){
-
+    
     BSTEntry current = root;
     BSTEntry ans = null;
 
     while (current != null) {
 
-      // current is larger than key so it is best answer
+      // current is larger than key so it is best answer 
       // seen so far and we should go left
       if ( key.compareTo( current.key ) < 0 ) {
         ans = current;
         current = current.left;
       }
 
-      // current is less than or equal to key so it is not a
+      // current is less than or equal to key so it is not a 
       // potential answer and we should go right
-      else
+      else 
         current = current.right;
     }
 
@@ -151,7 +151,7 @@ PROVIDED BY THE INSTRUCTOR.  Andrew Christopher Jones
 
 
   /* ================================================================
-  findEntry(k): find entry with key k
+  findEntry(k): find entry with key k 
 
   Return:  reference to (k,v) IF k is in BST
    reference to parent(k,v) IF k is NOT in BST (for put)
@@ -170,21 +170,21 @@ PROVIDED BY THE INSTRUCTOR.  Andrew Christopher Jones
       if ( k.compareTo( curr_node.key ) < 0 ) {
         prev_node = curr_node;       // Remember prev. node
         curr_node = curr_node.left;  // Continue search in left subtree
-      }
+      } 
       else if ( k.compareTo( curr_node.key ) > 0 ) {
         prev_node = curr_node;       // Remember prev. node
         curr_node = curr_node.right; // Continue search in right subtree
-      }
-      else
-        // Found key in BST
+      } 
+      else 
+        // Found key in BST 
         return curr_node;
-
+  
     }
 
     /* ======================================
     When we reach here, k is NOT in BST
     ====================================== */
-    return prev_node;       // Return the previous (parent) node
+    return prev_node;		// Return the previous (parent) node
   }
 
   /* ================================================================
@@ -219,7 +219,7 @@ PROVIDED BY THE INSTRUCTOR.  Andrew Christopher Jones
     Just like linked list, insert in an EMPTY BST
     must be taken care off separately by an if-statement
     ---------------------------------------------------------- */
-    if ( root == null ) {
+    if ( root == null ) {  
       // Insert into an empty BST
       root = new BSTEntry( k, v );
       root.height = 1;
@@ -232,7 +232,7 @@ PROVIDED BY THE INSTRUCTOR.  Andrew Christopher Jones
     p = findEntry(k);
 
     if ( k.equals( p.key ) ) {
-      p.value = v;          // Update value
+      p.value = v;			// Update value
       return;
     }
 
@@ -245,9 +245,9 @@ PROVIDED BY THE INSTRUCTOR.  Andrew Christopher Jones
     q.parent = p;
 
     if ( k.compareTo( p.key ) < 0 )
-      p.left = q;               // Add q as left child
-    else
-      p.right = q;              // Add q as right child
+      p.left = q;            	// Add q as left child
+    else 
+      p.right = q;           	// Add q as right child
 
     /* --------------------------------------------
     Recompute the height of all parent nodes...
@@ -270,7 +270,7 @@ PROVIDED BY THE INSTRUCTOR.  Andrew Christopher Jones
     p = findEntry(k);
 
     if ( ! k.equals( p.key ) )
-      return;           // Not found ==> nothing to delete....
+      return;			// Not found ==> nothing to delete....
 
 
     /* ========================================================
@@ -299,7 +299,7 @@ PROVIDED BY THE INSTRUCTOR.  Andrew Christopher Jones
 
     if ( p.left == null ){
       // Case 1a: p has 1 (right) child
-
+      
       parent = p.parent;
 
       /* ----------------------------------------------
@@ -345,12 +345,12 @@ PROVIDED BY THE INSTRUCTOR.  Andrew Christopher Jones
 
     Note: succ(p) has NOT left child !
     ================================================================ */
-    succ = p.right;         // p has 2 children....
+    succ = p.right;			// p has 2 children....
 
     while ( succ.left != null )
       succ = succ.left;
 
-    p.key = succ.key;       // Replace p with successor
+    p.key = succ.key;		// Replace p with successor
     p.value = succ.value;
 
 
@@ -360,7 +360,7 @@ PROVIDED BY THE INSTRUCTOR.  Andrew Christopher Jones
     parent = succ.parent;
 
     if ( parent.left == succ )
-      parent.left = succ.right; // parent skip over succ ...
+      parent.left = succ.right;	// parent skip over succ ...
     else
       parent.right = succ.right;    // ... and point to succ's right child
 

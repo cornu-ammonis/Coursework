@@ -1,0 +1,5 @@
+[cli]
+bears = SpaceConsistencyBear
+default_actions = *: ApplyPatchAction
+files = hw3/*.java
+use_spaces = True
