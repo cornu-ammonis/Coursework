@@ -54,6 +54,22 @@ public class SortedPriorityQueue<Key,Value> extends AbstractPriorityQueue<Key,Va
 		return list.remove(0);
 	}
 
+	// source citation: taken directly from UnsortedPriorityQueue code
+	public int size() { return list.size(); }
+
+	
+	public String toString(){
+		String s = "{";
+		if (isEmpty()) return s + "}";
+
+		s += list.get(0);
+		for(int i = 1; i < list.size(); i++){
+			s+= (", " + list.get(i));
+		}
+		s += "}";
+
+		return s;
+	}
 
 
 
