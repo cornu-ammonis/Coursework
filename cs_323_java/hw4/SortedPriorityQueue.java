@@ -20,6 +20,24 @@ public class SortedPriorityQueue<Key,Value> extends AbstractPriorityQueue<Key,Va
 	public SortedPriorityQueue(Comparator<Key> comp) { super(comp); }
 
 
+	public Entry<Key, Value> insert(Key k , Value v) throws IllegalArgumentException {
+
+		checkKey(k);
+
+		Entry<Key, Value> toInsert = new PQEntry<>(k, v);
+
+		int i = 0;
+
+		// increment insertion index until end of list or reach element larger
+		// than toInsert
+		while (i < list.size() && compare( list.get(i), toInsert ) < 0)
+			i++;
+
+		list.add(i, toInsert);
+
+		return toInsert;
+	}
+
 	public Entry<Key, Value> min() {
 		
 		if (list.isEmpty())
@@ -35,6 +53,7 @@ public class SortedPriorityQueue<Key,Value> extends AbstractPriorityQueue<Key,Va
 
 		return list.remove(0);
 	}
+
 
 
 
