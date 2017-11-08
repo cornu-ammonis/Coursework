@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 public class SortedPriorityQueue<Key,Value> extends AbstractPriorityQueue<Key,Value> {
+	
 	private ArrayList<Entry<Key, Value>> list = new ArrayList();
 
 	// Constructors
@@ -22,9 +23,9 @@ public class SortedPriorityQueue<Key,Value> extends AbstractPriorityQueue<Key,Va
 
 	public Entry<Key, Value> insert(Key k , Value v) throws IllegalArgumentException {
 
-		checkKey(k);
+		checkKey(k); // throws exception if key is invalid
 
-		Entry<Key, Value> toInsert = new PQEntry<>(k, v);
+		PQEntry<Key, Value> toInsert = new PQEntry<Key, Value>(k, v);
 
 		int i = 0;
 
@@ -33,7 +34,7 @@ public class SortedPriorityQueue<Key,Value> extends AbstractPriorityQueue<Key,Va
 		while (i < list.size() && compare( list.get(i), toInsert ) < 0)
 			i++;
 
-		list.add(i, toInsert);
+		list.add(i, toInsert); // adds at i, pushing entries at >= i to the right
 
 		return toInsert;
 	}
@@ -48,7 +49,7 @@ public class SortedPriorityQueue<Key,Value> extends AbstractPriorityQueue<Key,Va
 
 	public Entry<Key, Value> removeMin()  {
 
-		if (list.isEmpty())
+		if ( list.isEmpty() )
 			return null;
 
 		return list.remove(0);
@@ -57,7 +58,7 @@ public class SortedPriorityQueue<Key,Value> extends AbstractPriorityQueue<Key,Va
 	// source citation: taken directly from UnsortedPriorityQueue code
 	public int size() { return list.size(); }
 
-	
+	// source citation: taken directly from UnsortedPriorityQueue code
 	public String toString(){
 		String s = "{";
 		if (isEmpty()) return s + "}";
