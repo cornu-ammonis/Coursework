@@ -31,7 +31,7 @@ public class SortedPriorityQueue<Key,Value> extends AbstractPriorityQueue<Key,Va
 
 		// increment insertion index until end of list or reach element larger
 		// than toInsert
-		while (i < list.size() && compare( list.get(i), toInsert ) < 0)
+		while (i < list.size() && compare( list.get(i), toInsert ) <= 0)
 			i++;
 
 		list.add(i, toInsert); // adds at i, pushing entries at >= i to the right
