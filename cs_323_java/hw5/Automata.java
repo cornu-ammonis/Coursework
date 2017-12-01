@@ -51,8 +51,7 @@ public class Automata {
 			stateByTransition [ patternString.length() ] [c] = patternString.length();
 
 
-		abcabcabc
-		abcabcde
+
 	}
 
 	public int prefixSuffixOverlap(int i, int c) {
@@ -69,6 +68,35 @@ public class Automata {
 
 
 	public int prefixSuffixOverlapCount(String string) {
+
+		int[] dp = new int[ string.length() ];
+
+		int i = 1;
+		int length = 0;
+
+		while ( i < string.length() ) {
+			if ( string.charAt(i) == string.charAt(length) ) {
+				
+				length += 1;
+				dp[i] = length;
+				i += 1;
+
+			}
+
+			else {
+				if ( length == 0 ) {
+					dp[i] = 0;
+					i += 1;
+				}
+
+				else
+					length = dp[ length - 1 ]; 
+			}
+		}
+
+		return dp[ string.length() - 1 ];
+
+
 
 	}
 
