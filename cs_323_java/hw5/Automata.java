@@ -22,6 +22,17 @@ public class Automata {
 		for (int i = 0; i < patternString.length(); i++) 
 			inPattern[ (int) patternString.charAt(i) ] = true;
 
-		
+		// don't do last character because if we're at the last character we remain in that state indefinitely
+		for (int i = 0; i < patternString.length() - 1; i++) {
+
+			// c represents each ascii value
+			for (int c = 0; c < 128; c++ ) {
+
+				if ( inPattern[c] ) {
+					
+				}
+
+			}
+		}
 	}
 }
