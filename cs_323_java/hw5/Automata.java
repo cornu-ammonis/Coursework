@@ -42,5 +42,12 @@ public class Automata {
 
 			}
 		}
+
+		for (int c = 0; c < 128; c++)
+			stateByTransition [ patternString.length() ] [c] = patternString.length();
+
+
 	}
+
+	
 }
