@@ -22,14 +22,22 @@ public class Automata {
 		for (int i = 0; i < patternString.length(); i++) 
 			inPattern[ (int) patternString.charAt(i) ] = true;
 
-		// don't do last character because if we're at the last character we remain in that state indefinitely
-		for (int i = 0; i < patternString.length() - 1; i++) {
+		// we loop to the last chracter but not to the last position in the stateByTransition array becasue that last position is 
+		for (int i = 0; i < patternString.length(); i++) {
 
 			// c represents each ascii value
 			for (int c = 0; c < 128; c++ ) {
 
 				if ( inPattern[c] ) {
+					// this means that the character is the correct one for subsequent position in string
+					// therefore the state is the current state + 1
+					if (c == (int) patternString.charAt(i) ) 
+						stateByTransition[i][c] = i + 1;
 
+					else 
+						stateByTransition[i][c] = prefixSuffixOverlapCount(i, c, patternString);
+
+					
 				}
 
 			}
