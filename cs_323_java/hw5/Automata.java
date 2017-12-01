@@ -54,8 +54,8 @@ public class Automata {
 
 	}
 
-	public int prefixSuffixOverlap(int i, int c) {
-		possibleString = "";
+	private int prefixSuffixOverlap(int i, int c) {
+		String possibleString = "";
 
 		for (int j = 0; j < i; j++) 
 			possibleString += patternString.charAt(j);
@@ -67,7 +67,7 @@ public class Automata {
 	}
 
 
-	public int prefixSuffixOverlapCount(String string) {
+	private int prefixSuffixOverlapCount(String string) {
 
 		int[] dp = new int[ string.length() ];
 
@@ -83,7 +83,8 @@ public class Automata {
 
 			}
 
-			else {
+			else { // string[i] != string[length]
+
 				if ( length == 0 ) {
 					dp[i] = 0;
 					i += 1;
