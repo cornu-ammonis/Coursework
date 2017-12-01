@@ -47,6 +47,13 @@ public class Automata {
 			stateByTransition [ patternString.length() ] [c] = patternString.length();
 
 
+
+	}
+
+	public int transition(int i , char c) {
+
+		return stateByTransition[i] [(int) c];
+
 	}
 
 	
