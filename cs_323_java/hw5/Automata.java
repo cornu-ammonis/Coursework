@@ -14,7 +14,7 @@ public class Automata {
 	// Constructor which builds an automata for patternString
 	public Automata(String patternString) {
 		
-		stateByTransition = new int[ patternString.length() ] [ 128 ];
+		stateByTransition = new int[ patternString.length() + 1] [ 128 ];
 
 		inPattern = new boolean[ 128 ];
 
@@ -29,7 +29,7 @@ public class Automata {
 			for (int c = 0; c < 128; c++ ) {
 
 				if ( inPattern[c] ) {
-					
+
 				}
 
 			}
