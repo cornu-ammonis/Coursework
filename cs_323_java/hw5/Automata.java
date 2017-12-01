@@ -11,9 +11,13 @@ public class Automata {
 
 	private boolean[] inPattern;
 
+	private String patternString; 
+
 	// Constructor which builds an automata for patternString
-	public Automata(String patternString) {
-		
+	public Automata(String pattern) {
+
+		patternString = pattern;
+
 		stateByTransition = new int[ patternString.length() + 1] [ 128 ];
 
 		inPattern = new boolean[ 128 ];
@@ -35,7 +39,7 @@ public class Automata {
 						stateByTransition[i][c] = i + 1;
 
 					else 
-						stateByTransition[i][c] = prefixSuffixOverlapCount(i, c, patternString);
+						stateByTransition[i][c] = prefixSuffixOverlap(i, c);
 
 					
 				}
@@ -47,7 +51,16 @@ public class Automata {
 			stateByTransition [ patternString.length() ] [c] = patternString.length();
 
 
+		abcabcabc
+		abcabcde
+	}
 
+	public int prefixSuffixOverlap(int i, int c) {
+		possibleString = "";
+
+		for (int j = 0; j < i; j++) {
+
+		}
 	}
 
 	public int transition(int i , char c) {
