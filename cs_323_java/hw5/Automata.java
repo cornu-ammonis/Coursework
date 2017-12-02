@@ -33,6 +33,7 @@ public class Automata {
 			for (int c = 0; c < 128; c++ ) {
 
 				if ( inPattern[c] ) {
+					
 					// this means that the character is the correct one for subsequent position in string
 					// therefore the state is the current state + 1
 					if (c == (int) patternString.charAt(i) ) 
@@ -54,6 +55,13 @@ public class Automata {
 
 	}
 
+	// creates a new string -- possilbeString -- which represents a string which matched the pattern
+	// up until this most recent character c. it then uses the prefixSuffixOverlapCount helper method 
+	// to determine the longest prefix which is also a suffix of this string. 
+	//
+	// the purpose of this computation is to determine whether this mismatch sends the automata 
+	// back to state zero or instead sends it to an intermediate state which is equal to 
+	// prefixSuffixOverlapCount
 	private int prefixSuffixOverlap(int i, int c) {
 		String possibleString = "";
 
@@ -67,6 +75,11 @@ public class Automata {
 	}
 
 
+	// determines the longest prefix which is also a suffix of this string. 
+	//
+	// the purpose of this computation is to determine whether this mismatch sends the automata 
+	// back to state zero or instead sends it to an intermediate state which is equal to 
+	// prefixSuffixOverlapCount
 	private int prefixSuffixOverlapCount(String string) {
 
 		int[] dp = new int[ string.length() ];
@@ -101,12 +114,16 @@ public class Automata {
 
 	}
 
+	// returns the state of the automata given that it starts from state i and 
+	// receives character c as input
 	public int transition(int i , char c) {
 
 		return stateByTransition[i] [(int) c];
 
 	}
 
+	// returns true if the automata is in a final state. for this automata the state is final
+	// if it reached the last available state, which is equivalent to having matched the pattern
 	public boolean isFinal(int state) {
 		return state == patternString.length();
 	}
