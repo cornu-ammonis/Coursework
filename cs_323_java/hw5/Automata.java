@@ -107,5 +107,8 @@ public class Automata {
 
 	}
 
+	public boolean isFinal(int state) {
+		return state == patternString.length();
+	}
 	
 }
