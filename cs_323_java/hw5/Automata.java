@@ -30,31 +30,36 @@ public class Automata {
 		// can save us some time in constructing the automata
 		inPattern = new boolean[ 128 ];
 
-		// TO DO: add try catch with helpful error message if charcter not in ascii
+		// handles exception where pattern contains a non-ascii character
 		try {
 			for (int i = 0; i < patternString.length(); i++) 
 				inPattern[ (int) patternString.charAt(i) ] = true;
 		}
-		catch(Exception e) {
+
+		// this exception will be an array index out of bounds error which is less helpful than the exception i provide
+		catch(Exception e) { 
 			throw new IllegalArgumentException("pattern contains a non-ascii character");
 		}
 		
 
-		// we loop to the last chracter but not to the last position in the stateByTransition array becasue that last position is final
+		// we loop to the last chracter but not to the last position in the stateByTransition array becasue that last state is final
 		for (int i = 0; i < patternString.length(); i++) {
 
 			// c represents each ascii value
 			for (int c = 0; c < 128; c++ ) {
 
+				// only proceed for characters present in the pattern string; leave any others at default 0 value
 				if ( inPattern[c] ) {
 					
 					// this means that the character is the correct one for subsequent position in string
-					// therefore the state is the current state + 1
-					if (c == (int) patternString.charAt(i) ) 
-						stateByTransition[i][c] = i + 1;
+					// therefore transition state is the current state + 1
+					if (c == (int) patternString.charAt( i ) ) 
+						stateByTransition[ i ][ c ] = i + 1;
 
+					// not the subsequent character in the pattern meaning transition state 
+					// is either 0 or the maximum prefix-suffix overlap length
 					else 
-						stateByTransition[i][c] = prefixSuffixOverlap(i, c);
+						stateByTransition[ i ][ c ] = prefixSuffixOverlap(i, c);
 
 					
 				}
@@ -95,15 +100,20 @@ public class Automata {
 	//
 	// the purpose of this computation is to determine whether this mismatch sends the automata 
 	// back to state zero or instead sends it to an intermediate state which is equal to 
-	// prefixSuffixOverlapCount
+	// prefixSuffixOverlapCount. 
+	// 
+	// Works via similar logic to KMP algorithm and partially derived from it
 	private int prefixSuffixOverlapCount(String string) {
 
+		// similar to lps array in KMP algorithm
 		int[] dp = new int[ string.length() ];
 
 		int i = 1;
 		int length = 0;
 
 		while ( i < string.length() ) {
+
+			// possible prefix-suffix match
 			if ( string.charAt(i) == string.charAt(length) ) {
 				
 				length += 1;
@@ -112,6 +122,7 @@ public class Automata {
 
 			}
 
+			// no match here
 			else { // string[i] != string[length]
 
 				if ( length == 0 ) { // no possible prefix/suffix for this position
@@ -124,6 +135,7 @@ public class Automata {
 			}
 		}
 
+		// equivalent to the length of the longest valid prefix which is also a suffix
 		return dp[ string.length() - 1 ];
 
 
@@ -134,7 +146,7 @@ public class Automata {
 	// receives character c as input
 	public int transition(int i , char c) {
 
-		return stateByTransition[i] [(int) c];
+		return stateByTransition[ i ] [ (int) c];
 
 	}
 
