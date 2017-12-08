@@ -11,19 +11,34 @@ public class Automata {
 
 	private boolean[] inPattern;
 
+	// this is here for easier accesibility for helper methods (avoid redundant parameters)
 	private String patternString; 
 
 	// Constructor which builds an automata using pattern
-	public Automata(String patternString) {
+	public Automata(String pattern) {
 
+		// set private field
+		patternString = pattern;
 
+		// initialized to be (m+1)*k 
 		stateByTransition = new int[ patternString.length() + 1] [ 128 ];
 
+		// indiciates which characters in the ascii alphabet are in the pattern
+		// if they are not in the pattern, we know their input will always result
+		// in a transition to state zero, making this assumption (and relying on
+		// the fact that int arrays have default element values of 0)
+		// can save us some time in constructing the automata
 		inPattern = new boolean[ 128 ];
 
 		// TO DO: add try catch with helpful error message if charcter not in ascii
-		for (int i = 0; i < patternString.length(); i++) 
-			inPattern[ (int) patternString.charAt(i) ] = true;
+		try {
+			for (int i = 0; i < patternString.length(); i++) 
+				inPattern[ (int) patternString.charAt(i) ] = true;
+		}
+		catch(Exception e) {
+			throw new IllegalArgumentException("pattern contains a non-ascii character");
+		}
+		
 
 		// we loop to the last chracter but not to the last position in the stateByTransition array becasue that last position is final
 		for (int i = 0; i < patternString.length(); i++) {
