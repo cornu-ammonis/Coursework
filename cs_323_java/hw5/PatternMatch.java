@@ -31,7 +31,7 @@ public class PatternMatch {
 			// get input pattern
 			Scanner scan = new Scanner(System.in);
 			System.out.println("enter a pattern");
-			String s = scan.next();
+			String s = scan.nextLine();
 
 			// Construct Automata and set default state
 			Automata automata = new Automata(s);
