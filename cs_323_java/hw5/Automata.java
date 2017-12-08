@@ -13,10 +13,9 @@ public class Automata {
 
 	private String patternString; 
 
-	// Constructor which builds an automata for patternString
-	public Automata(String pattern) {
+	// Constructor which builds an automata using pattern
+	public Automata(String patternString) {
 
-		patternString = pattern;
 
 		stateByTransition = new int[ patternString.length() + 1] [ 128 ];
 
@@ -26,7 +25,7 @@ public class Automata {
 		for (int i = 0; i < patternString.length(); i++) 
 			inPattern[ (int) patternString.charAt(i) ] = true;
 
-		// we loop to the last chracter but not to the last position in the stateByTransition array becasue that last position is 
+		// we loop to the last chracter but not to the last position in the stateByTransition array becasue that last position is final
 		for (int i = 0; i < patternString.length(); i++) {
 
 			// c represents each ascii value
@@ -48,6 +47,8 @@ public class Automata {
 			}
 		}
 
+		// not strictly necessary, but for completeness we 
+		// set the final state to return to itself given every ascii input
 		for (int c = 0; c < 128; c++)
 			stateByTransition [ patternString.length() ] [c] = patternString.length();
 
@@ -59,7 +60,7 @@ public class Automata {
 	// up until this most recent character c. it then uses the prefixSuffixOverlapCount helper method 
 	// to determine the longest prefix which is also a suffix of this string. 
 	//
-	// the purpose of this computation is to determine whether this mismatch sends the automata 
+	// the purpose of this computation is to determine whether a mismatch sends the automata 
 	// back to state zero or instead sends it to an intermediate state which is equal to 
 	// prefixSuffixOverlapCount
 	private int prefixSuffixOverlap(int i, int c) {
@@ -98,12 +99,12 @@ public class Automata {
 
 			else { // string[i] != string[length]
 
-				if ( length == 0 ) {
+				if ( length == 0 ) { // no possible prefix/suffix for this position
 					dp[i] = 0;
 					i += 1;
 				}
 
-				else
+				else // a shorter prefix / suffix may be valid 
 					length = dp[ length - 1 ]; 
 			}
 		}
